@@ -6215,8 +6215,8 @@
             ? state.topicQuizRetrySubset
             : qs.map((_, i) => i);
 
-          const isPronounRefTopic = ['a1_subject_etre_avoir', 'a1_possessives_places', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives', 'advanced_pronouns'].includes(activeTopic.id);
-          const isVerbRefTopic = ['a1_regular_present', 'a1_irregular_modals', 'a2_passe_compose_avoir', 'a2_passe_compose_etre', 'a2_imparfait', 'a2_futur_simple'].includes(activeTopic.id);
+          const isPronounRefTopic = ['a1_subject_etre_avoir', 'a1_possessives_places', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives', 'a2_adverbs_dem_poss_pronouns', 'advanced_pronouns'].includes(activeTopic.id);
+          const isVerbRefTopic = ['a1_regular_present', 'a1_irregular_modals', 'a1_stem_irregulars', 'a1_imperative', 'a2_passe_compose_avoir', 'a2_passe_compose_etre', 'a2_imparfait', 'a2_savoir_connaitre_leave', 'a2_futur_simple'].includes(activeTopic.id);
 
           const topStepNav = `
             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -7452,8 +7452,8 @@
 
         const levelIntro = {
           A0: 'Build crisp French pronunciation and ear decoding first: Mandarin ü vs u, nasal vowels, liaisons, and Canadian spoken contractions.',
-          A1: 'True Beginner Step-by-Step Path: Subject Pronouns + Être/Avoir → Gender & Articles → C’est/Il est → Regular/Irregular Present → Negation & Questions → Possessives & Places → Tonic & Reflexives → Near Future & Recent Past.',
-          A2: 'Elementary Expansion: Passé Composé (avoir, then être/reflexives) → Imparfait → PC vs IMP → Futur Simple → Direct & Indirect Object Pronouns (COD, COI, Y, EN) & Comparatives.',
+          A1: 'True Beginner Step-by-Step Path (12 modules): Subject Pronouns + Être/Avoir → Gender & Articles → C’est/Il est → Regular, Irregular & Boot Verbs → Negation & Questions → Possessives, Contractions & Quantities → Tonic & Reflexives → Near Future, Recent Past & Imperative.',
+          A2: 'Elementary Expansion (11 modules): Passé Composé (avoir / être) → Imparfait → PC vs IMP → Depuis/Pendant/Pour → Savoir/Connaître & Leave Verbs → Futur Simple → COD, COI, Y, EN, Comparatives & Adverbs/Demonstrative/Possessive Pronouns.',
           B1: 'Intermediate Fluency: Plus-que-parfait → Conditionnel & Si-Clauses → Double Object & Relative Pronouns (qui/que/où/dont) → Cause/Contrast Connectors & Gérondif.',
           B2: 'CLB 7 Mastery: Subjunctive Triggers vs. Indicative Look-Alikes, Type 3 Regrets, Compound Relatives & Academic Nuance.'
         }[curLvl];

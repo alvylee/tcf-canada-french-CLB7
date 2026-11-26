@@ -1259,6 +1259,240 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "expZh": "nous pouvons（能）后接原形 apprendre。"
     }
   ],
+  "a1_stem_irregulars": [
+    {
+      "type": "teach",
+      "stepTag": "Concept 1 of 3 · Stem-Changing -ER Verbs (« Boot » Pattern)",
+      "title": "Why Does « acheter » Become « j’achète » — But « nous achetons »?",
+      "summary": "Several common -ER verbs change spelling inside the « boot » (je, tu, il/elle/on, ils/elles) so the syllable stays strong and open, while nous and vous stay normal! Learn the 3 subtypes: e → è, é → è, and doubled l/t.",
+      "summaryZh": "法语不少高频 -ER 动词遵循“靴子规则”：je / tu / il / ils（靴子里面）重音读得更响，所以词干微调；nous / vous（靴子外面）完全照原型变位！",
+      "table": {
+        "headers": [
+          "Type",
+          "Inside Boot (je / tu / il / ils)",
+          "Outside Boot (nous / vous)"
+        ],
+        "rows": [
+          [
+            "e → è (acheter, lever, mener)",
+            "j’achète, ils achètent",
+            "nous achetons, vous achetez"
+          ],
+          [
+            "é → è (préférer, répéter, espérer)",
+            "je préfère, ils préfèrent",
+            "nous préférons, vous préférez"
+          ],
+          [
+            "l/t → ll/tt (appeler, jeter)",
+            "j’appelle, ils appellent",
+            "nous appelons, vous appelez"
+          ]
+        ]
+      },
+      "tip": "Hear the difference: « nous achetons » [ahsh-tohn] vs. « ils achètent » [ah-shet]!",
+      "tipZh": "发音对照：nous achetons（弱读 e），ils achètent（开口 è 清晰响亮）。",
+      "examples": [
+        {
+          "fr": "J’achète du pain ici, mais nous achetons le fromage au marché.",
+          "en": "I buy bread here, while we buy cheese at the market.",
+          "zh": "我在这儿买面包，而我们在市场买奶酪。"
+        },
+        {
+          "fr": "Je préfère le thé, et vous préférez le café.",
+          "en": "I prefer tea, and you prefer coffee.",
+          "zh": "我更喜欢茶，您更喜欢咖啡。"
+        }
+      ]
+    },
+    {
+      "type": "fib",
+      "stepTag": "Practice 1 · Boot-Pattern -ER Verbs",
+      "title": "Inside vs. Outside the Boot",
+      "prompt": "Nous ___ (préférer) rester ici, mais Claire ___ (acheter) des billets pour ce soir.",
+      "hint": "« nous » stays outside the boot (keeps é); « Claire » is inside the boot (e → è).",
+      "answers": [
+        "préférons / achète",
+        "préférons/achète"
+      ],
+      "frFull": "Nous préférons rester ici, mais Claire achète des billets pour ce soir.",
+      "exp": "« Nous préférons » keeps the infinitive « é »; « Claire achète » shifts « e » to « è » inside the boot.",
+      "expZh": "nous 在靴外保持 préférons；Claire 在靴内改成 achète。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 2 of 3 · Irregular -IR Families (partir/dormir & ouvrir)",
+      "title": "Two High-Frequency -IR Patterns That Do NOT Use « -iss- »",
+      "summary": "Unlike « finir » (-issons/-issent), two everyday -IR families follow their own clean rhythm: (1) « partir / sortir / dormir / servir » drop the consonant in singular (je pars, je dors) and put it back in plural (ils dorment); (2) « ouvrir / offrir / découvrir » use regular -ER endings!",
+      "summaryZh": "不是所有 -IR 动词都加 -iss-！日常高频另有两组：① partir / sortir / dormir：单数砍掉尾辅音（je pars, je dors），复数加回辅音（nous partons, ils dorment）；② ouvrir / offrir：完全套用 -ER 动词词尾！",
+      "table": {
+        "headers": [
+          "Verb Group",
+          "Singular (je / tu / il)",
+          "Plural (nous / vous / ils)"
+        ],
+        "rows": [
+          [
+            "partir / sortir (leave / go out)",
+            "pars, pars, part",
+            "partons, partez, partent"
+          ],
+          [
+            "dormir / servir (sleep / serve)",
+            "dors, dors, dort",
+            "dormons, dormez, dorment"
+          ],
+          [
+            "ouvrir / offrir (-ER endings!)",
+            "ouvre, ouvres, ouvre",
+            "ouvrons, ouvrez, ouvrent"
+          ]
+        ]
+      },
+      "tip": "Think « il part » (NO -iss-) vs. « il finit » (finir group)! Hearing « ils dorment » [dorm] vs. « il dort » [dor] tells you singular vs. plural instantly.",
+      "tipZh": "听力秘诀：单数 il dort 尾音 t 不发音 [dor]，复数 ils dorment 里的 m 会清脆读出来 [dorm]！",
+      "examples": [
+        {
+          "fr": "Le train part à huit heures, mais mes amis dorment encore.",
+          "en": "The train leaves at 8:00, yet my friends are still sleeping.",
+          "zh": "火车八点开，但我朋友们还在睡。"
+        },
+        {
+          "fr": "Vous ouvrez la fenêtre et nous offrons du thé aux invités.",
+          "en": "You open the window and we offer tea to the guests.",
+          "zh": "您打开窗户，我们给客人们端上茶。"
+        }
+      ]
+    },
+    {
+      "type": "mcq",
+      "stepTag": "Practice 2 · Irregular -IR Check",
+      "title": "Contrast partir / dormir / ouvrir",
+      "prompt": "Complete: « Le soir, je ___ (dormir) tôt et mes collègues ___ (sortir) souvent, mais la banque ___ (ouvrir) à neuf heures. »",
+      "opts": [
+        "dors / sortent / ouvre",
+        "dormis / sortissent / ouvrit",
+        "dort / sort / ouvrent",
+        "dors / sort / ouvre"
+      ],
+      "ans": 0,
+      "frFull": "Le soir, je dors tôt et mes collègues sortent souvent, mais la banque ouvre à neuf heures.",
+      "exp": "« Je dors » drops m; « mes collègues sortent » brings t back in plural; « la banque ouvre » takes -ER ending -e.",
+      "expZh": "je dors 去 m，mes collègues sortent 恢复 t，la banque ouvre 套用 -ER 词尾 -e。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 3 of 3 · Everyday Essentials: boire, voir, dire, lire, écrire",
+      "title": "Five Daily Communication Verbs + The Famous « vous dites »",
+      "summary": "You use « drink, see, say, read, write » every single day. Watch two classics: « dire » uses irregular « vous dites » (like « vous faites »!), and « boire / voir » change vowels inside nous/vous.",
+      "summaryZh": "每天必说的五个不规则动词：boire（喝）、voir（看）、dire（说）、lire（读）、écrire（写）。重点防踩坑：vous dites（就像 vous faites，不说 disez！）。",
+      "table": {
+        "headers": [
+          "Verb",
+          "je / tu / il",
+          "nous / vous",
+          "ils / elles"
+        ],
+        "rows": [
+          [
+            "boire (drink)",
+            "bois, bois, boit",
+            "buvons, buvez",
+            "boivent"
+          ],
+          [
+            "voir (see)",
+            "vois, vois, voit",
+            "voyons, voyez",
+            "voient"
+          ],
+          [
+            "dire (say / tell)",
+            "dis, dis, dit",
+            "disons, dites (!)",
+            "disent"
+          ],
+          [
+            "lire / écrire",
+            "lis, lit / écris, écrit",
+            "lisons / écrivons",
+            "lisent / écrivent"
+          ]
+        ]
+      },
+      "tip": "Only THREE verbs in French do NOT end in -ez with « vous »: « vous êtes » (être), « vous faites » (faire), and « vous dites » (dire)!",
+      "tipZh": "全法语只有三个动词的 vous 变位不以 -ez 结尾：vous êtes / vous faites / vous dites！",
+      "examples": [
+        {
+          "fr": "Vous dites la vérité et nous écrivons la réponse.",
+          "en": "You tell the truth and we write the reply.",
+          "zh": "您说的是实话，我们来写回复。"
+        },
+        {
+          "fr": "Le matin, je lis le journal et mes parents boivent du café.",
+          "en": "In the morning I read the paper and my parents drink coffee.",
+          "zh": "早上我看报纸，我父母喝咖啡。"
+        }
+      ]
+    },
+    {
+      "type": "spot",
+      "stepTag": "Practice 3 · Spot Both Irregular Traps",
+      "title": "Fix Classic Beginner Conjugation Slips",
+      "wrongSentence": "Qu’est-ce que vous disez ? Moi, j’achete du thé et mes amis boiventt de l’eau.",
+      "prompt": "Pick the clean, accurate French sentence:",
+      "opts": [
+        "Qu’est-ce que vous dites ? Moi, j’achète du thé et mes amis boivent de l’eau.",
+        "Qu’est-ce que vous disez ? Moi, j’achète du thé et mes amis boivent de l’eau.",
+        "Qu’est-ce que vous dites ? Moi, j’achete du thé et mes amis buvent de l’eau.",
+        "Qu’est-ce que vous dites ? Moi, j’achètes du thé et mes amis bois de l’eau."
+      ],
+      "ans": 0,
+      "frFull": "Qu’est-ce que vous dites ? Moi, j’achète du thé et mes amis boivent de l’eau.",
+      "exp": "« Dire » takes « vous dites »; « acheter » shifts to « j’achète » inside the boot; « boire » for « ils » is « boivent ».",
+      "expZh": "vous dites 不可写 disez；j’achète 靴内加 è；ils boivent 是正确复数。"
+    },
+    {
+      "type": "dict",
+      "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
+      "title": "Listen and Type the Exact French Sentence",
+      "audio": "J’achète du pain et je bois un café.",
+      "hint": "9 words · Listen for « achète » (with è) and « bois ».",
+      "answers": [
+        "J’achète du pain et je bois un café.",
+        "J'achète du pain et je bois un café.",
+        "J’achète du pain et je bois un café",
+        "J'achète du pain et je bois un café"
+      ],
+      "frFull": "J’achète du pain et je bois un café.",
+      "en": "I buy bread and I drink a coffee.",
+      "zh": "我买面包，喝一杯咖啡。",
+      "exp": "Boot-changed « j’achète » + irregular present « je bois ».",
+      "expZh": "j’achète 读出开口 è；je bois 末尾 s 不发音。"
+    },
+    {
+      "type": "build",
+      "stepTag": "Practice 5 · Sentence Builder",
+      "title": "Tap the Tiles in Order: « You tell the truth and they write the letter. »",
+      "prompt": "Combine irregular « dire » (vous) and « écrire » (ils):",
+      "promptZh": "组句：「您说实话，他们写信。」",
+      "tiles": [
+        "Vous",
+        "dites",
+        "la",
+        "vérité",
+        "et",
+        "ils",
+        "écrivent",
+        "la",
+        "lettre."
+      ],
+      "answer": "Vous dites la vérité et ils écrivent la lettre.",
+      "frFull": "Vous dites la vérité et ils écrivent la lettre.",
+      "exp": "Irregular « vous dites » + plural « ils écrivent » (inserting « v »).",
+      "expZh": "vous dites 不规则变位；ils écrivent 复数加 v。"
+    }
+  ],
   "a1_negation_questions": [
     {
       "type": "teach",
@@ -1736,6 +1970,248 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "expZh": "Cet été（阳性元音）+ chez（某人家）+ mon amie（元音前用 mon）+ en Ontario。"
     }
   ],
+  "a1_contractions_quantities": [
+    {
+      "type": "teach",
+      "stepTag": "Concept 1 of 3 · Contractions of « à » & « de »",
+      "title": "Mandatory Mergers: à + le → au | de + le → du",
+      "summary": "In French, you are NEVER allowed to leave « à le », « à les », « de le », or « de les » apart! Whenever « à » or « de » meets masculine « le » or plural « les », they fuse automatically into one word.",
+      "summaryZh": "法语两大禁止分开的介词组合：à / de 遇到阳性单数 le 或复数 les 时必须缩合成一个词（绝对不写 à le 或 de les）！遇到阴性 la 和省音 l’ 则不缩合。",
+      "table": {
+        "headers": [
+          "Preposition + Article",
+          "Turns Into",
+          "Example"
+        ],
+        "rows": [
+          [
+            "à + le (m.sg.)",
+            "au",
+            "Je parle au médecin. / Je vais au parc."
+          ],
+          [
+            "à + les (pl.)",
+            "aux",
+            "Il écrit aux clients. / Aux États-Unis."
+          ],
+          [
+            "de + le (m.sg.)",
+            "du",
+            "Le nom du quartier. / Près du métro."
+          ],
+          [
+            "de + les (pl.)",
+            "des",
+            "L’horaire des trains. / Le bureau des étudiants."
+          ],
+          [
+            "à/de + la or l’",
+            "unchanged!",
+            "à la poste / de la ville / de l’hôtel"
+          ]
+        ]
+      },
+      "tip": "Contrast two « du » roles you already know: « du café » (partitive = some coffee) and « près du café » (contraction = near THE café) look identical!",
+      "tipZh": "小洞察：du 既可以是部分冠词（du café 一点咖啡），也可以是 de + le 缩合（le prix du café 这杯咖啡的价格），形同而用活。",
+      "examples": [
+        {
+          "fr": "Le bureau du directeur est juste en face du parc.",
+          "en": "The director’s office is right across from the park.",
+          "zh": "主管的办公室就在公园对面。（du = de + le）"
+        },
+        {
+          "fr": "Je pose une question aux étudiants avant d’aller au café.",
+          "en": "I ask the students a question before going to the café.",
+          "zh": "去咖啡馆前我问了学生们一个问题。（aux / au）"
+        }
+      ]
+    },
+    {
+      "type": "fib",
+      "stepTag": "Practice 1 · Contractions",
+      "title": "Merge « à » and « de » With Masc. / Plural Nouns",
+      "prompt": "Nous sommes près ___ (de + le) musée ; tu téléphones ___ (à + les) voisins, puis nous allons ___ (à + le) cinéma.",
+      "hint": "Combine « de + le », « à + les », and « à + le ».",
+      "answers": [
+        "du / aux / au",
+        "du/aux/au"
+      ],
+      "frFull": "Nous sommes près du musée ; tu téléphones aux voisins, puis nous allons au cinéma.",
+      "exp": "de + le → « du »; à + les → « aux »; à + le → « au ».",
+      "expZh": "de + le 缩合为 du，à + les 缩合为 aux，à + le 缩合为 au。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 2 of 3 · Expressions of Quantity + Bare « de »",
+      "title": "Beaucoup de / Trop de / Un peu de — NEVER Use « des / du » Here!",
+      "summary": "English says « a lot of books » and « too much coffee ». In French, AFTER any expression of quantity (beaucoup, trop, assez, peu, plus, moins, combien, un verre, une tasse, un kilo), drop « les / du / de la » completely and use ONLY bare « de / d’ »!",
+      "summaryZh": "超级高频规则（TCF 写作听力必杀）：只要出现数量词或容器词，后面的介词一律只留光杆的 de（元音前 d’），绝对不要接 des / du / de la！",
+      "table": {
+        "headers": [
+          "Quantity Expression",
+          "Meaning",
+          "Correct Example (bare de/d’!)"
+        ],
+        "rows": [
+          [
+            "beaucoup de / d’",
+            "a lot of / many",
+            "beaucoup de gens / beaucoup d’amis (NOT des!)"
+          ],
+          [
+            "trop de / assez de / peu de",
+            "too much / enough / little",
+            "trop de bruit / assez de temps / peu d’eau"
+          ],
+          [
+            "combien de / plus de",
+            "how much/many / more",
+            "combien de jours ? / plus de soleil"
+          ],
+          [
+            "Containers (un verre / un kilo)",
+            "a glass / kilo of",
+            "une tasse de thé / un litre d’eau"
+          ]
+        ]
+      },
+      "tip": "Trap alert: « des amis » (some friends) loses its -s as soon as you add « beaucoup » → « beaucoup d’amis » (even though « amis » stays plural!).",
+      "tipZh": "注意：虽然后面的名词 amis 保持复数拼写，但介词必须是 d’（beaucoup d’amis），绝不能写 beaucoup des amis！",
+      "examples": [
+        {
+          "fr": "J’ai beaucoup d’amis au Québec, mais j’ai peu de temps libre.",
+          "en": "I have many friends in Québec, though I have little free time.",
+          "zh": "我在魁北克有很多朋友，但空闲时间很少。"
+        },
+        {
+          "fr": "Tu prends une tasse de café et un verre d’eau ?",
+          "en": "Are you having a cup of coffee and a glass of water?",
+          "zh": "你喝一杯咖啡和一杯水吗？"
+        }
+      ]
+    },
+    {
+      "type": "mcq",
+      "stepTag": "Practice 2 · Quantity + de/d’ Check",
+      "title": "Pick the Accurate Quantity Forms",
+      "prompt": "Complete: « Aujourd’hui, il y a trop ___ voitures et je n’ai pas assez ___ patience ! »",
+      "opts": [
+        "de / de",
+        "des / de la",
+        "de / de la",
+        "des / de"
+      ],
+      "ans": 0,
+      "frFull": "Aujourd’hui, il y a trop de voitures et je n’ai pas assez de patience !",
+      "exp": "Both « trop de » and « assez de » take bare « de » regardless of plural « voitures » or feminine « patience ».",
+      "expZh": "trop 和 assez 后面不管接复数名词还是阴性不可数名词，都只加光杆 de。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 3 of 3 · All 4 Forms of « tout » + Pronunciation Tip",
+      "title": "Everything, Everyone & Every Day: tout / toute / tous / toutes",
+      "summary": "« Tout » changes like an adjective before « le / la / les »: tout (m.sg.), toute (f.sg.), tous (m.pl.), toutes (f.pl.). Two famous rules from Tex: (1) « Tout le monde » (= everyone) uses a SINGULAR verb; (2) « Tous » is silent [too] before a noun, but buzzes [tooss] when standing alone!",
+      "summaryZh": "万能词 tout 修饰限定词+名词时要随阴阳性单复数变化，重点掌握两个高分细节：① tout le monde（大家）用单数动词；② tous 在名词前结尾 s 不发音，单独作代词时末尾 s 必须读出 [tus]！",
+      "table": {
+        "headers": [
+          "Form",
+          "Gender / Number",
+          "Key Usage & Example"
+        ],
+        "rows": [
+          [
+            "tout",
+            "masc. sg. (+ pronoun)",
+            "tout le monde (everyone IS → est!) / tout le temps"
+          ],
+          [
+            "toute",
+            "fem. sg.",
+            "toute la journée / toute l’année"
+          ],
+          [
+            "tous",
+            "masc. pl.",
+            "tous les jours [s silent] vs. Ils sont tous là [s pronounced!]"
+          ],
+          [
+            "toutes",
+            "fem. pl.",
+            "toutes les semaines / toutes mes amies"
+          ]
+        ]
+      },
+      "tip": "Hear « Ils sont tous là » [tooss] vs. « tous les matins » [too] — TCF Listening loves that contrast!",
+      "tipZh": "对照朗读记住：tous les jours（不读 s）vs Ils sont tous prêts（读出 s）！",
+      "examples": [
+        {
+          "fr": "Tout le monde étudie toute la semaine pour réussir.",
+          "en": "Everyone studies all week long to succeed.",
+          "zh": "大家整周都在学习以求通过。"
+        },
+        {
+          "fr": "Ils pratiquent tous les jours et sont tous motivés.",
+          "en": "They practice every day and are all motivated.",
+          "zh": "他们每天都练习，而且大家都干劲十足。（前 tous 不读 s，后 tous 读 s！）"
+        }
+      ]
+    },
+    {
+      "type": "spot",
+      "stepTag": "Practice 3 · Spot 3 Classic Mistakes",
+      "title": "Fix Contraction, Quantity & « tout » Errors",
+      "wrongSentence": "Je parle à le voisin qui a beaucoup des livres tout la semaine.",
+      "prompt": "Pick the 100% grammatical sentence:",
+      "opts": [
+        "Je parle au voisin qui a beaucoup de livres toute la semaine.",
+        "Je parle au voisin qui a beaucoup des livres toute la semaine.",
+        "Je parle à le voisin qui a beaucoup de livres toute la semaine.",
+        "Je parle au voisin qui a beaucoup de livres tout la semaine."
+      ],
+      "ans": 0,
+      "frFull": "Je parle au voisin qui a beaucoup de livres toute la semaine.",
+      "exp": "« à + le » contracts to « au »; « beaucoup de » takes bare « de »; feminine « la semaine » requires « toute ».",
+      "expZh": "à + le 缩合为 au；beaucoup 后用光杆 de；阴性 semaine 用 toute。"
+    },
+    {
+      "type": "dict",
+      "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
+      "title": "Listen and Type the Exact Sentence",
+      "audio": "Tout le monde a beaucoup de travail aujourd’hui.",
+      "hint": "8 words · Notice singular verb « a » after « Tout le monde » and bare « de ».",
+      "answers": [
+        "Tout le monde a beaucoup de travail aujourd’hui.",
+        "Tout le monde a beaucoup de travail aujourd'hui.",
+        "Tout le monde a beaucoup de travail aujourd’hui",
+        "Tout le monde a beaucoup de travail aujourd'hui"
+      ],
+      "frFull": "Tout le monde a beaucoup de travail aujourd’hui.",
+      "en": "Everyone has a lot of work today.",
+      "zh": "大家今天都有很多工作。",
+      "exp": "« Tout le monde » takes 3rd-person singular « a »; « beaucoup de » uses bare « de ».",
+      "expZh": "Tout le monde 动词用单数 a；beaucoup 后用光杆 de。"
+    },
+    {
+      "type": "build",
+      "stepTag": "Practice 5 · Sentence Builder",
+      "title": "Tap the Tiles in Order: « I go to the market every Saturday. »",
+      "prompt": "Combine « au » (contraction) and plural « tous »:",
+      "promptZh": "组句：「我每个周六都去市场。」",
+      "tiles": [
+        "Je",
+        "vais",
+        "au",
+        "marché",
+        "tous",
+        "les",
+        "samedis."
+      ],
+      "answer": "Je vais au marché tous les samedis.",
+      "frFull": "Je vais au marché tous les samedis.",
+      "exp": "« à + le marché » → « au marché »; « every Saturday » (masc. pl.) → « tous les samedis ».",
+      "expZh": "去市场用 au marché；每个周六（阳性复数）用 tous les samedis。"
+    }
+  ],
   "a1_tonic_reflexives": [
     {
       "type": "teach",
@@ -2209,6 +2685,236 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "frFull": "Est-ce qu’ils vont s’inscrire ce soir ?",
       "exp": "« Est-ce qu’ils vont » (near future) + reflexive infinitive « s’inscrire ».",
       "expZh": "Est-ce qu’ils vont + 自反动词原形 s’inscrire。"
+    }
+  ],
+  "a1_imperative": [
+    {
+      "type": "teach",
+      "stepTag": "Concept 1 of 3 · Regular Imperatives (Drop Subject + Drop -s on -ER!)",
+      "title": "Give Direct Advice or Directions Without Subject Pronouns",
+      "summary": "Imperative only has 3 forms: « tu » (you casual), « nous » (let’s...), and « vous » (polite / plural). Simply take the present tense and drop the subject pronoun — with ONE huge rule: drop the final « -s » on « tu » for ALL -ER verbs (plus « aller » & « ouvrir »)!",
+      "summaryZh": "命令式只用 tu / nous / vous 三个人称，方法是直接取现在时并去掉主语。唯独牢记这一条：所有人称 tu 的 -ER 动词（外加 aller 和 ouvrir）结尾的 -s 必须砍掉！",
+      "table": {
+        "headers": [
+          "Person",
+          "-ER / aller (NO -s on tu!)",
+          "-IR (finir)",
+          "-RE (attendre / prendre)"
+        ],
+        "rows": [
+          [
+            "tu (1 friend)",
+            "Parle ! / Écoute ! / Va !",
+            "Finis !",
+            "Attends ! / Prends !"
+          ],
+          [
+            "nous (Let’s...)",
+            "Parlons ! / Allons !",
+            "Finissons !",
+            "Attendons ! / Prenons !"
+          ],
+          [
+            "vous (polite/pl.)",
+            "Parlez ! / Allez !",
+            "Finissez !",
+            "Attendez ! / Prenez !"
+          ]
+        ]
+      },
+      "tip": "Compare: « Tu écoutes » (statement = with -s) vs. « Écoute ! » (command = NO -s!). Also « Vas-y ! » brings -s back only before « y/en ».",
+      "tipZh": "写作极易漏掉：陈述句 Tu parles 带 s，命令句 Parle ! 去掉 s！",
+      "examples": [
+        {
+          "fr": "Écoute bien l’enregistrement et finis l’exercice !",
+          "en": "Listen carefully to the recording and finish the exercise!",
+          "zh": "仔细听录音，然后完成练习！（-ER 去 s，-IR 留 s）"
+        },
+        {
+          "fr": "Prenez cette rue, puis tournez à gauche au feu.",
+          "en": "Take this street, then turn left at the light.",
+          "zh": "走这条街，然后在红绿灯处左转。"
+        }
+      ]
+    },
+    {
+      "type": "fib",
+      "stepTag": "Practice 1 · Regular & -ER Drop-S Imperatives",
+      "title": "Build Casual (tu) vs. Polite (vous) Commands",
+      "prompt": "___ (regarder, tu) l’horaire et ___ (répondre, vous) avant vendredi, s’il vous plaît.",
+      "hint": "Drop -s on -ER « tu » imperative; keep -ez on « vous ».",
+      "answers": [
+        "Regarde / répondez",
+        "regarde / répondez",
+        "Regarde/répondez"
+      ],
+      "frFull": "Regarde l’horaire et répondez avant vendredi, s’il vous plaît.",
+      "exp": "« Tu » of -ER « regarder » drops -s → « Regarde »; « vous » of « répondre » → « répondez ».",
+      "expZh": "regarder 对 tu 去 -s 成 Regarde；répondre 对 vous 用 répondez。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 2 of 3 · Negative Commands & The 3 Irregulars",
+      "title": "« Ne... pas ! » + Être, Avoir & Savoir Irregulars",
+      "summary": "To tell someone NOT to do something, wrap « ne... pas » around the imperative (« Ne parlez pas vite ! »). Watch out for the 3 irregular verbs whose imperative looks totally different from present tense: être (sois/soyons/soyez), avoir (aie/ayons/ayez), savoir (sache/sachons/sachez).",
+      "summaryZh": "否定命令式直接用 ne... pas 夹住动词！另外记住 3 个变位完全不同的核心不规则命令式：être → sois/soyons/soyez；avoir → aie/ayons/ayez；savoir → sache/sachons/sachez。",
+      "table": {
+        "headers": [
+          "Verb",
+          "tu",
+          "nous",
+          "vous"
+        ],
+        "rows": [
+          [
+            "être (be)",
+            "Sois calme !",
+            "Soyons patients !",
+            "Soyez à l’heure !"
+          ],
+          [
+            "avoir (have)",
+            "N’aie pas peur !",
+            "Ayons confiance !",
+            "N’ayez pas de doute !"
+          ],
+          [
+            "savoir (know)",
+            "Sache que...",
+            "Sachons...",
+            "Sachez que..."
+          ]
+        ]
+      },
+      "tip": "Exam gold phrase for Speaking/Writing: « Soyez rassuré(e) » (Rest assured) and « N’hésitez pas à me contacter ! » (Don’t hesitate to contact me!).",
+      "tipZh": "TCF 书信黄金结尾：N’hésitez pas à me contacter ! / Soyez patient(e)s !。",
+      "examples": [
+        {
+          "fr": "Soyez à l’heure demain et n’oubliez pas votre passeport !",
+          "en": "Be on time tomorrow and don’t forget your passport!",
+          "zh": "明天请准时到，别忘了带护照！"
+        },
+        {
+          "fr": "N’aie pas peur de parler français, fais de ton mieux.",
+          "en": "Don’t be afraid to speak French, do your best.",
+          "zh": "别怕说法语，尽力就好。"
+        }
+      ]
+    },
+    {
+      "type": "mcq",
+      "stepTag": "Practice 2 · Irregular & Negative Commands",
+      "title": "Choose the Right Polite Imperatives",
+      "prompt": "Complete politely (vous): « ___ (être) prudents sur la route et n’___ (avoir) pas peur ! »",
+      "opts": [
+        "Soyez / ayez",
+        "Êtes / avez",
+        "Sois / aie",
+        "Soyez / avez"
+      ],
+      "ans": 0,
+      "frFull": "Soyez prudents sur la route et n’ayez pas peur !",
+      "exp": "Polite/plural irregular imperatives: être → « Soyez », avoir → « ayez ».",
+      "expZh": "礼貌/复数不规则命令式：être → Soyez，avoir → ayez。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 3 of 3 · Reflexive Commands (Lève-toi ! vs. Ne te lève pas !)",
+      "title": "Reflexive Flip: Affirmative → « -toi » After | Negative → « te » Before!",
+      "summary": "With reflexive verbs (« se lever, se dépêcher, s’inquiéter »): in an AFFIRMATIVE command, move the pronoun AFTER the verb with a hyphen and change « te » to « toi » (« Lève-toi ! »). In a NEGATIVE command, move it BACK BEFORE (« Ne te lève pas ! »)!",
+      "summaryZh": "自反动词命令式的位置会翻转：① 肯定时代词加连字符放到动词后面，且 te 变成重读 toi（Lève-toi ! Dépêchez-vous !）；② 否定时立刻跑回动词前面变回 te（Ne te lève pas ! Ne vous inquiétez pas !）！",
+      "table": {
+        "headers": [
+          "Person",
+          "Affirmative (Pronoun AFTER + hyphen)",
+          "Negative (Pronoun BEFORE!)"
+        ],
+        "rows": [
+          [
+            "tu (te → toi!)",
+            "Lève-toi ! / Dépêche-toi !",
+            "Ne te lève pas ! / Ne t’inquiète pas !"
+          ],
+          [
+            "nous",
+            "Dépêchons-nous !",
+            "Ne nous dépêchons pas !"
+          ],
+          [
+            "vous",
+            "Asseyez-vous ! / Reposez-vous !",
+            "Ne vous inquiétez pas !"
+          ]
+        ]
+      },
+      "tip": "Same goes for COD/COI pronouns in imperatives: « Appelle-moi ! Téléphone-lui ! » (after!) vs. « Ne m’appelle pas ! » (before!).",
+      "tipZh": "这个位置规律对其他代词（moi/le/lui）同样适用：肯定放后连字符（Appelle-moi !），否定放回动词前（Ne m’appelle pas !）。",
+      "examples": [
+        {
+          "fr": "Reposez-vous bien ce soir et ne vous inquiétez pas pour demain !",
+          "en": "Get a good rest tonight and don’t worry about tomorrow!",
+          "zh": "今晚好好休息，别担心明天的事！（肯定放后 / 否定放前）"
+        },
+        {
+          "fr": "Dépêche-toi, mais ne te stresse pas !",
+          "en": "Hurry up, though don’t stress yourself!",
+          "zh": "快点儿，但别给自己太大压力！"
+        }
+      ]
+    },
+    {
+      "type": "spot",
+      "stepTag": "Practice 3 · Spot Both Imperative Traps",
+      "title": "Fix -ER -s & Negative Reflexive Errors",
+      "wrongSentence": "Parles plus doucement et ne dépêche-toi pas !",
+      "prompt": "Pick the grammatically accurate « tu » commands:",
+      "opts": [
+        "Parle plus doucement et ne te dépêche pas !",
+        "Parles plus doucement et ne te dépêche pas !",
+        "Parle plus doucement et ne dépêche-toi pas !",
+        "Parle plus doucement et te ne dépêche pas !"
+      ],
+      "ans": 0,
+      "frFull": "Parle plus doucement et ne te dépêche pas !",
+      "exp": "Drop -s on -ER « Parle ! »; in a negative imperative, « te » jumps back before the verb (« ne te dépêche pas ! »).",
+      "expZh": "-ER 动词 tu 命令式去掉 s（Parle !）；否定自反命令式代词跳回动词前：ne te dépêche pas。"
+    },
+    {
+      "type": "dict",
+      "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
+      "title": "Listen and Type the Exact Advice",
+      "audio": "Soyez patients et ne vous inquiétez pas !",
+      "hint": "8 words · Irregular « Soyez » + negative reflexive « ne vous inquiétez pas ».",
+      "answers": [
+        "Soyez patients et ne vous inquiétez pas !",
+        "Soyez patients et ne vous inquiétez pas"
+      ],
+      "frFull": "Soyez patients et ne vous inquiétez pas !",
+      "en": "Be patient and don’t worry!",
+      "zh": "请耐心一点，别担心！",
+      "exp": "Irregular imperative « Soyez » (vous of être) + negative reflexive imperative « ne vous inquiétez pas ».",
+      "expZh": "être 命令式 Soyez；否定自反命令式代词放前：ne vous inquiétez pas。"
+    },
+    {
+      "type": "build",
+      "stepTag": "Practice 5 · Sentence Builder",
+      "title": "Tap the Tiles in Order: « Take the metro and get off at the station. »",
+      "prompt": "Build clear « vous » transit directions:",
+      "promptZh": "组句（礼貌指路）：「坐地铁，然后在火车站下车。」",
+      "tiles": [
+        "Prenez",
+        "le",
+        "métro",
+        "et",
+        "descendez",
+        "à",
+        "la",
+        "gare."
+      ],
+      "answer": "Prenez le métro et descendez à la gare.",
+      "frFull": "Prenez le métro et descendez à la gare.",
+      "exp": "Polite « vous » imperatives without subject pronouns: « Prenez » and « descendez ».",
+      "expZh": "省略主语直接用 Prenez（prendre）和 descendez（descendre）。"
     }
   ],
   "a2_passe_compose_avoir": [
@@ -3116,6 +3822,472 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "frFull": "Pendant que je lisais, Paul est arrivé.",
       "exp": "« Pendant que + Imparfait » (« je lisais ») + interrupting completed arrival (« Paul est arrivé »).",
       "expZh": "pendant que 引导正在进行的背景（lisais），随后发生的到达（est arrivé）用 PC。"
+    }
+  ],
+  "a2_time_depuis_pendant": [
+    {
+      "type": "teach",
+      "stepTag": "Concept 1 of 3 · Depuis + Present (and Imparfait)",
+      "title": "Action Started Before and STILL Happening? Use PRESENT + Depuis!",
+      "summary": "This is one of the top traps for English speakers! To say « I have lived in Toronto for 2 years » (meaning you STILL live there now), do NOT use Passé Composé — French uses PRESENT TENSE + « depuis »! (Or Imparfait + « depuis » for « had been doing » in a past story.)",
+      "summaryZh": "英语说 I have lived here for 2 years，但法语只要动作从过去一直持续到现在还没停，就必须用「现在时 + depuis」（绝不用复合过去时）！若在过去故事里表示“当时已经持续……”，则用「Imparfait + depuis」。",
+      "table": {
+        "headers": [
+          "Timeline",
+          "Tense + Word",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Started before → STILL true now",
+            "Présent + depuis",
+            "J’étudie le français depuis six mois."
+          ],
+          [
+            "Equivalents with « que »",
+            "Ça fait / Il y a + time + que + Présent",
+            "Ça fait six mois que j’étudie le français."
+          ],
+          [
+            "Was already ongoing before a past event",
+            "Imparfait + depuis",
+            "J’attendais depuis une heure quand il est arrivé !"
+          ]
+        ]
+      },
+      "tip": "Negation + « depuis » can switch back to PC or Présent: « Je ne l’ai pas vu depuis lundi » (I haven’t seen him since Monday — completed non-seeing!).",
+      "tipZh": "否定动作一直没发生（自从周一就没见过他）常用否定复合过去时：Je ne l’ai pas vu depuis lundi。",
+      "examples": [
+        {
+          "fr": "Nous habitons au Canada depuis trois ans.",
+          "en": "We have lived in Canada for three years.",
+          "zh": "我们在加拿大住了三年了。（还在住 → 现在时！）"
+        },
+        {
+          "fr": "Il attendait le bus depuis trente minutes quand j’ai appelé.",
+          "en": "He had been waiting for the bus for 30 minutes when I called.",
+          "zh": "我打电话时，他当时已经等了半小时车。"
+        }
+      ]
+    },
+    {
+      "type": "fib",
+      "stepTag": "Practice 1 · Depuis + Present",
+      "title": "Fix the English « Have Been » Habit",
+      "prompt": "Depuis combien de temps est-ce que tu ___ (travailler) ici ? — Je travaille ici ___ janvier.",
+      "hint": "Action still continuing right now → Present tense + « depuis ».",
+      "answers": [
+        "travailles / depuis",
+        "travailles/depuis"
+      ],
+      "frFull": "Depuis combien de temps est-ce que tu travailles ici ? — Je travaille ici depuis janvier.",
+      "exp": "Still ongoing now → present « tu travailles » + « depuis janvier ».",
+      "expZh": "动作延续至今，动词用现在时 travailles，时间起点用 depuis janvier。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 2 of 3 · Depuis vs. Pendant vs. Pour (« for »)",
+      "title": "Three Ways to Translate English « For » — Pick by Timeline!",
+      "summary": "English uses « for » for all three, while French picks carefully: (1) « depuis » = started before & STILL continuing; (2) « pendant » = complete duration (usually finished in Passé Composé, or general habit); (3) « pour » = planned future duration (with partir, aller, réserver).",
+      "summaryZh": "英语统统用 for，法语严格三分：还在继续用 depuis（配现在时）；已结束的一段时长用 pendant（配复合过去时）；计划将来待多久用 pour（配 partir / réserver 等）！",
+      "table": {
+        "headers": [
+          "French Word",
+          "Meaning / Rule",
+          "Example"
+        ],
+        "rows": [
+          [
+            "depuis (+ Présent)",
+            "Since / for (STILL going on!)",
+            "Elle vit à Québec depuis 2022."
+          ],
+          [
+            "pendant (+ PC / habit)",
+            "For / during (CLOSED time block)",
+            "J’ai étudié pendant deux heures hier."
+          ],
+          [
+            "pour (+ Présent / Futur)",
+            "Planned future stay / intention",
+            "Nous partons en France pour dix jours."
+          ]
+        ]
+      },
+      "tip": "Rule of thumb: Past completed trip? → « pendant » (« Je suis resté à Paris pendant une semaine »). Upcoming trip? → « pour » (« Je pars à Paris pour une semaine »)!",
+      "tipZh": "过去那次待了一周用 pendant；打算去待一周用 pour！",
+      "examples": [
+        {
+          "fr": "J’ai travaillé à Ottawa pendant deux ans, puis je suis parti pour Toronto.",
+          "en": "I worked in Ottawa for two years, then I left for Toronto.",
+          "zh": "我在渥太华工作过两年（已结束用 pendant），然后去了多伦多。"
+        },
+        {
+          "fr": "Elle part en vacances pour quinze jours demain matin.",
+          "en": "She is leaving on vacation for two weeks tomorrow morning.",
+          "zh": "她明天一早出发去度假两周。（计划时长用 pour）"
+        }
+      ]
+    },
+    {
+      "type": "mcq",
+      "stepTag": "Practice 2 · Depuis / Pendant / Pour",
+      "title": "Pick the Right Preposition for Each Timeline",
+      "prompt": "Choose cleanly: « Hier j’ai dormi ___ neuf heures ; aujourd’hui je pars à Québec ___ trois jours ; et j’étudie le français ___ octobre ! »",
+      "opts": [
+        "pendant / pour / depuis",
+        "depuis / pendant / pour",
+        "pour / depuis / pendant",
+        "pendant / depuis / pour"
+      ],
+      "ans": 0,
+      "frFull": "Hier j’ai dormi pendant neuf heures ; je pars à Québec pour trois jours ; j’étudie le français depuis octobre.",
+      "exp": "Completed yesterday → « pendant »; future departure → « pour »; ongoing since October → « depuis ».",
+      "expZh": "昨晚已睡完用 pendant，计划去魁北克三天用 pour，十月学到现在用 depuis。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 3 of 3 · « Il y a » (Ago) & Punctuality (à l’heure / en retard)",
+      "title": "« Il y a + Duration » = Ago | Tôt/Tard vs. En avance/En retard",
+      "summary": "Put « il y a + time » at the start or end of a past sentence to mean « ago » (« Il est parti il y a dix minutes »). And when talking about trains, work, or appointments in TCF CO, distinguish clock punctuality (« en avance / à l’heure / en retard ») from time of day (« tôt / tard »)!",
+      "summaryZh": "最后两个高频表达：①「il y a + 时长」放过去句中表示“……前（ago）”；② 赶车/赴约准点用 en avance（提前）/ à l’heure（准时）/ en retard（迟到），泛指时间早晚才用 tôt / tard！",
+      "table": {
+        "headers": [
+          "Expression",
+          "Use",
+          "Example"
+        ],
+        "rows": [
+          [
+            "il y a + duration",
+            "Ago (completed past)",
+            "Je suis arrivé il y a deux semaines."
+          ],
+          [
+            "en avance ↔ en retard",
+            "Early / late vs. schedule",
+            "Le bus est en retard, mais je suis en avance !"
+          ],
+          [
+            "à l’heure",
+            "Right on schedule / on time",
+            "Il faut être à l’heure au rendez-vous."
+          ],
+          [
+            "tôt ↔ tard",
+            "Early / late in the day",
+            "Je me lève tôt et je me couche tard."
+          ]
+        ]
+      },
+      "tip": "Never say « Je suis tard » for « I’m running late » — « Je suis tard » doesn’t make sense; say « Je suis en retard ! ».",
+      "tipZh": "地道避坑：说“我迟到了”永远用 « Je suis en retard ! »，绝不说 « Je suis tard »！",
+      "examples": [
+        {
+          "fr": "Le rendez-vous a commencé il y a cinq minutes, mais il est arrivé à l’heure.",
+          "en": "The appointment started five minutes ago, yet he arrived on time.",
+          "zh": "预约五分钟前就开始了，不过他准时到了。"
+        },
+        {
+          "fr": "Demain je me lève tôt pour être en avance à la gare.",
+          "en": "Tomorrow I’m getting up early to be at the station ahead of time.",
+          "zh": "明天我早起，好提前到达车站。"
+        }
+      ]
+    },
+    {
+      "type": "spot",
+      "stepTag": "Practice 3 · Spot Both TCF Listening Traps",
+      "title": "Fix Tense + Preposition + Punctuality Errors",
+      "wrongSentence": "J’ai habité au Canada depuis deux ans et je suis toujours tôt au bureau.",
+      "prompt": "Assume the speaker STILL lives in Canada and arrives ahead of schedule at the office:",
+      "opts": [
+        "J’habite au Canada depuis deux ans et je suis toujours en avance au bureau.",
+        "J’ai habité au Canada depuis deux ans et je suis toujours en avance au bureau.",
+        "J’habite au Canada pendant deux ans et je suis toujours tôt au bureau.",
+        "J’habite au Canada depuis deux ans et je suis toujours tard au bureau."
+      ],
+      "ans": 0,
+      "frFull": "J’habite au Canada depuis deux ans et je suis toujours en avance au bureau.",
+      "exp": "Ongoing stay takes Present + « depuis » (« J’habite... depuis deux ans »); ahead of schedule uses « en avance ».",
+      "expZh": "还在住用现在时 J’habite + depuis；提前到达办公室用 en avance。"
+    },
+    {
+      "type": "dict",
+      "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
+      "title": "Listen and Type the Exact Sentence",
+      "audio": "J’étudie le français depuis six mois et je suis toujours à l’heure.",
+      "hint": "13 words · Listen for present « étudie », « depuis six mois », and « à l’heure ».",
+      "answers": [
+        "J’étudie le français depuis six mois et je suis toujours à l’heure.",
+        "J'étudie le français depuis six mois et je suis toujours à l'heure.",
+        "J’étudie le français depuis six mois et je suis toujours à l’heure",
+        "J'étudie le français depuis six mois et je suis toujours à l'heure"
+      ],
+      "frFull": "J’étudie le français depuis six mois et je suis toujours à l’heure.",
+      "en": "I have been studying French for six months and I am always on time.",
+      "zh": "我学法语六个月了，而且我总是准时。",
+      "exp": "Ongoing action uses Present + « depuis »; punctuality uses « à l’heure ».",
+      "expZh": "持续学习至今用现在时 j’étudie + depuis；准时用 à l’heure。"
+    },
+    {
+      "type": "build",
+      "stepTag": "Practice 5 · Sentence Builder",
+      "title": "Tap the Tiles in Order: « We lived in Ottawa for two years. »",
+      "prompt": "Build a completed past duration using Passé Composé + « pendant »:",
+      "promptZh": "组句（已结束的经历）：「我们曾在渥太华住过两年。」",
+      "tiles": [
+        "Nous",
+        "avons",
+        "habité",
+        "à",
+        "Ottawa",
+        "pendant",
+        "deux",
+        "ans."
+      ],
+      "answer": "Nous avons habité à Ottawa pendant deux ans.",
+      "frFull": "Nous avons habité à Ottawa pendant deux ans.",
+      "exp": "Closed past duration uses Passé Composé (« avons habité ») + « pendant deux ans ».",
+      "expZh": "已结束的居住时长用复合过去时 avons habité + pendant deux ans。"
+    }
+  ],
+  "a2_savoir_connaitre_leave": [
+    {
+      "type": "teach",
+      "stepTag": "Concept 1 of 3 · Savoir (Facts, Clauses & Skills)",
+      "title": "Know #1: Savoir = Facts (« savoir que ») + How-To Skills (« savoir + Inf. »)",
+      "summary": "English uses « know » everywhere, while French splits it cleanly! Use « savoir » whenever you know a FACT, a QUESTION CLAUSE (« que / où / si / comment / pourquoi »), or HOW TO DO a skill (+ infinitive). Never use « savoir » before a person or city!",
+      "summaryZh": "法语把“知道/认识”一分为二！第一把钥匙 savoir 专用于：① 知道某个事实/从句（savoir que / où / si）；② 会做某项技能（savoir + 动词原形）。绝不直接加人或城市！",
+      "table": {
+        "headers": [
+          "Subject",
+          "savoir (Present)",
+          "Use + Examples"
+        ],
+        "rows": [
+          [
+            "je / tu / il",
+            "sais, sais, sait",
+            "Je sais nager. / Il sait que tu viens."
+          ],
+          [
+            "nous / vous",
+            "savons, savez",
+            "Vous savez où est la gare ?"
+          ],
+          [
+            "ils / elles",
+            "savent",
+            "Ils savent parler français."
+          ],
+          [
+            "Passé Composé",
+            "avoir + su",
+            "J’ai su la nouvelle hier (= I found out!)."
+          ]
+        ]
+      },
+      "tip": "« Savoir + infinitive » = « know how to... » (« Elle sait cuisiner ») — don’t add « comment »!",
+      "tipZh": "“会做某事”直接用 savoir + 动词原形（Je sais conduire），不需要多加 comment！",
+      "examples": [
+        {
+          "fr": "Savez-vous à quelle heure part le prochain train ?",
+          "en": "Do you know what time the next train leaves?",
+          "zh": "您知道下一班火车几点开吗？（接从句）"
+        },
+        {
+          "fr": "Mes enfants savent déjà lire et nager.",
+          "en": "My children already know how to read and swim.",
+          "zh": "我的孩子们已经会阅读和游泳了。（接原形）"
+        }
+      ]
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 2 of 3 · Connaître (People, Places & Things)",
+      "title": "Know #2: Connaître = Be Familiar With a Person, Place, Book, or Subject",
+      "summary": "« Connaître » (accent ^ on î in « il connaît »!) ALWAYS takes a direct NOUN object: a person (« Tu connais Paul ? »), a place (« Je connais Montréal »), or a work/topic (« Nous connaissons ce film »). It NEVER takes « que » or an infinitive!",
+      "summaryZh": "第二把钥匙 connaître（注意第三人称单数 connaît 上面有 ^ 符）后面永远直接接“名词”（认识某人、熟悉某地、了解某本书/法规），绝不能接 que 从句或动词原形！",
+      "table": {
+        "headers": [
+          "Subject",
+          "connaître (Present)",
+          "Correct Object (NOUN only!)"
+        ],
+        "rows": [
+          [
+            "je / tu / il",
+            "connais, connais, connaît",
+            "Je connais bien Québec."
+          ],
+          [
+            "nous / vous",
+            "connaissons, connaissez",
+            "Vous connaissez ce quartier ?"
+          ],
+          [
+            "ils / elles",
+            "connaissent",
+            "Ils connaissent le règlement."
+          ],
+          [
+            "Passé Composé",
+            "avoir + connu",
+            "J’ai connu Sophie à l’université (= I met!)."
+          ]
+        ]
+      },
+      "tip": "Direct rule from Tex: If « que », « si », « où », or a verb follows, pick SAVOIR. If a person or place noun follows, pick CONNAÎTRE!",
+      "tipZh": "一秒口诀：后面是“人名/地名/名词” → connaître；后面是“事情/从句/动词” → savoir！",
+      "examples": [
+        {
+          "fr": "Je connais cette ville, mais je ne sais pas où est ce musée.",
+          "en": "I know this city, though I don’t know where that museum is.",
+          "zh": "我熟悉这座城市（connais），但我不知道那座博物馆在哪儿（sais où）。"
+        },
+        {
+          "fr": "Ils connaissent nos collègues et savent qu’ils sont fiables.",
+          "en": "They know our colleagues and know they are reliable.",
+          "zh": "他们认识我们的同事，也知道他们很可靠。"
+        }
+      ]
+    },
+    {
+      "type": "fib",
+      "stepTag": "Practice 1 · Savoir vs. Connaître",
+      "title": "Choose Between Fact/Skill and Familiarity",
+      "prompt": "Est-ce que tu ___ (connaître/savoir) cette chanson ? Oui, et je ___ (connaître/savoir) qui la chante !",
+      "hint": "Noun « cette chanson » takes familiarity; clause « qui la chante » takes factual knowledge.",
+      "answers": [
+        "connais / sais",
+        "connais/sais"
+      ],
+      "frFull": "Est-ce que tu connais cette chanson ? Oui, et je sais qui la chante !",
+      "exp": "Noun (« cette chanson ») → « connais »; question clause (« qui la chante ») → « sais ».",
+      "expZh": "名词 cette chanson 用 connais，疑问从句 qui la chante 用 sais。"
+    },
+    {
+      "type": "mcq",
+      "stepTag": "Practice 2 · Plural Forms & Passé Composé",
+      "title": "Pick the Accurate Verb Pair",
+      "prompt": "Complete: « Nos amis ___ (savoir) conduire et ___ (connaître) très bien l’Ontario. »",
+      "opts": [
+        "savent / connaissent",
+        "connaissent / savent",
+        "sais / connais",
+        "savent / connaîtent"
+      ],
+      "ans": 0,
+      "frFull": "Nos amis savent conduire et connaissent très bien l’Ontario.",
+      "exp": "Infinitive « conduire » → « savent »; place noun « l’Ontario » → « connaissent ».",
+      "expZh": "接原形 conduire 用 savent；接地名 l’Ontario 用 connaissent。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 3 of 3 · Four Ways to Say « Leave » (Partir, Sortir, Quitter, Laisser)",
+      "title": "Stop Saying « Je pars Montréal »: Intransitive vs. Transitive Leave!",
+      "summary": "Tex highlights why transitivity unlocks all four « leave » verbs: (1) « partir » (set off, NO direct object — use « partir pour / de »), (2) « sortir » (step out / exit « de » a place), (3) « quitter » (MUST have direct object: leave a person/city/job), (4) « laisser » (leave something behind / let).",
+      "summaryZh": "法语表达“离开/留下”看有没有直接宾语（极容易写错的一组词）：① partir（动身出发，不直接加地点，配 pour/de）；② sortir（走出门/出去玩，配 de）；③ quitter（必须直接加人/城市/工作）；④ laisser（把物品/口信留下）。",
+      "table": {
+        "headers": [
+          "Verb",
+          "Grammar Type",
+          "Pattern & Example"
+        ],
+        "rows": [
+          [
+            "partir (être)",
+            "Intransitive (no direct obj.)",
+            "Je pars pour Québec. / Elle est partie tôt."
+          ],
+          [
+            "sortir (être)",
+            "Intransitive (exit / go out)",
+            "Il sort du bureau. / On sort ce soir ?"
+          ],
+          [
+            "quitter (avoir!)",
+            "Transitive (MUST have object!)",
+            "Il a quitté Montréal / son travail."
+          ],
+          [
+            "laisser (avoir!)",
+            "Transitive (leave behind / let)",
+            "J’ai laissé mes clés / un message."
+          ]
+        ]
+      },
+      "tip": "Auxiliary contrast: « Je suis parti DE Paris » (être!), whereas « J’ai quitté Paris » (avoir, direct object!) — both mean « I left Paris »!",
+      "tipZh": "注意助动词也跟着变：Je suis parti de Paris（être）vs J’ai quitté Paris（avoir，及物）！",
+      "examples": [
+        {
+          "fr": "Il a quitté son emploi à Lyon et il est parti pour Montréal.",
+          "en": "He left his job in Lyon and set off for Montreal.",
+          "zh": "他辞去了里昂的工作，动身前往蒙特利尔。（quitter+宾语 / partir pour）"
+        },
+        {
+          "fr": "Je suis sorti de chez moi, mais j’ai laissé mon parapluie !",
+          "en": "I stepped out of my home, but I left my umbrella behind!",
+          "zh": "我出了门，却把伞忘在家里了！"
+        }
+      ]
+    },
+    {
+      "type": "spot",
+      "stepTag": "Practice 3 · Spot Both « Know » & « Leave » Traps",
+      "title": "Fix Classic Beginner-to-A2 Errors",
+      "wrongSentence": "Je connais parler français et demain je pars Montréal.",
+      "prompt": "Pick the 100% grammatical correction:",
+      "opts": [
+        "Je sais parler français et demain je quitte Montréal.",
+        "Je connais parler français et demain je quitte Montréal.",
+        "Je sais parler français et demain je pars Montréal.",
+        "Je sais parler français et demain je laisse Montréal."
+      ],
+      "ans": 0,
+      "frFull": "Je sais parler français et demain je quitte Montréal.",
+      "exp": "Skill + infinitive (« parler ») takes « sais »; direct city object (« Montréal » without « de/pour ») requires « quitte »!",
+      "expZh": "会说（+动词原形）用 sais；直接加城市名词作宾语用 quitte Montréal（或写 je pars de Montréal）。"
+    },
+    {
+      "type": "dict",
+      "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
+      "title": "Listen and Type the Exact French Sentence",
+      "audio": "Je connais bien Montréal et je sais parler français.",
+      "hint": "9 words · Contrasts place noun « connais » with skill « sais parler ».",
+      "answers": [
+        "Je connais bien Montréal et je sais parler français.",
+        "Je connais bien Montréal et je sais parler français"
+      ],
+      "frFull": "Je connais bien Montréal et je sais parler français.",
+      "en": "I know Montreal well and I know how to speak French.",
+      "zh": "我很熟悉蒙特利尔，而且我会说法语。",
+      "exp": "City noun → « connais »; infinitive skill → « sais parler ».",
+      "expZh": "城市名用 connais，会说用 sais parler。"
+    },
+    {
+      "type": "build",
+      "stepTag": "Practice 5 · Sentence Builder",
+      "title": "Tap the Tiles in Order: « He left his job and he is leaving for Québec. »",
+      "prompt": "Contrast transitive « quitter » (PC) and intransitive « partir pour »:",
+      "promptZh": "组句：「他辞了工作，现在动身去魁北克。」",
+      "tiles": [
+        "Il",
+        "a",
+        "quitté",
+        "son",
+        "travail",
+        "et",
+        "il",
+        "part",
+        "pour",
+        "Québec."
+      ],
+      "answer": "Il a quitté son travail et il part pour Québec.",
+      "frFull": "Il a quitté son travail et il part pour Québec.",
+      "exp": "Direct object « son travail » requires « a quitté »; destination uses « part pour Québec ».",
+      "expZh": "直接接工作用 a quitté son travail；去往某地用 part pour。"
     }
   ],
   "a2_futur_simple": [
@@ -4088,6 +5260,242 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "frFull": "Je parle mieux français et j’y vais demain.",
       "exp": "« Parle » (verb) → adverb « mieux »; going to a previously mentioned place → « j’y vais ».",
       "expZh": "parle 动词配副词 mieux；去那儿用 j’y vais。"
+    }
+  ],
+  "a2_adverbs_dem_poss_pronouns": [
+    {
+      "type": "teach",
+      "stepTag": "Concept 1 of 3 · Adverbs Ending in « -ment »",
+      "title": "Turn Almost Any Adjective Into a French Adverb (-ly → -ment)",
+      "summary": "Most French manner adverbs correspond to English « -ly ». Form them in 3 simple ways: (1) Consonant ending → take FEMININE adjective + -ment (« lent → lentement »); (2) Vowel ending → add -ment directly (« vrai → vraiment »); (3) -ant / -ent → -amment / -emment (« courant → couramment »).",
+      "summaryZh": "英语副词加 -ly，法语副词加 -ment，记住三大拼写规则：① 辅音结尾形容词 → 变阴性 + -ment；② 元音结尾形容词 → 直接加 -ment；③ -ant / -ent → -amment / -emment！",
+      "table": {
+        "headers": [
+          "Adjective Pattern",
+          "Rule",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Consonant (lent, doux, heureux)",
+            "fem. adj. + -ment",
+            "lentement, doucement, heureusement"
+          ],
+          [
+            "Vowel (vrai, poli, absolu)",
+            "masc. adj. + -ment (no extra e!)",
+            "vraiment, poliment, absolument"
+          ],
+          [
+            "-ant / -ent (courant, évident)",
+            "-amment / -emment [-ah-mahn]",
+            "couramment, évidemment, récemment"
+          ]
+        ]
+      },
+      "tip": "Don’t confuse « rapide → rapidement » (-e already there) with « vrai → vraiment » (drop nothing, add -ment directly!) or irregular « gentil → gentiment ».",
+      "tipZh": "口语超实用：Je parle couramment français.（我法语说得很流利）、Heureusement !（幸好！）。",
+      "examples": [
+        {
+          "fr": "Elle parle couramment français et écrit poliment ses courriels.",
+          "en": "She speaks French fluently and writes her emails politely.",
+          "zh": "她法语说得很流利，写邮件也很礼貌。"
+        },
+        {
+          "fr": "Heureusement, nous avons lentement mais vraiment progressé !",
+          "en": "Fortunately, we made slow yet real progress!",
+          "zh": "幸好，我们虽然慢但确实进步了！"
+        }
+      ]
+    },
+    {
+      "type": "fib",
+      "stepTag": "Practice 1 · Adverb Formation",
+      "title": "Build -ment and -amment Adverbs",
+      "prompt": "Pour être clair au téléphone, parlez ___ (lent) ; bientôt vous parlerez ___ (courant) !",
+      "hint": "Feminine « lente » + -ment, and « -ant » → « -amment ».",
+      "answers": [
+        "lentement / couramment",
+        "lentement/couramment"
+      ],
+      "frFull": "Parlez lentement ; bientôt vous parlerez couramment !",
+      "exp": "« Lent » → fem. « lente + -ment » = « lentement »; « courant » → « couramment ».",
+      "expZh": "lent 先变阴性 lente 再加 -ment（lentement）；courant 改为 couramment。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 2 of 3 · Demonstrative Pronouns (celui, celle, ceux, celles)",
+      "title": "Stop Repeating Nouns: Say « This One / The One From / Those Who »",
+      "summary": "Never repeat the noun twice (« J’aime la voiture rouge, pas la voiture bleue » → say « celle qui est bleue / celle-là »)! Match the noun’s gender & number: celui (m.sg.), celle (f.sg.), ceux (m.pl.), celles (f.pl.) — and ALWAYS follow them with « -ci/-là », « de », or « qui/que »!",
+      "summaryZh": "告别反复啰嗦同一个名词！指示代词“这个/那个/……的那个”：celui(阳单)、celle(阴单)、ceux(阳复)、celles(阴复)。铁律：它们永远不能孤零零出现，后面必须接 -ci/-là 或 de 或 qui/que！",
+      "table": {
+        "headers": [
+          "Form",
+          "Replaces",
+          "Three Legal Endings (-ci/-là · de · qui/que)"
+        ],
+        "rows": [
+          [
+            "celui (m.sg.)",
+            "le livre, le sac",
+            "celui-ci / celui de Paul / celui que je lis"
+          ],
+          [
+            "celle (f.sg.)",
+            "la voiture, l’idée",
+            "celle-là / celle de Marie / celle qui arrive"
+          ],
+          [
+            "ceux (m.pl.)",
+            "les films, people",
+            "ceux-ci / ceux de 2024 / ceux qui étudient"
+          ],
+          [
+            "celles (f.pl.)",
+            "les photos, les villes",
+            "celles-là / celles du Québec / celles que j’aime"
+          ]
+        ]
+      },
+      "tip": "« Celui / celle / ceux / celles » NEVER take an adjective directly! Say « celui qui est rouge » (NOT « celui rouge »!).",
+      "tipZh": "重要禁忌：不能说 celui rouge！想接形容词必须加关系词变成 celui qui est rouge。",
+      "examples": [
+        {
+          "fr": "Tu prends ce café-ci ou celui de ton collègue ?",
+          "en": "Are you taking this coffee here or your colleague’s?",
+          "zh": "你喝这杯咖啡，还是你同事那杯？"
+        },
+        {
+          "fr": "Ceux qui révisent régulièrement réussissent plus facilement.",
+          "en": "Those who review regularly succeed more easily.",
+          "zh": "经常复习的人更容易通过。（Ceux qui...）"
+        }
+      ]
+    },
+    {
+      "type": "mcq",
+      "stepTag": "Practice 2 · Demonstrative Pronouns",
+      "title": "Match Gender, Number & Legal Follow-Up",
+      "prompt": "Pick the natural continuation: « Voici deux villes canadiennes (f.pl.) : je connais bien Québec, mais je préfère ___ (the ones in Ontario). »",
+      "opts": [
+        "celles de l’Ontario",
+        "ceux de l’Ontario",
+        "cettes de l’Ontario",
+        "la celle de l’Ontario"
+      ],
+      "ans": 0,
+      "frFull": "Je préfère celles de l’Ontario.",
+      "exp": "« Villes » is feminine plural → « celles » + « de » (« celles de l’Ontario »).",
+      "expZh": "villes 是阴性复数，用 celles + de。"
+    },
+    {
+      "type": "teach",
+      "stepTag": "Concept 3 of 3 · Possessive Pronouns (le mien, la tienne, le vôtre...)",
+      "title": "Mine, Yours, Ours, Theirs: Always Keep « le / la / les »!",
+      "summary": "Unlike « my book » (« mon livre »), « mine » (« le mien ») replaces the noun and ALWAYS carries « le / la / les » matching the thing owned! Notice « le nôtre / la vôtre » add a circumflex accent ^ to mark the pronoun.",
+      "summaryZh": "区分“我的书（物主形容词 mon livre）” vs “我的（物主代词 le mien）”：后者必须带定冠词 le/la/les，且按被替代名词的性数变化！",
+      "table": {
+        "headers": [
+          "Owner",
+          "Masc. Sg.",
+          "Fem. Sg.",
+          "Masc. / Fem. Plural"
+        ],
+        "rows": [
+          [
+            "mine / yours (tu)",
+            "le mien / le tien",
+            "la mienne / la tienne",
+            "les miens(nes) / les tiens(nes)"
+          ],
+          [
+            "his / hers / its",
+            "le sien",
+            "la sienne",
+            "les siens / les siennes"
+          ],
+          [
+            "ours / yours (pl.)",
+            "le nôtre / le vôtre",
+            "la nôtre / la vôtre",
+            "les nôtres / les vôtres"
+          ],
+          [
+            "theirs",
+            "le leur",
+            "la leur",
+            "les leurs (adds -s here!)"
+          ]
+        ]
+      },
+      "tip": "Contrast two « leur » pronouns! Verb COI: « Je leur parle » (no article, no -s); Possessive pronoun: « Voici les leurs ! » (article + -s for plural things owned!).",
+      "tipZh": "区分：动词前间宾 leur 绝不加 -s；物主代词 les leurs 指代复数东西时必须加 -s！",
+      "examples": [
+        {
+          "fr": "Mon téléphone est chargé ; et le tien ?",
+          "en": "My phone is charged; what about yours?",
+          "zh": "我的手机充好电了；你的呢？（téléphone 阳性→le tien）"
+        },
+        {
+          "fr": "Leur maison est grande, mais je préfère la nôtre.",
+          "en": "Their house is big, though I prefer ours.",
+          "zh": "他们的房子很大，不过我更喜欢我们的。（maison 阴性→la nôtre）"
+        }
+      ]
+    },
+    {
+      "type": "spot",
+      "stepTag": "Practice 3 · Spot Both Adverb & Pronoun Mistakes",
+      "title": "Fix Classic A2/B1 Slip-Ups",
+      "wrongSentence": "Elle parle courantment français et j’aime celui voiture plus que ton.",
+      "prompt": "Pick the 100% grammatical French sentence:",
+      "opts": [
+        "Elle parle couramment français et j’aime cette voiture plus que la tienne.",
+        "Elle parle courantment français et j’aime celle voiture plus que la tienne.",
+        "Elle parle couramment français et j’aime celui voiture plus que le tien.",
+        "Elle parle couramment français et j’aime celle-ci plus que ton."
+      ],
+      "ans": 0,
+      "frFull": "Elle parle couramment français et j’aime cette voiture plus que la tienne.",
+      "exp": "« Courant » → adverb « couramment »; before a noun (« voiture » f.) use determiner « cette »; « yours » replacing « la voiture » (f.sg.) = « la tienne ».",
+      "expZh": "courant 变副词为 couramment；名词 voiture 前用指示形容词 cette；替代阴性 voiture 的“你的（车）”用 la tienne。"
+    },
+    {
+      "type": "dict",
+      "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
+      "title": "Listen and Type the Exact Sentence",
+      "audio": "Ce dossier est le mien, celui-là est le vôtre.",
+      "hint": "10 words · Contrasts « le mien » (mine) and « celui-là / le vôtre » (that one is yours).",
+      "answers": [
+        "Ce dossier est le mien, celui-là est le vôtre.",
+        "Ce dossier est le mien celui-là est le vôtre",
+        "Ce dossier est le mien, celui-là est le vôtre"
+      ],
+      "frFull": "Ce dossier est le mien, celui-là est le vôtre.",
+      "en": "This file is mine, that one is yours.",
+      "zh": "这份文件是我的，那份是您的。",
+      "exp": "« Dossier » (m.sg.) pairs with « le mien », « celui-là », and « le vôtre » (with ^ accent!).",
+      "expZh": "dossier 阳性单数，分别对应 le mien、celui-là 和带 ^ 号的 le vôtre。"
+    },
+    {
+      "type": "build",
+      "stepTag": "Practice 5 · Sentence Builder",
+      "title": "Tap the Tiles in Order: « She speaks French fluently and prefers this one. »",
+      "prompt": "Combine adverb « couramment » and masc. demonstrative « celui-ci »:",
+      "promptZh": "组句：「她流利地说法语，而且更喜欢这一个（阳性）。」",
+      "tiles": [
+        "Elle",
+        "parle",
+        "couramment",
+        "français",
+        "et",
+        "préfère",
+        "celui-ci."
+      ],
+      "answer": "Elle parle couramment français et préfère celui-ci.",
+      "frFull": "Elle parle couramment français et préfère celui-ci.",
+      "exp": "Adverb « couramment » goes right after the conjugated verb « parle »; « celui-ci » stands in for a masculine singular noun.",
+      "expZh": "副词 couramment 紧跟动词 parle；celui-ci 指代阳性单数“这一个”。"
     }
   ],
   "plus_que_parfait": [
