@@ -295,6 +295,21 @@
               </div>
             </div>
 
+            <div id="abbrPopoverWrap" class="relative">
+              <button id="btnAbbrPopover" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Abbreviations & Grammar Terms Guide">? Terms</button>
+
+              <div id="abbrPopoverPanel" class="hidden audio-popover absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[75vh] overflow-y-auto p-4 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
+                <div class="flex items-center justify-between gap-2 pb-2 border-b border-[var(--border)]">
+                  <div>
+                    <div class="text-xs font-bold text-[var(--foreground)]">Abbreviations &amp; Grammar Terms</div>
+                    <div class="text-[11px] text-[var(--muted-foreground)]">Quick decoder for French grammar &amp; TCF terms</div>
+                  </div>
+                  <button id="btnCloseAbbrPopover" type="button" class="px-1.5 py-0.5 rounded-lg tint-muted-hover text-xs text-[var(--muted-foreground)] cursor-pointer" aria-label="Close terms guide">✕</button>
+                </div>
+                <div id="abbrPopoverBody" class="space-y-3 text-xs"></div>
+              </div>
+            </div>
+
             <button id="btnToggleTheme" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Switch Light / Dark theme">🌙</button>
           </div>
         </div>
@@ -1977,12 +1992,12 @@
             example: 'Tu te prépares pour toi, je te donne ton livre.'
           },
           {
-            en: 'He / Him / It (m.)', zh: '他 / 它',
+            en: 'He / Him / It (masculine)', zh: '他 / 它',
             subject: 'il', cod: 'le / l’', coi: 'lui', tonic: 'lui', reflexive: 'se / s’', possessive: 'son / sa / ses',
             example: 'Il se lève tôt ; je le vois souvent et je lui parle avec lui.'
           },
           {
-            en: 'She / Her / It (f.)', zh: '她 / 它',
+            en: 'She / Her / It (feminine)', zh: '她 / 它',
             subject: 'elle', cod: 'la / l’', coi: 'lui', tonic: 'elle', reflexive: 'se / s’', possessive: 'son / sa / ses',
             example: 'Elle s’organise bien ; je l’écoute et je lui écris chez elle.'
           },
@@ -2002,12 +2017,12 @@
             example: 'Vous vous installez ici ; je vous envoie votre dossier.'
           },
           {
-            en: 'They / Them (m. or mixed)', zh: '他们',
+            en: 'They / Them (masc. or mixed)', zh: '他们',
             subject: 'ils', cod: 'les', coi: 'leur', tonic: 'eux', reflexive: 'se / s’', possessive: 'leur / leurs',
             example: 'Ils se reposent ; je les aide et je leur parle avec eux.'
           },
           {
-            en: 'They / Them (all f.)', zh: '她们',
+            en: 'They / Them (all feminine)', zh: '她们',
             subject: 'elles', cod: 'les', coi: 'leur', tonic: 'elles', reflexive: 'se / s’', possessive: 'leur / leurs',
             example: 'Elles s’entraident ; je les invite et je leur écris pour elles.'
           }
@@ -2030,10 +2045,10 @@
         verbConjugation: {
           regularRows: [
             { pronoun: 'je / j’', en: 'I', zh: '我', erEnd: '-e', erEx: 'je parle', erPron: 'silent -e', irEnd: '-is', irEx: 'je finis', irPron: 'silent -s', reEnd: '-s', reEx: 'je vends', rePron: 'silent -ds' },
-            { pronoun: 'tu', en: 'you (sg.)', zh: '你', erEnd: '-es', erEx: 'tu parles', erPron: 'silent -es', irEnd: '-is', irEx: 'tu finis', irPron: 'silent -s', reEnd: '-s', reEx: 'tu vends', rePron: 'silent -ds' },
+            { pronoun: 'tu', en: 'you (singular)', zh: '你', erEnd: '-es', erEx: 'tu parles', erPron: 'silent -es', irEnd: '-is', irEx: 'tu finis', irPron: 'silent -s', reEnd: '-s', reEx: 'tu vends', rePron: 'silent -ds' },
             { pronoun: 'il / elle / on', en: 'he / she / we', zh: '他/她/我们', erEnd: '-e', erEx: 'il parle', erPron: 'silent -e', irEnd: '-it', irEx: 'il finit', irPron: 'silent -t', reEnd: '— (stem)', reEx: 'il vend', rePron: 'silent -d' },
             { pronoun: 'nous', en: 'we (formal)', zh: '我们', erEnd: '-ons', erEx: 'nous parlons', erPron: '[ohn]', irEnd: '-issons', irEx: 'nous finissons', irPron: '[ee-sohn]', reEnd: '-ons', reEx: 'nous vendons', rePron: '[ohn]' },
-            { pronoun: 'vous', en: 'you (pl./polite)', zh: '您/你们', erEnd: '-ez', erEx: 'vous parlez', erPron: '[ay]', irEnd: '-issez', irEx: 'vous finissez', irPron: '[ee-say]', reEnd: '-ez', reEx: 'vous vendez', rePron: '[ay]' },
+            { pronoun: 'vous', en: 'you (plural / polite)', zh: '您/你们', erEnd: '-ez', erEx: 'vous parlez', erPron: '[ay]', irEnd: '-issez', irEx: 'vous finissez', irPron: '[ee-say]', reEnd: '-ez', reEx: 'vous vendez', rePron: '[ay]' },
             { pronoun: 'ils / elles', en: 'they', zh: '他们/她们', erEnd: '-ent', erEx: 'ils parlent', erPron: 'silent -ent!', irEnd: '-issent', irEx: 'ils finissent', irPron: 'pronounce -ss-!', reEnd: '-ent', reEx: 'ils vendent', rePron: 'pronounce -d-!' }
           ],
           groupExamples: [
@@ -2775,6 +2790,11 @@
         btnAudioPopover: document.getElementById('btnAudioPopover'),
         audioPopoverPanel: document.getElementById('audioPopoverPanel'),
         audioPopoverSpeedLabel: document.getElementById('audioPopoverSpeedLabel'),
+        abbrPopoverWrap: document.getElementById('abbrPopoverWrap'),
+        btnAbbrPopover: document.getElementById('btnAbbrPopover'),
+        abbrPopoverPanel: document.getElementById('abbrPopoverPanel'),
+        abbrPopoverBody: document.getElementById('abbrPopoverBody'),
+        btnCloseAbbrPopover: document.getElementById('btnCloseAbbrPopover'),
         speedBtns: document.querySelectorAll('.speed-btn'),
         voiceSelect: document.getElementById('voiceSelect'),
         btnTestVoice: document.getElementById('btnTestVoice'),
@@ -3546,6 +3566,55 @@
       /* =========================================================
          9. TOP BAR & SIDEBAR RENDERING
       ========================================================= */
+      const ABBR_GLOSSARY = [
+        {
+          group: 'Grammar & Pronouns',
+          items: [
+            { abbr: 'COD', full: 'Complément d’Objet Direct (Direct Object)', en: 'Receives the verb directly with NO preposition (Je vois Paul → Je le vois).', zh: '直接宾语：动词后无介词（如 voir qqn → le / la / les）。' },
+            { abbr: 'COI', full: 'Complément d’Objet Indirect (Indirect Object)', en: 'Connected with à + person (Je parle à Marie → Je lui parle).', zh: '间接宾语：动词 + à + 人（如 parler à qqn → lui / leur）。' },
+            { abbr: 'Tonic', full: 'Stressed / Disjunctive Pronoun', en: 'Used after prepositions (avec moi, chez lui, pour eux) or for emphasis.', zh: '重读代词：放在介词（avec/chez/pour）后或用于强调。' },
+            { abbr: 'Reflexive', full: 'Pronom réfléchi', en: 'Action reflects back to subject (Je me lève = I get myself up).', zh: '自反代词：动作回到主语自身（me/te/se/nous/vous）。' },
+            { abbr: 'm. / f. / sg. / pl.', full: 'Masculine / Feminine / Singular / Plural', en: 'Grammatical gender and number of French nouns & pronouns.', zh: '阳性 / 阴性 / 单数 / 复数。' },
+            { abbr: '+ inf. / + subj. / + nom', full: 'Infinitive / Subjunctive / Noun', en: 'What form must follow a connector or verb (base verb vs. subjunctive vs. noun).', zh: '后接：动词原形 / 虚拟式 / 名词。' },
+            { abbr: 'PC / IMP / COND', full: 'Passé Composé / Imparfait / Conditionnel', en: 'Completed past event (PC) vs. background/habit past (IMP) vs. would/polite (COND).', zh: '复合过去时（已完成）/ 未完成过去时（背景・习惯）/ 条件式（委婉・假设）。' },
+            { abbr: 'Faux Amis', full: 'False Friends (Cognate Traps)', en: 'French words that look like English but mean something different (actuellement = currently).', zh: '假朋友：拼写像英语但意思完全不同的词。' }
+          ]
+        },
+        {
+          group: 'TCF Canada & Study',
+          items: [
+            { abbr: 'CO / CE', full: 'Compréhension Orale / Écrite', en: 'CO = Listening section · CE = Reading section.', zh: 'CO 听力理解 · CE 阅读理解。' },
+            { abbr: 'EE / EO', full: 'Expression Écrite / Orale', en: 'EE = Writing section · EO = Speaking section.', zh: 'EE 书面表达（写作）· EO 口语表达。' },
+            { abbr: 'CLB 7 / NCLC 7', full: 'Canadian Language Benchmark 7', en: 'French equivalent is NCLC 7 (≈ CEFR B2), required for Express Entry French bonus points.', zh: '加拿大语言基准 7 级（≈ 欧标 B2），EE 法语加分门槛。' },
+            { abbr: 'CEFR (A1–B2)', full: 'Common European Framework', en: 'A1 Beginner → A2 Elementary → B1 Intermediate → B2 Upper-Intermediate.', zh: '欧洲语言标准：A1 入门 → B2 中高级。' },
+            { abbr: 'SRS', full: 'Spaced Repetition System', en: 'Schedules flashcard reviews right before you forget them.', zh: '间隔重复记忆法：按遗忘曲线自动安排复习。' },
+            { abbr: 'FR / CA / QC', full: 'France / Canada / Québec', en: 'Regional French labels (e.g., Québécois everyday phrases vs. Metropolitan French).', zh: '法国法语 / 加拿大法语 / 魁北克地道表达。' },
+            { abbr: 'Tâche 1–3', full: 'Exam Tasks 1 to 3', en: 'Official 3 progressive parts in TCF Writing (EE) and Speaking (EO).', zh: 'TCF 写作/口语官方任务 1–3（难度逐级递增）。' }
+          ]
+        }
+      ];
+
+      function renderAbbrPopover() {
+        if (!els.abbrPopoverBody) return;
+        els.abbrPopoverBody.innerHTML = ABBR_GLOSSARY.map((sec) => `
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">${esc(sec.group)}</div>
+            <div class="space-y-1.5">
+              ${sec.items.map((it) => `
+                <div class="p-2 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-0.5">
+                  <div class="flex flex-wrap items-baseline gap-1.5">
+                    <span class="font-bold text-[var(--foreground)]">${esc(it.abbr)}</span>
+                    <span class="text-[11px] text-[var(--muted-foreground)]">${esc(it.full)}</span>
+                  </div>
+                  <div class="text-[11px] text-[var(--foreground)]">${esc(it.en)}</div>
+                  ${state.showZh && it.zh ? `<div class="text-[11px] text-[var(--primary)]">${esc(it.zh)}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      }
+
       function renderTopControls() {
         els.speedBtns.forEach((btn) => {
           const active = Math.abs(parseFloat(btn.dataset.speed) - state.speed) < 0.01;
@@ -3562,6 +3631,8 @@
           ? 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-primary-soft tint-primary text-[var(--primary)] cursor-pointer'
           : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] cursor-pointer';
         els.btnToggleZh.textContent = state.showZh ? 'EN + 中文' : 'EN Only';
+
+        renderAbbrPopover();
       }
 
       const WORKSPACES = [
@@ -3780,7 +3851,7 @@
                           <button type="button" data-speak="${escAttr(r.example)}" class="speak-btn text-xs font-semibold text-[var(--primary)] cursor-pointer">🔊 Example</button>
                         </div>
                         <div class="text-xs text-[var(--muted-foreground)]">
-                          Subj: <strong class="text-[var(--foreground)]">${esc(r.subject)}</strong> · COD: <strong>${esc(r.cod)}</strong> · COI: <strong>${esc(r.coi)}</strong> · Tonic: <strong>${esc(r.tonic)}</strong> · Poss: <strong>${esc(r.possessive)}</strong>
+                          Subject: <strong class="text-[var(--foreground)]">${esc(r.subject)}</strong> · Direct Object (COD): <strong>${esc(r.cod)}</strong> · Indirect Object (COI, à+person): <strong>${esc(r.coi)}</strong> · Tonic (after prep.): <strong>${esc(r.tonic)}</strong> · Possessive: <strong>${esc(r.possessive)}</strong>
                         </div>
                       </div>
                     `).join('')}
@@ -3858,12 +3929,12 @@
                     <thead>
                       <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
                         <th class="py-2 pr-2">Meaning</th>
-                        <th class="py-2 pr-2">Subject<div class="font-normal opacity-75">who does it</div></th>
-                        <th class="py-2 pr-2">Direct (COD)<div class="font-normal opacity-75">me/him/them</div></th>
-                        <th class="py-2 pr-2">Indirect (COI)<div class="font-normal opacity-75">to me/him/them</div></th>
-                        <th class="py-2 pr-2">Tonic<div class="font-normal opacity-75">avec/chez/moi</div></th>
-                        <th class="py-2 pr-2">Reflexive<div class="font-normal opacity-75">myself/himself</div></th>
-                        <th class="py-2 pr-2">Possessive<div class="font-normal opacity-75">my/your/his/her</div></th>
+                        <th class="py-2 pr-2">Subject<div class="font-normal opacity-75">who does it${state.showZh ? ' · 主语' : ''}</div></th>
+                        <th class="py-2 pr-2" title="COD = Complément d’Objet Direct (Direct Object, no preposition)">Direct (COD)<div class="font-normal opacity-75">no “à” · me/him${state.showZh ? ' · 直接宾语' : ''}</div></th>
+                        <th class="py-2 pr-2" title="COI = Complément d’Objet Indirect (Indirect Object, à + person)">Indirect (COI)<div class="font-normal opacity-75">à + person · to him${state.showZh ? ' · 间接宾语' : ''}</div></th>
+                        <th class="py-2 pr-2" title="Tonic = Stressed pronoun after prepositions">Tonic (Stressed)<div class="font-normal opacity-75">after avec/chez/pour${state.showZh ? ' · 重读' : ''}</div></th>
+                        <th class="py-2 pr-2">Reflexive<div class="font-normal opacity-75">myself/himself${state.showZh ? ' · 自反' : ''}</div></th>
+                        <th class="py-2 pr-2">Possessive<div class="font-normal opacity-75">my/your/his/her${state.showZh ? ' · 物主' : ''}</div></th>
                         <th class="py-2">Hear</th>
                       </tr>
                     </thead>
@@ -3890,8 +3961,11 @@
                   </table>
                 </div>
 
-                <div class="p-3.5 rounded-xl tint-primary border border-primary-soft text-xs space-y-1">
-                  <div><strong>3 Beginner Rules That Save Tons of Mistakes:</strong></div>
+                <div class="p-3.5 rounded-xl tint-primary border border-primary-soft text-xs space-y-1.5">
+                  <div><strong>What are COD &amp; COI?${state.showZh ? '（直接宾语 vs 间接宾语）' : ''}</strong></div>
+                  <div>• <strong>COD</strong> (<em>Complément d’Objet Direct</em> = <strong>Direct Object</strong>): receives the verb directly with <strong>no preposition</strong> — e.g. <em>Je vois Paul</em> → <em>Je <strong>le</strong> vois</em> (I see him).${state.showZh ? ' <span class="text-[var(--primary)]">动词后不加介词直接跟宾语。</span>' : ''}</div>
+                  <div>• <strong>COI</strong> (<em>Complément d’Objet Indirect</em> = <strong>Indirect Object</strong>): connected via <strong>« à » + person</strong> — e.g. <em>Je parle <strong>à</strong> Marie</em> → <em>Je <strong>lui</strong> parle</em> (I speak to her).${state.showZh ? ' <span class="text-[var(--primary)]">动词 + à + 人（如 parler à, téléphoner à）。</span>' : ''}</div>
+                  <div class="pt-1 border-t border-primary-soft"><strong>3 Beginner Rules That Save Tons of Mistakes:</strong></div>
                   <div>1) <strong>COD/COI go BEFORE the verb</strong>: « Je <strong>le</strong> vois » (not <del>Je vois lui</del>).</div>
                   <div>2) <strong>After prepositions (avec, pour, chez, sans)</strong>, always use Tonic: « avec <strong>moi</strong> », « chez <strong>lui</strong> », « pour <strong>eux</strong> ».</div>
                   <div>3) <strong>son / sa / ses</strong> agree with the <em>thing owned</em>, NOT the owner (« sa voiture » = his OR her car!).</div>
@@ -4897,7 +4971,7 @@
               </div>
               <div class="flex items-center gap-2 shrink-0">
                 <button type="button" id="btnDailyOutOpen" data-out-jump="${dailyOut.tab}" data-out-task="${dailyOut.taskId}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] cursor-pointer">
-                  Open ${dailyOut.tab.toUpperCase()} Studio →
+                  Open ${dailyOut.tab === 'ee' ? 'Writing (EE)' : 'Speaking (EO)'} Studio →
                 </button>
                 <button type="button" id="btnDailyOutDone" class="px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
                   outputDoneToday ? 'tint-success border border-success-soft text-[var(--success)]' : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
@@ -4914,10 +4988,10 @@
               <h3 class="text-base font-bold text-[var(--foreground)]">Curriculum Progress (A1 → B2)</h3>
               <div class="flex flex-wrap gap-2">
                 <button type="button" data-go-ws="mock" class="px-3 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                  🎯 TCF Mock
+                  🎯 TCF Mock (CO/CE)
                 </button>
                 <button type="button" data-go-ws="output" class="px-3 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                  ✍️ EE / EO Studio
+                  ✍️ Writing &amp; Speaking (EE/EO)
                 </button>
               </div>
             </div>
@@ -6306,6 +6380,9 @@
               <p class="text-sm text-[var(--muted-foreground)] mt-1">
                 ${ALL_VOCAB.length} A1–B2 expressions • Due today: <strong class="text-[var(--primary)]">${dueTotal}</strong> • Mastered: <strong class="text-[var(--success)]">${countMasteredVocab()}</strong>
               </p>
+              <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+                <strong>SRS</strong> = Spaced Repetition (auto-scheduled review) · <strong>Faux Amis</strong> = English-French “false friends”${state.showZh ? ' · 间隔重复记忆 + 假朋友易混词' : ''}
+              </p>
             </div>
 
             <!-- Controls -->
@@ -6682,6 +6759,9 @@
               <div>
                 <h2 class="text-2xl font-bold">🎯 TCF Canada Timed Mock Simulator</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">4 timed sets (40 total questions): start with A1→B2 Placement, then test CLB 7 readiness with the B1→B2+ Sprints. Missed items auto-save to your Mistake Review queue.</p>
+                <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+                  <strong>CO</strong> = Listening (<em>Compréhension Orale</em>) · <strong>CE</strong> = Reading (<em>Compréhension Écrite</em>) · <strong>CLB 7</strong> ≈ B2${state.showZh ? ' · CO 听力 / CE 阅读' : ''}
+                </p>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -7101,14 +7181,17 @@
               <div>
                 <h2 class="text-2xl font-bold">✍️ Writing (EE) &amp; Speaking (EO) CLB 7 Studio</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">Practice official TCF Canada Tâches 1–3 with word-limit meters, French accent pad, B2 rubric checks, timers &amp; audio shadowing.</p>
+                <p class="text-xs text-[var(--muted-foreground)] mt-0.5">
+                  <strong>EE</strong> = Writing (<em>Expression Écrite</em>) · <strong>EO</strong> = Speaking (<em>Expression Orale</em>) · <strong>Tâches 1–3</strong> = Exam Tasks 1–3${state.showZh ? ' · EE 写作 / EO 口语 / Tâche 官方任务' : ''}
+                </p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 <button type="button" id="btnOutToCoach" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-semibold cursor-pointer">
                   🤖 AI Coach Prompts →
                 </button>
                 <div class="inline-flex p-1 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-                  <button type="button" data-out-tab="ee" class="px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${isEE ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">✍️ Expression Écrite (EE)</button>
-                  <button type="button" data-out-tab="eo" class="px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${!isEE ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">🎙️ Expression Orale (EO)</button>
+                  <button type="button" data-out-tab="ee" class="px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${isEE ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">✍️ Writing (EE)</button>
+                  <button type="button" data-out-tab="eo" class="px-3.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${!isEE ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">🎙️ Speaking (EO)</button>
                 </div>
               </div>
             </div>
@@ -7810,12 +7893,26 @@
       if (els.btnAudioPopover && els.audioPopoverPanel) {
         els.btnAudioPopover.onclick = (e) => {
           e.stopPropagation();
+          if (els.abbrPopoverPanel) els.abbrPopoverPanel.classList.add('hidden');
           els.audioPopoverPanel.classList.toggle('hidden');
         };
+      }
+      if (els.btnAbbrPopover && els.abbrPopoverPanel) {
+        els.btnAbbrPopover.onclick = (e) => {
+          e.stopPropagation();
+          if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
+          els.abbrPopoverPanel.classList.toggle('hidden');
+        };
+      }
+      if (els.btnCloseAbbrPopover && els.abbrPopoverPanel) {
+        els.btnCloseAbbrPopover.onclick = () => els.abbrPopoverPanel.classList.add('hidden');
       }
       window.addEventListener('click', (e) => {
         if (els.audioPopoverPanel && els.audioPopoverWrap && typeof els.audioPopoverWrap.contains === 'function' && !els.audioPopoverWrap.contains(e.target)) {
           els.audioPopoverPanel.classList.add('hidden');
+        }
+        if (els.abbrPopoverPanel && els.abbrPopoverWrap && typeof els.abbrPopoverWrap.contains === 'function' && !els.abbrPopoverWrap.contains(e.target)) {
+          els.abbrPopoverPanel.classList.add('hidden');
         }
         const dm = document.getElementById('sidebarDataMenu');
         if (dm && dm.open && typeof dm.contains === 'function' && !dm.contains(e.target)) {
@@ -7825,6 +7922,7 @@
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
+          if (els.abbrPopoverPanel) els.abbrPopoverPanel.classList.add('hidden');
           const dm = document.getElementById('sidebarDataMenu');
           if (dm) dm.open = false;
         }
