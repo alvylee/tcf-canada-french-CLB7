@@ -1,0 +1,12 @@
+# Local Python TTS virtual environment & MP3 synthesis cache
+.tts_venv/
+.tts_cache/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
