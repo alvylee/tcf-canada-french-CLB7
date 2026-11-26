@@ -24,6 +24,8 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 INDEX_HTML = ROOT / "index.html"
 SYLLABUS_JS = ROOT / "data" / "syllabus_data.js"
+LESSONS_JS = ROOT / "data" / "grammar_lessons.js"
+QUIZZES_JS = ROOT / "data" / "grammar_quizzes.js"
 PACKS_DIR = ROOT / "data" / "audio_packs"
 MANIFEST_JS = ROOT / "data" / "audio_manifest.js"
 LEGACY_AUDIO_DIR = ROOT / "data" / "audio"
@@ -75,6 +77,8 @@ def clean_for_speech(text: str) -> str:
 def extract_phrases_with_voices() -> list[dict]:
     html = INDEX_HTML.read_text(encoding="utf-8")
     syllabus_code = SYLLABUS_JS.read_text(encoding="utf-8") if SYLLABUS_JS.exists() else ""
+    lessons_code = LESSONS_JS.read_text(encoding="utf-8") if LESSONS_JS.exists() else ""
+    quizzes_code = QUIZZES_JS.read_text(encoding="utf-8") if QUIZZES_JS.exists() else ""
     scripts = re.findall(r"<script(?![^>]*src)[^>]*>(.*?)</script>", html, re.S)
     if not scripts:
         raise RuntimeError("No inline <script> found in index.html")
@@ -191,6 +195,26 @@ if (typeof QUICK_ESSENTIALS !== 'undefined') {
   });
 }
 
+if (typeof GRAMMAR_LESSONS !== 'undefined') {
+  Object.values(GRAMMAR_LESSONS).forEach((slides, mIdx) => {
+    (slides || []).forEach((sl, sIdx) => {
+      const vPool = ['denise', 'henri', 'sylvie', 'thierry'];
+      const v = vPool[(mIdx + sIdx) % vPool.length];
+      if (sl.examples) sl.examples.forEach((ex, i) => add(ex.fr, i % 2 === 0 ? v : 'henri', 'lessons'));
+      if (sl.audio) add(sl.audio, v, 'lessons');
+      if (sl.frFull) add(sl.frFull, (sIdx % 2 === 0 ? 'denise' : 'sylvie'), 'lessons');
+    });
+  });
+}
+
+if (typeof GRAMMAR_QUIZZES !== 'undefined') {
+  GRAMMAR_QUIZZES.forEach((t, tIdx) => {
+    (t.questions || []).forEach((q, qIdx) => {
+      if (q.frFull) add(q.frFull, ['denise', 'henri', 'sylvie', 'thierry'][(tIdx + qIdx) % 4], 'lessons');
+    });
+  });
+}
+
 const out = [...entries.entries()].map(([text, meta]) => ({ text, voice: meta.voice, group: meta.group }));
 const emit = (typeof console !== 'undefined' && console.log) ? console.log.bind(console) : print;
 emit(JSON.stringify(out));
@@ -219,7 +243,10 @@ function makeDummy() {
     disabled: false,
     value: "",
     appendChild: function(){},
-    setAttribute: function(){}
+    setAttribute: function(){},
+    focus: function(){},
+    blur: function(){},
+    select: function(){}
   };
 }
 var document = {
@@ -235,6 +262,10 @@ var fetch = function() { return { then: function(){ return { catch: function(){}
 """
         + "\n"
         + syllabus_code
+        + "\n"
+        + lessons_code
+        + "\n"
+        + quizzes_code
         + "\n"
         + extract_js
     )
@@ -310,7 +341,7 @@ def load_existing_clips() -> dict[str, tuple[str, str]]:
 def bucket_for_group(group: str) -> str:
     if group == "quick_essentials":
         return "essentials"
-    if group == "grammar":
+    if group in ("grammar", "lessons"):
         return "grammar"
     if group in ("vocab_syllabus", "drills_gender"):
         return "vocab"

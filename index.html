@@ -184,34 +184,9 @@
       </div>
 
       <!-- Navigation Links -->
-      <nav class="flex-1 overflow-y-auto px-2.5 py-3 space-y-3">
-        <!-- Grouped Workspaces -->
-        <div id="sidebarWorkspaces" class="space-y-3"></div>
-
-        <!-- Collapsible Thematic Listening & Reading Units -->
-        <details id="sidebarUnitsDetails" class="sidebar-units pt-2 border-t border-[var(--border)]">
-          <summary class="px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] tint-muted-hover cursor-pointer select-none">
-            <span class="flex items-center gap-1.5">
-              <span class="units-chevron inline-block transition-transform duration-150">▸</span>
-              <span>Thematic Units</span>
-            </span>
-            <span id="sidebarUnitsCount" class="px-1.5 py-0.5 rounded-full tint-muted text-[11px] font-semibold tabular-nums">0/12</span>
-          </summary>
-
-          <div class="mt-1.5 space-y-1.5">
-            <div class="px-2 flex items-center justify-between">
-              <span class="text-[11px] text-[var(--muted-foreground)]">CEFR Level</span>
-              <select id="sidebarLevelFilter" class="text-xs bg-[var(--card)] border border-[var(--border)] rounded-md px-1.5 py-0.5 text-[var(--foreground)] cursor-pointer" aria-label="Filter chapters by CEFR level">
-                <option value="all">All</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-              </select>
-            </div>
-            <div id="sidebarChaptersList" class="space-y-0.5"></div>
-          </div>
-        </details>
+      <nav class="flex-1 overflow-y-auto px-2.5 py-3 space-y-4">
+        <!-- Main 4 Pillars + Quick Ref -->
+        <div id="sidebarWorkspaces" class="space-y-4"></div>
       </nav>
 
       <!-- Minimal Footer -->
@@ -2504,10 +2479,34 @@
       }
 
       const persisted = loadState();
+      const rawView = persisted.activeView || 'roadmap';
+      const normalizedInitView =
+        rawView === 'drills' || rawView === 'vocab' ? 'practice'
+        : (rawView === 'mock' || rawView === 'output' || rawView === 'coach') ? 'exam'
+        : rawView;
+      const normalizedInitPracticeTab =
+        rawView === 'vocab' ? 'srs' : (persisted.practiceTab || 'quizzes');
+      const normalizedInitExamTab =
+        (rawView === 'mock' || rawView === 'output' || rawView === 'coach') ? rawView : (persisted.examTab || 'mock');
+
+      const restoredSlideState = {};
+      if (persisted.topicLessonDone && typeof persisted.topicLessonDone === 'object') {
+        Object.entries(persisted.topicLessonDone).forEach(([tid, idxs]) => {
+          if (Array.isArray(idxs)) {
+            idxs.forEach((si) => {
+              restoredSlideState[`${tid}_${si}`] = { visited: true, answered: true, ok: true, showHint: false, userVal: '', chosenOpt: null, builtIndices: [] };
+            });
+          }
+        });
+      }
 
       const state = {
-        activeView: persisted.activeView || 'roadmap', // 'roadmap' | 'chapter' | 'drills' | 'vocab' | 'mock' | 'output'
+        activeView: normalizedInitView, // 'roadmap' | 'course' | 'practice' | 'exam' | 'essentials' | 'grammar' | 'vocabsyl' | 'chapter'
         roadmapTab: 'today', // 'today' | 'sprint' | 'plan'
+        courseLevel: persisted.courseLevel || 'A1', // 'A0' | 'A1' | 'A2' | 'B1' | 'B2'
+        courseTypeFilter: 'all', // 'all' | 'grammar' | 'vocab' | 'units' | 'notes'
+        practiceTab: normalizedInitPracticeTab, // 'mistakes' | 'srs' | 'quizzes' | 'conjugation' | 'cloze' | 'gender' | 'dictation' | 'fauxamis'
+        examTab: normalizedInitExamTab, // 'mock' | 'output' | 'coach'
         activeChapterId: persisted.activeChapterId || 'a1_1',
         sidebarLevelFilter: 'all',
         showZh: persisted.showZh !== undefined ? persisted.showZh : true,
@@ -2570,7 +2569,7 @@
         activeTopicQuizId: null,
         topicQuizPhase: 'learn', // 'learn' | 'quiz'
         topicLessonStep: 0,
-        topicLessonState: {},
+        topicLessonState: restoredSlideState,
         topicQuizIdx: 0,
         topicQuizAnswers: {},
         topicQuizFinished: false,
@@ -2653,9 +2652,23 @@
       }
 
       function serializeProgress() {
+        const topicLessonDone = {};
+        Object.entries(state.topicLessonState || {}).forEach(([k, v]) => {
+          if (!v || (!v.visited && !v.answered)) return;
+          const sep = k.lastIndexOf('_');
+          if (sep <= 0) return;
+          const tid = k.slice(0, sep);
+          const si = parseInt(k.slice(sep + 1), 10);
+          if (!Number.isFinite(si)) return;
+          if (!topicLessonDone[tid]) topicLessonDone[tid] = [];
+          if (!topicLessonDone[tid].includes(si)) topicLessonDone[tid].push(si);
+        });
         return {
           audioEngineVersion: 2,
           activeView: state.activeView,
+          courseLevel: state.courseLevel,
+          practiceTab: state.practiceTab,
+          examTab: state.examTab,
           activeChapterId: state.activeChapterId,
           activeGrammarId: state.activeGrammarId,
           activeVocabLessonId: state.activeVocabLessonId,
@@ -2676,6 +2689,7 @@
           vocabSRS: state.vocabSRS,
           quizAnswers: state.quizAnswers,
           topicQuizBest: state.topicQuizBest,
+          topicLessonDone,
           selectedVoiceURI: state.selectedVoiceURI,
           eeDrafts: state.eeDrafts
         };
@@ -2851,8 +2865,32 @@
       const GRAMMAR_QUIZZES = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_QUIZZES__)) ? window.__TCF_GRAMMAR_QUIZZES__ : [];
       const GRAMMAR_LESSONS = (typeof window !== 'undefined' && window.__TCF_GRAMMAR_LESSONS__ && typeof window.__TCF_GRAMMAR_LESSONS__ === 'object') ? window.__TCF_GRAMMAR_LESSONS__ : {};
 
-      function openTopicQuiz(topicId, phase = 'learn') {
-        state.drillMode = 'topics';
+      function getRecommendedNextCourseTopic() {
+        return GRAMMAR_QUIZZES.find((t) => {
+          const rec = state.topicQuizBest[t.id];
+          return !rec || rec.best < 7;
+        }) || GRAMMAR_QUIZZES[0] || null;
+      }
+
+      function getTopicLessonDoneCount(topicId) {
+        const slides = GRAMMAR_LESSONS[topicId] || [];
+        return slides.filter((sl, si) => {
+          const sSt = state.topicLessonState[`${topicId}_${si}`];
+          return sSt && (sl.type === 'teach' ? sSt.visited : sSt.answered);
+        }).length;
+      }
+
+      function rerenderActiveTopicView() {
+        if (state.activeView === 'course') renderCourseView();
+        else renderPracticeView();
+      }
+
+      function openTopicQuiz(topicId, phase = 'learn', targetView) {
+        const dest = targetView || (phase === 'quiz' ? 'practice' : 'course');
+        const topic = GRAMMAR_QUIZZES.find((t) => t.id === topicId);
+        if (topic && ['A1', 'A2', 'B1', 'B2'].includes(topic.level)) {
+          state.courseLevel = topic.level;
+        }
         state.activeTopicQuizId = topicId || null;
         state.topicQuizPhase = phase || 'learn';
         state.topicLessonStep = 0;
@@ -2861,7 +2899,13 @@
         state.topicQuizFinished = false;
         state.topicQuizRetrySubset = null;
         state.topicQuizTypedVal = '';
-        navigate('ws', 'drills');
+        if (dest === 'practice') {
+          state.practiceTab = 'quizzes';
+          state.drillMode = 'topics';
+          navigate('ws', 'practice');
+        } else {
+          navigate('ws', 'course');
+        }
       }
 
       function countMasteredVocab() {
@@ -3667,15 +3711,13 @@
       }
 
       const WORKSPACES = [
-        { id: 'roadmap', icon: '🗺️', label: 'Today & Plan', group: 'plan' },
-        { id: 'essentials', icon: '📌', label: 'Quick Essentials', group: 'learn' },
-        { id: 'grammar', icon: '📘', label: 'Grammar & Sounds', group: 'learn' },
-        { id: 'vocabsyl', icon: '📚', label: 'Vocab Syllabus', group: 'learn' },
-        { id: 'drills', icon: '⚡', label: 'Active Drill Lab', group: 'practice' },
-        { id: 'vocab', icon: '🗂️', label: 'SRS Flashcards', group: 'practice' },
-        { id: 'mock', icon: '🎯', label: 'TCF Mock Exam', group: 'practice' },
-        { id: 'output', icon: '✍️', label: 'Writing & Speaking', group: 'practice' },
-        { id: 'coach', icon: '🤖', label: 'AI Coach', group: 'practice' }
+        { id: 'roadmap', icon: '🗺️', label: 'Today', group: 'main' },
+        { id: 'course', icon: '📘', label: 'Course (A0 → B2)', group: 'main' },
+        { id: 'practice', icon: '⚡', label: 'Practice & SRS', group: 'main' },
+        { id: 'exam', icon: '🎯', label: 'TCF Exam', group: 'main' },
+        { id: 'ref_pronouns', icon: '👤', label: 'Pronouns & Changes', group: 'quickref', essTab: 'pronouns' },
+        { id: 'ref_verbs', icon: '🔤', label: 'Verb Endings & Top 4', group: 'quickref', essTab: 'verbs' },
+        { id: 'essentials', icon: '📌', label: 'All Cheat-Sheets', group: 'quickref', essTab: 'basics' }
       ];
 
       function renderSidebar() {
@@ -3685,24 +3727,28 @@
         const vlDone = state.completedVocabLessons.length;
         const vlTotal = Math.max(1, VOCAB_SYLLABUS.length);
         const vDone = countMasteredVocab();
+        const dueCount = countDueVocab();
+        const masteredCourses = GRAMMAR_QUIZZES.filter((t) => state.topicQuizBest[t.id] && state.topicQuizBest[t.id].best >= 7).length;
         const readiness = Math.min(
           100,
-          Math.round(((gDone / gTotal) * 30) + ((vlDone / vlTotal) * 20) + ((chDone / CHAPTERS.length) * 30) + ((vDone / Math.max(1, ALL_VOCAB.length)) * 20))
+          Math.round(((gDone / gTotal) * 25) + ((masteredCourses / Math.max(1, GRAMMAR_QUIZZES.length)) * 20) + ((vlDone / vlTotal) * 15) + ((chDone / CHAPTERS.length) * 20) + ((vDone / Math.max(1, ALL_VOCAB.length)) * 20))
         );
 
-        els.sidebarProgressText.textContent = `${readiness}%`;
-        els.sidebarProgressBar.style.width = `${readiness}%`;
-        els.sidebarChaptersStat.textContent = `${gDone}/${GRAMMAR_SYLLABUS.length} gram · ${vlDone}/${VOCAB_SYLLABUS.length} voc`;
-        els.sidebarVocabStat.textContent = `${chDone}/${CHAPTERS.length} units`;
-        if (els.sidebarUnitsCount) els.sidebarUnitsCount.textContent = `${chDone}/${CHAPTERS.length}`;
-        if (els.sidebarUnitsDetails && state.activeView === 'chapter') {
-          els.sidebarUnitsDetails.open = true;
-        }
+        if (els.sidebarProgressText) els.sidebarProgressText.textContent = `${readiness}%`;
+        if (els.sidebarProgressBar) els.sidebarProgressBar.style.width = `${readiness}%`;
+        if (els.sidebarChaptersStat) els.sidebarChaptersStat.textContent = `${masteredCourses}/${GRAMMAR_QUIZZES.length} courses · ${vlDone}/${VOCAB_SYLLABUS.length} voc`;
+        if (els.sidebarVocabStat) els.sidebarVocabStat.textContent = `${chDone}/${CHAPTERS.length} units`;
 
         if (els.topbarViewTitle) {
           if (state.activeView === 'chapter') {
             const curCh = CHAPTERS.find((c) => c.id === state.activeChapterId) || CHAPTERS[0];
-            els.topbarViewTitle.textContent = `${curCh.code} · ${curCh.shortTitle}`;
+            els.topbarViewTitle.textContent = `Course · ${curCh.code} ${curCh.shortTitle}`;
+          } else if (state.activeView === 'grammar') {
+            els.topbarViewTitle.textContent = state.grammarFilterLevel === 'Sounds' ? 'Course · A0 Sounds' : 'Course · Grammar Notes';
+          } else if (state.activeView === 'vocabsyl') {
+            els.topbarViewTitle.textContent = 'Course · Vocab Themes';
+          } else if (state.activeView === 'essentials') {
+            els.topbarViewTitle.textContent = 'Quick Ref · Pronouns & Tables';
           } else {
             const curWs = WORKSPACES.find((w) => w.id === state.activeView);
             els.topbarViewTitle.textContent = curWs ? curWs.label : 'TCF Canada Studio';
@@ -3710,13 +3756,16 @@
         }
 
         const st = getStudyStreak();
-        els.streakDisplay.textContent = st > 0 ? `🔥 ${st}d · ${state.xp} XP` : `🔥 ${state.xp} XP`;
+        if (els.streakDisplay) els.streakDisplay.textContent = st > 0 ? `🔥 ${st}d · ${state.xp} XP` : `🔥 ${state.xp} XP`;
 
         const groupsMeta = [
-          { key: 'plan', title: '' },
-          { key: 'learn', title: 'Learn' },
-          { key: 'practice', title: 'Practice & Exam' }
+          { key: 'main', title: 'Main Workspace' },
+          { key: 'quickref', title: 'Quick Ref' }
         ];
+
+        const isCourseChild = ['course', 'grammar', 'vocabsyl', 'chapter'].includes(state.activeView);
+        const isPracticeChild = ['practice', 'drills', 'vocab'].includes(state.activeView);
+        const isExamChild = ['exam', 'mock', 'output', 'coach'].includes(state.activeView);
 
         els.sidebarWorkspaces.innerHTML = groupsMeta.map((grp) => {
           const items = WORKSPACES.filter((w) => w.group === grp.key);
@@ -3724,14 +3773,27 @@
             ? `<div class="px-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1">${grp.title}</div>`
             : '';
           const rows = items.map((w) => {
-            const active = state.activeView === w.id;
+            let active = false;
+            if (w.id === 'course') active = isCourseChild;
+            else if (w.id === 'practice') active = isPracticeChild;
+            else if (w.id === 'exam') active = isExamChild;
+            else if (w.id === 'ref_pronouns') active = state.activeView === 'essentials' && state.essentialsTab === 'pronouns';
+            else if (w.id === 'ref_verbs') active = state.activeView === 'essentials' && state.essentialsTab === 'verbs';
+            else if (w.id === 'essentials') active = state.activeView === 'essentials' && !['pronouns', 'verbs'].includes(state.essentialsTab);
+            else active = state.activeView === w.id;
+
             let badge = '';
-            if (w.id === 'grammar') badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${gDone}/${GRAMMAR_SYLLABUS.length}</span>`;
-            else if (w.id === 'vocabsyl') badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${vlDone}/${VOCAB_SYLLABUS.length}</span>`;
-            else if (w.id === 'drills' && state.mistakes.length > 0) badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-error text-[var(--error)] font-bold tabular-nums shrink-0" title="Missed items to review">${state.mistakes.length} fix</span>`;
-            else if (w.id === 'vocab') badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${vDone}/${ALL_VOCAB.length}</span>`;
+            if (w.id === 'course') {
+              badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${masteredCourses}/${GRAMMAR_QUIZZES.length}</span>`;
+            } else if (w.id === 'practice') {
+              if (state.mistakes.length > 0) {
+                badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-error text-[var(--error)] font-bold tabular-nums shrink-0" title="Missed items to review">${state.mistakes.length} fix</span>`;
+              } else if (dueCount > 0) {
+                badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${dueCount} due</span>`;
+              }
+            }
             return `
-              <button type="button" data-nav-ws="${w.id}" class="w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between gap-2 text-[13px] transition cursor-pointer border ${
+              <button type="button" data-nav-ws="${w.id}" ${w.essTab ? `data-ess-jump="${w.essTab}"` : ''} class="w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between gap-2 text-[13px] transition cursor-pointer border ${
                 active
                   ? 'tint-primary text-[var(--primary)] border-primary-soft font-semibold'
                   : 'border-transparent text-[var(--foreground)] tint-muted-hover font-medium'
@@ -3744,37 +3806,20 @@
               </button>
             `;
           }).join('');
-          return `<div>${heading}<div class="space-y-0.5">${rows}</div></div>`;
-        }).join('');
-
-        const filteredCh = CHAPTERS.filter((c) => state.sidebarLevelFilter === 'all' || c.level === state.sidebarLevelFilter);
-        els.sidebarChaptersList.innerHTML = filteredCh.map((ch) => {
-          const active = state.activeView === 'chapter' && state.activeChapterId === ch.id;
-          const done = state.completedChapters.includes(ch.id);
-          return `
-            <button type="button" data-nav-ch="${ch.id}" class="w-full text-left px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-2 text-xs transition cursor-pointer border ${
-              active
-                ? 'tint-primary text-[var(--primary)] border-primary-soft font-semibold'
-                : 'border-transparent text-[var(--foreground)] tint-muted-hover'
-            }">
-              <span class="flex items-center gap-2 min-w-0">
-                <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold shrink-0 ${levelBadgeStyle(ch.level)}">${ch.code}</span>
-                <span class="truncate">${esc(ch.shortTitle)}</span>
-              </span>
-              ${done ? '<span class="text-[var(--success)] font-bold shrink-0">✓</span>' : ''}
-            </button>
-          `;
+          return `<div class="${grp.key === 'quickref' ? 'pt-3 border-t border-[var(--border)]' : ''}">${heading}<div class="space-y-0.5">${rows}</div></div>`;
         }).join('');
 
         els.sidebarWorkspaces.querySelectorAll('[data-nav-ws]').forEach((btn) => {
           btn.onclick = () => {
-            navigate('ws', btn.dataset.navWs);
-            closeMobileSidebar();
-          };
-        });
-        els.sidebarChaptersList.querySelectorAll('[data-nav-ch]').forEach((btn) => {
-          btn.onclick = () => {
-            navigate('ch', btn.dataset.navCh);
+            const target = btn.dataset.navWs;
+            if (btn.dataset.essJump) {
+              state.essentialsTab = btn.dataset.essJump;
+              state.essentialsSearch = '';
+              navigate('ws', 'essentials');
+            } else {
+              if (target === 'course') state.activeTopicQuizId = null;
+              navigate('ws', target);
+            }
             closeMobileSidebar();
           };
         });
@@ -3804,6 +3849,14 @@
         } else if (kind === 'vsyl') {
           state.activeView = 'vocabsyl';
           if (id) state.activeVocabLessonId = id;
+        } else if (id === 'drills') {
+          state.activeView = 'practice';
+        } else if (id === 'vocab') {
+          state.activeView = 'practice';
+          state.practiceTab = 'srs';
+        } else if (id === 'mock' || id === 'output' || id === 'coach') {
+          state.activeView = 'exam';
+          state.examTab = id;
         } else {
           state.activeView = id;
         }
@@ -3827,15 +3880,20 @@
       ========================================================= */
       function renderMain() {
         if (state.activeView === 'roadmap') renderRoadmapView();
+        else if (state.activeView === 'course') renderCourseView();
+        else if (state.activeView === 'practice' || state.activeView === 'drills') renderPracticeView();
+        else if (state.activeView === 'vocab') { state.practiceTab = 'srs'; state.activeView = 'practice'; renderPracticeView(); }
+        else if (state.activeView === 'exam') renderExamView();
+        else if (state.activeView === 'mock' || state.activeView === 'output' || state.activeView === 'coach') {
+          state.examTab = state.activeView;
+          state.activeView = 'exam';
+          renderExamView();
+        }
         else if (state.activeView === 'essentials') renderEssentialsView();
         else if (state.activeView === 'grammar') renderGrammarView();
         else if (state.activeView === 'vocabsyl') renderVocabSyllabusView();
         else if (state.activeView === 'chapter') renderChapterView();
-        else if (state.activeView === 'drills') renderDrillsView();
-        else if (state.activeView === 'vocab') renderVocabView();
-        else if (state.activeView === 'mock') renderMockView();
-        else if (state.activeView === 'output') renderOutputView();
-        else if (state.activeView === 'coach') renderCoachView();
+        else renderRoadmapView();
       }
 
       /* =========================================================
@@ -3958,9 +4016,14 @@
                       See how <strong>I / You / He / She / We / They</strong> change depending on whether they are Subject, Direct Object (COD), Indirect Object (COI), After a Preposition (Tonic), Reflexive, or Possessive.
                     </p>
                   </div>
-                  <button type="button" data-open-topic-quiz="pronouns_transform" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer shrink-0">
-                    📝 Test Pronouns (8 Q) →
-                  </button>
+                  <div class="flex flex-wrap gap-1.5 shrink-0">
+                    <button type="button" data-open-topic-quiz="a2_cod_pronouns" data-open-phase="quiz" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer">
+                      📝 Test COD/COI (A2) →
+                    </button>
+                    <button type="button" data-open-topic-quiz="a1_subject_etre_avoir" data-open-phase="learn" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold tint-muted-hover cursor-pointer">
+                      📘 A1 Lesson 1 →
+                    </button>
+                  </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -4057,7 +4120,7 @@
                       Drop <strong>-er / -ir / -re</strong> to get the stem, then attach the ending for each pronoun. Tap any conjugated verb to hear it!
                     </p>
                   </div>
-                  <button type="button" data-open-topic-quiz="present_tense" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer shrink-0">
+                  <button type="button" data-open-topic-quiz="a1_regular_present" data-open-phase="quiz" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer shrink-0">
                     📝 Test Present Tense (8 Q) →
                   </button>
                 </div>
@@ -4222,13 +4285,13 @@
           <div class="space-y-5">
             <div class="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 class="text-2xl font-bold text-[var(--foreground)]">📌 Quick Essentials &amp; Pronoun Cheat-Sheet</h2>
+                <h2 class="text-2xl font-bold text-[var(--foreground)]">📌 Quick Ref — Pronouns, Verbs &amp; Cheat-Sheets</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  Everyday foundational French for beginners — pronouns &amp; how they change, -ER/-IR/-RE verb endings, Monday–Sunday, months, numbers, question words, prepositions, survival phrases &amp; top 20 verbs. Tap any item to hear French audio.
+                  Instant lookup desk for frequently referenced French tables: Pronouns &amp; transformations, -ER/-IR/-RE verb endings, top 4 irregulars, days, months, numbers, prepositions &amp; survival phrases. Tap any item to hear French audio.
                 </p>
               </div>
               <button type="button" id="btnEssToGrammar" class="px-3.5 py-2 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer">
-                📘 Open Full Grammar Lessons →
+                📘 Open A0–B2 Course →
               </button>
             </div>
 
@@ -4261,7 +4324,7 @@
         `;
 
         const bindEssBodySpeak = () => {
-          els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
+        els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
           els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz, b.dataset.openPhase || 'quiz')));
         };
         bindEssBodySpeak();
@@ -4287,7 +4350,7 @@
           renderEssentialsView();
         }));
         const bGram = document.getElementById('btnEssToGrammar');
-        if (bGram) bGram.onclick = () => navigate('ws', 'grammar');
+        if (bGram) bGram.onclick = () => { state.activeTopicQuizId = null; navigate('ws', 'course'); };
       }
 
       /* =========================================================
@@ -4318,16 +4381,19 @@
         els.mainContent.innerHTML = `
           <div class="space-y-5">
             <!-- Header -->
-            <div class="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h2 class="text-2xl font-bold text-[var(--foreground)]">📚 CEFR Thematic Vocabulary Syllabus</h2>
-                <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  16 high-ROI TCF Canada themes (skipping obvious English cognates): gender-coded words, collocations, Faux Amis &amp; TCF paraphrase pairs.
-                </p>
-              </div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" id="btnBackToCourseFromVsyl" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                ← Back to ${esc(cur.level)} Course
+              </button>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold">
-                Lessons Mastered: <span class="text-[var(--success)]">${state.completedVocabLessons.length} / ${VOCAB_SYLLABUS.length}</span>
+                Themes Mastered: <span class="text-[var(--success)]">${state.completedVocabLessons.length} / ${VOCAB_SYLLABUS.length}</span>
               </div>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-[var(--foreground)]">📚 CEFR Thematic Vocabulary Syllabus</h2>
+              <p class="text-sm text-[var(--muted-foreground)] mt-1">
+                16 high-ROI TCF Canada themes (skipping obvious English cognates): gender-coded words, collocations, Faux Amis &amp; TCF paraphrase pairs.
+              </p>
             </div>
 
             <!-- Level Filter Strip -->
@@ -4508,6 +4574,12 @@
         `;
 
         // Bindings
+        const bBackCourseV = document.getElementById('btnBackToCourseFromVsyl');
+        if (bBackCourseV) bBackCourseV.onclick = () => {
+          state.courseLevel = cur.level || 'A1';
+          state.activeTopicQuizId = null;
+          navigate('ws', 'course');
+        };
         els.mainContent.querySelectorAll('[data-vl-filter]').forEach((b) => (b.onclick = () => {
           state.vocabLessonFilterLevel = b.dataset.vlFilter;
           const nextList = VOCAB_SYLLABUS.filter((v) => state.vocabLessonFilterLevel === 'all' || v.level === state.vocabLessonFilterLevel);
@@ -4698,16 +4770,19 @@
         els.mainContent.innerHTML = `
           <div class="space-y-5">
             <!-- Syllabus Header -->
-            <div class="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 CEFR Grammar &amp; Sounds Syllabus</h2>
-                <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  ${GRAMMAR_SYLLABUS.length} bite-sized 5-minute lessons — step-by-step from Phonetics &amp; A1 all the way to B2 (CLB 7).
-                </p>
-              </div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" id="btnBackToCourseFromGram" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                ← Back to ${cur.level === 'Sounds' ? 'A0 Sounds' : esc(cur.level)} Course
+              </button>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold">
-                Mastered: <span class="text-[var(--success)]">${state.completedGrammar.length} / ${GRAMMAR_SYLLABUS.length}</span>
+                Notes Reviewed: <span class="text-[var(--success)]">${state.completedGrammar.length} / ${GRAMMAR_SYLLABUS.length}</span>
               </div>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 ${cur.level === 'Sounds' ? 'A0 Phonetics &amp; Listening Foundation' : 'CEFR Grammar &amp; Sounds Reference Notes'}</h2>
+              <p class="text-sm text-[var(--muted-foreground)] mt-1">
+                ${GRAMMAR_SYLLABUS.length} bite-sized 5-minute reference lessons — step-by-step from Phonetics &amp; A1 all the way to B2 (CLB 7).
+              </p>
             </div>
 
             <!-- Level Filter Strip -->
@@ -4806,6 +4881,12 @@
         `;
 
         // Bindings
+        const bBackCourseG = document.getElementById('btnBackToCourseFromGram');
+        if (bBackCourseG) bBackCourseG.onclick = () => {
+          state.courseLevel = cur.level === 'Sounds' ? 'A0' : (cur.level || 'A1');
+          state.activeTopicQuizId = null;
+          navigate('ws', 'course');
+        };
         els.mainContent.querySelectorAll('[data-g-filter]').forEach((b) => (b.onclick = () => {
           state.grammarFilterLevel = b.dataset.gFilter;
           const nextList = GRAMMAR_SYLLABUS.filter((g) => state.grammarFilterLevel === 'all' || g.level === state.grammarFilterLevel);
@@ -4872,7 +4953,8 @@
             state.completedGrammar.push(cur.id);
             addXP(15);
           }
-          navigate('ws', 'drills');
+          state.practiceTab = 'conjugation';
+          navigate('ws', 'practice');
         };
       }
 
@@ -4884,6 +4966,7 @@
         const weeks = Math.round(totalHoursNeeded / (state.dailyHours * 7));
         const months = (weeks / 4.3).toFixed(1);
 
+        const nextCourse = getRecommendedNextCourseTopic();
         const nextGram = GRAMMAR_SYLLABUS.find((g) => !state.completedGrammar.includes(g.id)) || GRAMMAR_SYLLABUS[0];
         const nextVocab = VOCAB_SYLLABUS.find((v) => !state.completedVocabLessons.includes(v.id)) || VOCAB_SYLLABUS[0];
         const nextUnit = CHAPTERS.find((c) => !state.completedChapters.includes(c.id)) || CHAPTERS[0];
@@ -4974,7 +5057,7 @@
                 <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
                   <span><strong>Recommended Track: ${recLvl}</strong> — Start at your exact growth edge (and review Sounds P.1–P.7 anytime).</span>
                   <div class="flex flex-wrap gap-2">
-                    <button type="button" data-go-gram-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-bold cursor-pointer">Open ${recLvl} Grammar →</button>
+                    <button type="button" data-go-course-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-bold cursor-pointer">Open ${recLvl} Course →</button>
                     <button type="button" data-go-vsyl-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-semibold cursor-pointer">Open ${recLvl} Vocab →</button>
                   </div>
                 </div>
@@ -5003,12 +5086,23 @@
               </span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              ${nextGram ? `
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              ${nextCourse ? `
+                <button type="button" data-today-course="${nextCourse.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                  <div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-[var(--primary)]">1. Course · 8m</span>
+                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextCourse.level)}">${esc(nextCourse.badge)}</span>
+                    </div>
+                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${nextCourse.icon} ${esc(nextCourse.title)}</div>
+                  </div>
+                  <span class="text-xs font-bold text-[var(--link)]">Continue Course →</span>
+                </button>
+              ` : nextGram ? `
                 <button type="button" data-today-gram="${nextGram.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
                   <div>
                     <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--primary)]">1. Grammar · 5m</span>
+                      <span class="font-bold text-[var(--primary)]">1. Course · 5m</span>
                       <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextGram.level)}">${nextGram.code}</span>
                     </div>
                     <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextGram.title)}</div>
@@ -5375,6 +5469,14 @@
             renderRoadmapView();
           };
         }
+        els.mainContent.querySelectorAll('[data-today-course]').forEach((b) => (b.onclick = () => {
+          openTopicQuiz(b.dataset.todayCourse, 'learn', 'course');
+        }));
+        els.mainContent.querySelectorAll('[data-go-course-lvl]').forEach((b) => (b.onclick = () => {
+          state.courseLevel = b.dataset.goCourseLvl || 'A1';
+          state.activeTopicQuizId = null;
+          navigate('ws', 'course');
+        }));
         els.mainContent.querySelectorAll('[data-today-gram]').forEach((b) => (b.onclick = () => {
           state.grammarFilterLevel = 'all';
           navigate('gram', b.dataset.todayGram);
@@ -5386,15 +5488,17 @@
         const btnTR = document.getElementById('btnTodayReview');
         if (btnTR) btnTR.onclick = () => {
           if (state.mistakes.length > 0) {
+            state.practiceTab = 'mistakes';
             state.drillMode = 'mistakes';
             state.drillIdx = 0;
             state.drillAnswered = null;
-            navigate('ws', 'drills');
+            navigate('ws', 'practice');
           } else {
+            state.practiceTab = 'srs';
             state.vocabMode = 'flashcards';
             state.vocabDueOnly = true;
             state.flashIdx = 0;
-            navigate('ws', 'vocab');
+            navigate('ws', 'practice');
           }
         };
         els.mainContent.querySelectorAll('[data-go-ch]').forEach((b) => (b.onclick = () => navigate('ch', b.dataset.goCh)));
@@ -5839,15 +5943,18 @@
         els.mainContent.innerHTML = `
           <div class="space-y-5">
             <!-- Unit Header -->
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(ch.level)}">${ch.code} • ${ch.level}</span>
-                  ${isDone ? '<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-xs font-bold">✓ Completed</span>' : ''}
-                </div>
-                <h2 class="text-2xl font-bold mt-2 text-[var(--foreground)]">${esc(ch.title)}</h2>
-                <p class="text-sm text-[var(--muted-foreground)] mt-1">${esc(ch.subtitle)}</p>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" id="btnBackToCourseFromCh" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                ← Back to ${esc(ch.level)} Course
+              </button>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(ch.level)}">${ch.code} • ${ch.level}</span>
+                ${isDone ? '<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-xs font-bold">✓ Completed</span>' : ''}
               </div>
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-[var(--foreground)]">${esc(ch.title)}</h2>
+              <p class="text-sm text-[var(--muted-foreground)] mt-1">${esc(ch.subtitle)}</p>
             </div>
 
             <!-- 4-Step Bite-Sized Chunk Stepper -->
@@ -5883,6 +5990,12 @@
           navigate('gram', first ? first.id : 'p_1');
         }));
 
+        const bBackCh = document.getElementById('btnBackToCourseFromCh');
+        if (bBackCh) bBackCh.onclick = () => {
+          state.courseLevel = ch.level || 'A1';
+          state.activeTopicQuizId = null;
+          navigate('ws', 'course');
+        };
         els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
         els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz)));
         els.mainContent.querySelectorAll('[data-master-vocab]').forEach((b) => {
@@ -5999,10 +6112,11 @@
         return state.topicLessonState[key];
       }
 
-      function renderTopicQuizzesHTML() {
+      function renderTopicQuizzesHTML(opts = {}) {
         if (GRAMMAR_QUIZZES.length === 0) {
           return '<div class="studio-card p-6 text-sm text-[var(--muted-foreground)]">Grammar quizzes loading...</div>';
         }
+        const ctx = opts.context || (state.activeView === 'course' ? 'course' : 'practice');
 
         const activeTopic = state.activeTopicQuizId
           ? GRAMMAR_QUIZZES.find((t) => t.id === state.activeTopicQuizId) || null
@@ -6020,17 +6134,20 @@
             ? state.topicQuizRetrySubset
             : qs.map((_, i) => i);
 
+          const isPronounRefTopic = ['a1_subject_etre_avoir', 'a1_possessives_places', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives', 'advanced_pronouns'].includes(activeTopic.id);
+          const isVerbRefTopic = ['a1_regular_present', 'a1_irregular_modals', 'a2_passe_compose_avoir', 'a2_passe_compose_etre', 'a2_imparfait', 'a2_futur_simple'].includes(activeTopic.id);
+
           const topStepNav = `
             <div class="flex flex-wrap items-center justify-between gap-2">
               <button type="button" id="btnBackToTopics" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                ← All Grammar Topics
+                ${ctx === 'course' ? `← Back to ${esc(activeTopic.level)} Course` : '← All Topic Quizzes'}
               </button>
               <div class="inline-flex p-1 rounded-2xl bg-[var(--content)] border border-[var(--border)]">
                 <button type="button" data-tq-phase="learn" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                   phase === 'learn'
                     ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
                     : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
-                }">1. 📘 Guided Course (${slides.length || linkedLessons.length})</button>
+                }">1. 📘 Guided Lesson (${slides.length || linkedLessons.length})</button>
                 <button type="button" data-tq-phase="quiz" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                   phase === 'quiz'
                     ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
@@ -6048,7 +6165,7 @@
             const sKey = `${activeTopic.id}_${step}`;
             const st = getLessonSlideState(sKey);
             const pct = Math.round(((step + 1) / slides.length) * 100);
-            const typeIcon = (t) => (t === 'teach' ? '📘' : t === 'fib' ? '⌨️' : t === 'build' ? '🧩' : '🔍');
+            const typeIcon = (t) => (t === 'teach' ? '📘' : t === 'fib' ? '⌨️' : t === 'dict' ? '🎧' : t === 'build' ? '🧩' : t === 'mcq' ? '✅' : '🔍');
 
             let slideBodyHTML = '';
 
@@ -6058,15 +6175,15 @@
                   <p class="text-sm text-[var(--foreground)] leading-relaxed">${esc(slide.summary)}</p>
                   ${state.showZh && slide.summaryZh ? `<p class="text-xs sm:text-sm text-[var(--primary)] leading-relaxed">${esc(slide.summaryZh)}</p>` : ''}
 
-                  ${activeTopic.id === 'pronouns_transform' && step === 0 ? `
+                  ${isPronounRefTopic && step === 0 ? `
                     <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <span>📌 Reference: Full <strong>Pronoun Transformation Table</strong> (Subject / COD / COI / Tonic / Reflexive / Possessive)</span>
-                      <button type="button" data-tq-essentials="pronouns" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Table →</button>
+                      <span>📌 Quick Ref: Full <strong>Pronoun Transformation Table</strong> (Subject / COD / COI / Tonic / Reflexive / Possessive)</span>
+                      <button type="button" data-tq-essentials="pronouns" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Quick Ref →</button>
                     </div>
-                  ` : activeTopic.id === 'present_tense' && step === 0 ? `
+                  ` : isVerbRefTopic && step === 0 ? `
                     <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <span>📌 Reference: Full <strong>-ER / -IR / -RE Conjugation &amp; Top 4 Irregulars Table</strong></span>
-                      <button type="button" data-tq-essentials="verbs" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Table →</button>
+                      <span>📌 Quick Ref: Full <strong>-ER / -IR / -RE Conjugation &amp; Top 4 Irregulars Table</strong></span>
+                      <button type="button" data-tq-essentials="verbs" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Quick Ref →</button>
                     </div>
                   ` : ''}
 
@@ -6159,6 +6276,64 @@
                         <button type="button" data-speak="${escAttr(slide.frFull)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(slide.frFull)}</button>
                       </div>
                       <div class="text-xs text-[var(--foreground)]">${esc(slide.exp)}</div>
+                      ${state.showZh && slide.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.expZh)}</div>` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            } else if (slide.type === 'dict') {
+              slideBodyHTML = `
+                <div class="space-y-4">
+                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-3">
+                    <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Listen carefully and type the French sentence you hear</div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button type="button" id="btnSlideDictPlay" class="px-4 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                        🔊 Play Sentence
+                      </button>
+                      <button type="button" id="btnSlideDictSlow" class="px-3.5 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                        🐢 Slow (0.72x)
+                      </button>
+                      ${slide.hint ? `
+                        <button type="button" id="btnSlideDictHint" class="px-3 py-2 text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">
+                          ${st.showHint ? 'Hide Hint' : '💡 Show Hint'}
+                        </button>
+                      ` : ''}
+                    </div>
+                    ${slide.hint && st.showHint ? `<div class="text-xs text-[var(--muted-foreground)]">${esc(slide.hint)}</div>` : ''}
+                  </div>
+
+                  <form id="slideDictForm" class="space-y-2.5">
+                    <div class="flex flex-wrap items-center gap-1">
+                      <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                      ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-slide-dict-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                    </div>
+                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                      <input
+                        id="slideDictInput"
+                        type="text"
+                        autocomplete="off"
+                        value="${escAttr(st.userVal || '')}"
+                        placeholder="Type the French sentence you hear..."
+                        ${st.answered ? 'disabled' : ''}
+                        class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      />
+                      <button type="submit" ${st.answered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                        Check Dictation
+                      </button>
+                    </div>
+                  </form>
+
+                  ${st.answered ? `
+                    <div class="p-4 rounded-xl border space-y-2 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold">${st.ok ? (st.closeAccent ? 'Correct — watch accents! ✓ (+8 XP)' : 'Exact Dictation ! ✓ (+8 XP)') : 'Compare with the exact French:'}</span>
+                        <button type="button" data-speak="${escAttr(slide.frFull || slide.audio)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 Replay</button>
+                      </div>
+                      <div class="p-2.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs sm:text-sm font-semibold">
+                        ${renderDictationDiff(st.userVal || '', slide.frFull || slide.audio)}
+                      </div>
+                      ${slide.en ? `<div class="text-xs text-[var(--muted-foreground)]">${esc(slide.en)}${state.showZh && slide.zh ? ` · ${esc(slide.zh)}` : ''}</div>` : ''}
+                      ${slide.exp ? `<div class="text-xs text-[var(--foreground)]">${esc(slide.exp)}</div>` : ''}
                       ${state.showZh && slide.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.expZh)}</div>` : ''}
                     </div>
                   ` : ''}
@@ -6569,21 +6744,11 @@
                         </div>
                       </div>
                       <div class="pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
-                        <button type="button" data-learn-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
-                          studyFirstPrimary
-                            ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                            : 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
-                        }">
-                          📘 Study (${slides.length} Pages)
+                        <button type="button" data-learn-in-course="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                          📘 Lesson in Course
                         </button>
-                        <button type="button" data-start-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
-                          studyFirstPrimary
-                            ? 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
-                            : mastered
-                              ? 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
-                              : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                        }">
-                          ${best !== null ? 'Retake Quiz →' : `Quiz (${total} Q) →`}
+                        <button type="button" data-start-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer bg-[var(--primary)] text-[var(--primary-foreground)]">
+                          ${best !== null ? 'Retake Quiz →' : `Start Quiz (${total} Q) →`}
                         </button>
                       </div>
                     </div>
@@ -6599,8 +6764,11 @@
         els.mainContent.querySelectorAll('[data-tq-cat]').forEach((b) => {
           b.onclick = () => {
             state.topicQuizCategory = b.dataset.tqCat;
-            renderDrillsView();
+            rerenderActiveTopicView();
           };
+        });
+        els.mainContent.querySelectorAll('[data-learn-in-course]').forEach((b) => {
+          b.onclick = () => openTopicQuiz(b.dataset.learnInCourse, 'learn', 'course');
         });
         els.mainContent.querySelectorAll('[data-learn-topic]').forEach((b) => {
           b.onclick = () => {
@@ -6613,7 +6781,7 @@
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         });
@@ -6627,7 +6795,7 @@
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         });
@@ -6635,7 +6803,7 @@
           b.onclick = () => {
             stopAudio();
             state.topicQuizPhase = b.dataset.tqPhase === 'quiz' ? 'quiz' : 'learn';
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         });
@@ -6654,7 +6822,7 @@
             state.topicQuizPhase = 'learn';
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
-            renderDrillsView();
+            rerenderActiveTopicView();
           };
         }
 
@@ -6672,7 +6840,10 @@
         const st = getLessonSlideState(sKey);
 
         const markCurVisited = () => {
-          if (slide && slide.type === 'teach') st.visited = true;
+          if (slide && slide.type === 'teach') {
+            st.visited = true;
+            saveState();
+          }
         };
 
         els.mainContent.querySelectorAll('[data-lesson-step]').forEach((b) => {
@@ -6680,7 +6851,7 @@
             stopAudio();
             markCurVisited();
             state.topicLessonStep = parseInt(b.dataset.lessonStep, 10) || 0;
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         });
@@ -6691,7 +6862,7 @@
             stopAudio();
             markCurVisited();
             if (step > 0) state.topicLessonStep = step - 1;
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
@@ -6702,7 +6873,7 @@
             stopAudio();
             markCurVisited();
             if (step + 1 < slides.length) state.topicLessonStep = step + 1;
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
@@ -6718,7 +6889,7 @@
             state.topicQuizAnswers = {};
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
@@ -6728,7 +6899,7 @@
           if (btnHint) {
             btnHint.onclick = () => {
               st.showHint = !st.showHint;
-              renderDrillsView();
+              rerenderActiveTopicView();
             };
           }
           const fibForm = document.getElementById('slideFibForm');
@@ -6759,8 +6930,49 @@
               st.ok = accentOk;
               st.closeAccent = !exactOk && accentOk;
               if (accentOk) addXP(5);
+              else saveState();
               if (slide.frFull) speakPhrase(slide.frFull);
-              renderDrillsView();
+              rerenderActiveTopicView();
+            };
+          }
+        } else if (slide && slide.type === 'dict') {
+          const bPlay = document.getElementById('btnSlideDictPlay');
+          if (bPlay) bPlay.onclick = () => speakPhrase(slide.audio || slide.frFull);
+          const bSlow = document.getElementById('btnSlideDictSlow');
+          if (bSlow) bSlow.onclick = () => speakPhrase(slide.audio || slide.frFull, 0.72);
+          const bHint = document.getElementById('btnSlideDictHint');
+          if (bHint) bHint.onclick = () => { st.showHint = !st.showHint; rerenderActiveTopicView(); };
+          const dForm = document.getElementById('slideDictForm');
+          const dInp = document.getElementById('slideDictInput');
+          if (dForm && dInp) {
+            if (!st.answered) dInp.focus();
+            dInp.oninput = () => { st.userVal = dInp.value; };
+            els.mainContent.querySelectorAll('[data-slide-dict-accent]').forEach((b) => {
+              b.onclick = () => {
+                const ins = b.dataset.slideDictAccent;
+                const posStart = dInp.selectionStart || dInp.value.length;
+                const posEnd = dInp.selectionEnd || dInp.value.length;
+                dInp.value = dInp.value.slice(0, posStart) + ins + dInp.value.slice(posEnd);
+                dInp.focus();
+                dInp.selectionStart = dInp.selectionEnd = posStart + ins.length;
+                st.userVal = dInp.value;
+              };
+            });
+            dForm.onsubmit = (e) => {
+              e.preventDefault();
+              const val = dInp.value.trim();
+              if (!val || st.answered) return;
+              st.userVal = val;
+              const nVal = normalizeFr(val);
+              const pool = (slide.answers && slide.answers.length) ? slide.answers : [slide.frFull || slide.audio];
+              const exactOk = pool.some((a) => normalizeFr(a) === nVal);
+              const accentOk = exactOk || pool.some((a) => stripAccents(normalizeFr(a)) === stripAccents(nVal));
+              st.answered = true;
+              st.ok = accentOk;
+              st.closeAccent = !exactOk && accentOk;
+              if (accentOk) addXP(8);
+              else saveState();
+              rerenderActiveTopicView();
             };
           }
         } else if (slide && (slide.type === 'spot' || slide.type === 'mcq')) {
@@ -6772,8 +6984,9 @@
               st.chosenOpt = oi;
               st.ok = oi === slide.ans;
               if (st.ok) addXP(5);
+              else saveState();
               if (slide.frFull) speakPhrase(slide.frFull);
-              renderDrillsView();
+              rerenderActiveTopicView();
             };
           });
         } else if (slide && slide.type === 'build') {
@@ -6783,7 +6996,7 @@
               const origIdx = parseInt(b.dataset.buildPick, 10);
               if (!Array.isArray(st.builtIndices)) st.builtIndices = [];
               if (!st.builtIndices.includes(origIdx)) st.builtIndices.push(origIdx);
-              renderDrillsView();
+              rerenderActiveTopicView();
             };
           });
           els.mainContent.querySelectorAll('[data-build-remove]').forEach((b) => {
@@ -6791,7 +7004,7 @@
               if (st.answered) return;
               const pos = parseInt(b.dataset.buildRemove, 10);
               if (Array.isArray(st.builtIndices)) st.builtIndices.splice(pos, 1);
-              renderDrillsView();
+              rerenderActiveTopicView();
             };
           });
           const btnBuildReset = document.getElementById('btnBuildReset');
@@ -6799,7 +7012,7 @@
             btnBuildReset.onclick = () => {
               if (st.answered) return;
               st.builtIndices = [];
-              renderDrillsView();
+              rerenderActiveTopicView();
             };
           }
           const btnBuildCheck = document.getElementById('btnBuildCheck');
@@ -6811,8 +7024,9 @@
               st.answered = true;
               st.ok = ok;
               if (ok) addXP(8);
+              else saveState();
               if (slide.frFull) speakPhrase(slide.frFull);
-              renderDrillsView();
+              rerenderActiveTopicView();
             };
           }
         }
@@ -6826,7 +7040,7 @@
         els.mainContent.querySelectorAll('[data-tq-input-mode]').forEach((b) => {
           b.onclick = () => {
             state.topicQuizInputMode = b.dataset.tqInputMode === 'fib' ? 'fib' : 'mcq';
-            renderDrillsView();
+            rerenderActiveTopicView();
           };
         });
 
@@ -6840,7 +7054,7 @@
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
@@ -6855,7 +7069,7 @@
             state.topicQuizAnswers = {};
             state.topicQuizFinished = false;
             state.topicQuizTypedVal = '';
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
@@ -6881,7 +7095,7 @@
             renderSidebar();
           }
           if (curQ && curQ.frFull) speakPhrase(curQ.frFull);
-          renderDrillsView();
+          rerenderActiveTopicView();
         };
 
         els.mainContent.querySelectorAll('[data-tq-opt]').forEach((b) => {
@@ -6938,13 +7152,430 @@
                 addXP(15);
                 if (score >= 7 && prevBest < 7) addXP(20);
                 saveState();
+                renderSidebar();
               }
               state.topicQuizFinished = true;
             }
-            renderDrillsView();
+            rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
+      }
+
+      function renderCourseView() {
+        if (state.activeTopicQuizId) {
+          els.mainContent.innerHTML = renderTopicQuizzesHTML({ context: 'course' });
+          els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
+          bindTopicQuizEvents();
+          return;
+        }
+
+        const curLvl = ['A0', 'A1', 'A2', 'B1', 'B2'].includes(state.courseLevel) ? state.courseLevel : 'A1';
+        state.courseLevel = curLvl;
+        const rec = getRecommendedNextCourseTopic();
+        const masteredCourses = GRAMMAR_QUIZZES.filter((t) => state.topicQuizBest[t.id] && state.topicQuizBest[t.id].best >= 7).length;
+
+        const soundsList = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
+        const levelCourses = GRAMMAR_QUIZZES.filter((t) => t.level === curLvl);
+        const levelVocab = VOCAB_SYLLABUS.filter((v) => v.level === curLvl);
+        const levelUnits = CHAPTERS.filter((c) => c.level === curLvl);
+        const levelNotes = GRAMMAR_SYLLABUS.filter((g) => g.level === curLvl);
+
+        const levelTabs = [
+          { id: 'A0', label: `🔊 A0 Sounds (${soundsList.length})` },
+          { id: 'A1', label: `A1 Foundations (${GRAMMAR_QUIZZES.filter((t) => t.level === 'A1').length})` },
+          { id: 'A2', label: `A2 Elementary (${GRAMMAR_QUIZZES.filter((t) => t.level === 'A2').length})` },
+          { id: 'B1', label: `B1 Intermediate (${GRAMMAR_QUIZZES.filter((t) => t.level === 'B1').length})` },
+          { id: 'B2', label: `B2 CLB 7 (${GRAMMAR_QUIZZES.filter((t) => t.level === 'B2').length})` }
+        ];
+
+        const typeFilters = [
+          { id: 'all', label: 'All' },
+          { id: 'grammar', label: `📘 Guided Courses (${levelCourses.length})` },
+          { id: 'units', label: `🎧 Listening & Reading Units (${levelUnits.length})` },
+          { id: 'vocab', label: `📚 Vocab Themes (${levelVocab.length})` },
+          { id: 'notes', label: `📄 Grammar Notes (${levelNotes.length})` }
+        ];
+        const tf = state.courseTypeFilter || 'all';
+
+        const levelIntro = {
+          A0: 'Build crisp French pronunciation and ear decoding first: Mandarin ü vs u, nasal vowels, liaisons, and Canadian spoken contractions.',
+          A1: 'True Beginner Step-by-Step Path: Subject Pronouns + Être/Avoir → Gender & Articles → C’est/Il est → Regular/Irregular Present → Negation & Questions → Possessives & Places → Tonic & Reflexives → Near Future & Recent Past.',
+          A2: 'Elementary Expansion: Passé Composé (avoir, then être/reflexives) → Imparfait → PC vs IMP → Futur Simple → Direct & Indirect Object Pronouns (COD, COI, Y, EN) & Comparatives.',
+          B1: 'Intermediate Fluency: Plus-que-parfait → Conditionnel & Si-Clauses → Double Object & Relative Pronouns (qui/que/où/dont) → Cause/Contrast Connectors & Gérondif.',
+          B2: 'CLB 7 Mastery: Subjunctive Triggers vs. Indicative Look-Alikes, Type 3 Regrets, Compound Relatives & Academic Nuance.'
+        }[curLvl];
+
+        const a0BodyHTML = `
+          <div class="space-y-4">
+            <div class="p-3.5 rounded-xl tint-primary border border-primary-soft text-xs text-[var(--foreground)]">
+              💡 <strong>Suggested Pacing:</strong> Complete <strong>P.1–P.3</strong> (U vs OU, Nasals, Liaisons) before or alongside <strong>A1 · 1</strong>, then use <strong>P.4–P.7</strong> (Voiced/Voiceless, é/è, Canadian French) as you advance through A1–A2.
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              ${soundsList.map((g, idx) => {
+                const done = state.completedGrammar.includes(g.id);
+                return `
+                  <button type="button" data-course-gram="${g.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle('Sounds')}">0.${idx + 1} · ${esc(g.code)}</span>
+                        <span class="text-xs font-bold ${done ? 'text-[var(--success)]' : 'text-[var(--muted-foreground)]'}">${done ? '✓ Reviewed' : g.duration}</span>
+                      </div>
+                      <h4 class="text-sm font-bold text-[var(--foreground)] pt-1">${esc(g.title)}</h4>
+                      <p class="text-xs text-[var(--muted-foreground)] leading-snug">${esc(g.summary)}</p>
+                    </div>
+                    <span class="text-xs font-bold text-[var(--link)]">Open Sound Lesson →</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+
+        const guidedCoursesHTML = levelCourses.length ? `
+          <section class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-base font-bold text-[var(--foreground)]">1. Step-by-Step Grammar Courses (${curLvl})</h3>
+              <span class="text-xs text-[var(--muted-foreground)]">Micro-teach pages + FIB + Mini Dictée + Spot + Builder + 8-Q Quiz</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              ${levelCourses.map((t) => {
+                const slides = GRAMMAR_LESSONS[t.id] || [];
+                const donePages = getTopicLessonDoneCount(t.id);
+                const recBest = state.topicQuizBest[t.id];
+                const best = recBest ? recBest.best : null;
+                const total = (t.questions || []).length;
+                const mastered = best !== null && best >= 7;
+                const isNextRec = rec && rec.id === t.id;
+                const pagePct = slides.length ? Math.round((donePages / slides.length) * 100) : 0;
+
+                return `
+                  <div class="studio-card p-4 flex flex-col justify-between gap-3 ${isNextRec ? 'border-primary-soft ring-1 ring-[var(--primary)]/20' : ''}">
+                    <div class="space-y-2">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                          <span class="text-lg shrink-0">${t.icon}</span>
+                          <span class="px-2 py-0.5 rounded border text-[11px] font-bold shrink-0 ${levelBadgeStyle(t.level)}">${esc(t.badge)}</span>
+                          ${isNextRec ? '<span class="px-2 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[10px] font-bold">✨ Next Recommended</span>' : ''}
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold tabular-nums ${
+                          mastered ? 'tint-success text-[var(--success)]' : best !== null ? 'tint-primary text-[var(--primary)]' : 'tint-muted text-[var(--muted-foreground)]'
+                        }">
+                          ${mastered ? `✓ ${best}/${total}` : best !== null ? `Best ${best}/${total}` : `${slides.length} pages`}
+                        </span>
+                      </div>
+                      <h4 class="text-sm font-bold text-[var(--foreground)]">${esc(t.title)}</h4>
+                      <p class="text-xs text-[var(--muted-foreground)] leading-snug">${esc(t.subtitle)}</p>
+                      <div class="space-y-1">
+                        <div class="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] tabular-nums">
+                          <span>Lesson Progress</span>
+                          <span>${donePages} / ${slides.length} pages</span>
+                        </div>
+                        <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
+                          <div class="h-full rounded-full ${mastered ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${pagePct}%"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
+                      <button type="button" data-course-start="${t.id}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer bg-[var(--primary)] text-[var(--primary-foreground)]">
+                        ${donePages > 0 && donePages < slides.length ? 'Resume Lesson →' : donePages >= slides.length ? 'Review Lesson →' : 'Start Lesson →'}
+                      </button>
+                      <button type="button" data-course-quiz="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover">
+                        ${best !== null ? 'Retake Quiz' : `Quiz (${total} Q)`}
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        ` : '';
+
+        const unitsHTML = levelUnits.length ? `
+          <section class="space-y-3">
+            <h3 class="text-base font-bold text-[var(--foreground)]">2. Thematic Listening &amp; Reading Units (${curLvl})</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              ${levelUnits.map((ch) => {
+                const done = state.completedChapters.includes(ch.id);
+                return `
+                  <button type="button" data-course-ch="${ch.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                    <div>
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(ch.level)}">${esc(ch.code)}</span>
+                        ${done ? '<span class="text-xs font-bold text-[var(--success)]">✓ Done</span>' : `<span class="text-[11px] text-[var(--muted-foreground)]">${ch.passages.length} audio</span>`}
+                      </div>
+                      <div class="text-sm font-bold text-[var(--foreground)] mt-2">${esc(ch.shortTitle)}</div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1 line-clamp-2">${esc(ch.subtitle)}</div>
+                    </div>
+                    <span class="text-xs font-bold text-[var(--link)]">Open Unit →</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        ` : '';
+
+        const vocabHTML = levelVocab.length ? `
+          <section class="space-y-3">
+            <h3 class="text-base font-bold text-[var(--foreground)]">3. Thematic Vocabulary Themes (${curLvl})</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              ${levelVocab.map((vl) => {
+                const done = state.completedVocabLessons.includes(vl.id);
+                return `
+                  <button type="button" data-course-vsyl="${vl.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                    <div>
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(vl.level)}">${esc(vl.code)}</span>
+                        ${done ? '<span class="text-xs font-bold text-[var(--success)]">✓</span>' : ''}
+                      </div>
+                      <div class="text-sm font-bold text-[var(--foreground)] mt-2 leading-snug">${esc(vl.title)}</div>
+                      <div class="text-xs text-[var(--muted-foreground)] mt-1">${vl.words.length} curated words</div>
+                    </div>
+                    <span class="text-xs font-bold text-[var(--link)]">Study Words →</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        ` : '';
+
+        const notesHTML = levelNotes.length ? `
+          <section class="space-y-3">
+            <h3 class="text-base font-bold text-[var(--foreground)]">4. Quick Grammar Summary Notes (${curLvl})</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              ${levelNotes.map((g) => {
+                const done = state.completedGrammar.includes(g.id);
+                return `
+                  <button type="button" data-course-gram="${g.id}" class="text-left p-3.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${levelBadgeStyle(g.level)}">${esc(g.code)}</span>
+                        <span class="text-[11px] text-[var(--muted-foreground)]">${esc(g.duration)}</span>
+                      </div>
+                      <div class="text-xs font-bold text-[var(--foreground)] mt-1 truncate">${esc(g.title)}</div>
+                    </div>
+                    <span class="text-xs font-bold shrink-0 ${done ? 'text-[var(--success)]' : 'text-[var(--link)]'}">${done ? '✓' : '→'}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        ` : '';
+
+        els.mainContent.innerHTML = `
+          <div class="space-y-5">
+            <!-- Header -->
+            <div class="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 Structured French Course (A0 → B2)</h2>
+                <p class="text-sm text-[var(--muted-foreground)] mt-1">
+                  One clear learning path — follow the highlighted recommendation step by step, or jump freely to any level.
+                </p>
+              </div>
+              <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
+                Courses Mastered: <span class="text-[var(--success)]">${masteredCourses} / ${GRAMMAR_QUIZZES.length}</span>
+              </div>
+            </div>
+
+            ${rec ? `
+              <div class="studio-card p-4 border-primary-soft flex flex-wrap items-center justify-between gap-3">
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">✨ Next Recommended Lesson (Soft-Guided)</div>
+                  <div class="text-sm font-bold text-[var(--foreground)]">${rec.icon} [${esc(rec.badge)}] ${esc(rec.title)}</div>
+                  <div class="text-xs text-[var(--muted-foreground)]">${esc(rec.subtitle)}</div>
+                </div>
+                <button type="button" id="btnResumeRecommended" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer shrink-0">
+                  Continue Course →
+                </button>
+              </div>
+            ` : ''}
+
+            <!-- CEFR Level Tabs -->
+            <div class="flex flex-wrap gap-1.5 bg-[var(--card)] border border-[var(--card-border)] p-2 rounded-2xl">
+              ${levelTabs.map((lt) => `
+                <button type="button" data-course-lvl="${lt.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
+                  curLvl === lt.id
+                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
+                    : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                }">${lt.label}</button>
+              `).join('')}
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-xs text-[var(--muted-foreground)]">
+              <strong class="text-[var(--foreground)]">${curLvl} Focus:</strong> ${esc(levelIntro)}
+            </div>
+
+            ${curLvl === 'A0' ? a0BodyHTML : `
+              <div class="flex flex-wrap gap-1.5">
+                ${typeFilters.map((f) => `
+                  <button type="button" data-course-tf="${f.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
+                    tf === f.id
+                      ? 'tint-primary border-primary-soft text-[var(--primary)] font-bold'
+                      : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] tint-muted-hover'
+                  }">${f.label}</button>
+                `).join('')}
+              </div>
+              <div class="space-y-6">
+                ${tf === 'all' || tf === 'grammar' ? guidedCoursesHTML : ''}
+                ${tf === 'all' || tf === 'units' ? unitsHTML : ''}
+                ${tf === 'all' || tf === 'vocab' ? vocabHTML : ''}
+                ${tf === 'all' || tf === 'notes' ? notesHTML : ''}
+              </div>
+            `}
+          </div>
+        `;
+
+        const bRec = document.getElementById('btnResumeRecommended');
+        if (bRec && rec) bRec.onclick = () => openTopicQuiz(rec.id, 'learn', 'course');
+
+        els.mainContent.querySelectorAll('[data-course-lvl]').forEach((b) => {
+          b.onclick = () => {
+            state.courseLevel = b.dataset.courseLvl;
+            state.courseTypeFilter = 'all';
+            saveState();
+            renderCourseView();
+          };
+        });
+        els.mainContent.querySelectorAll('[data-course-tf]').forEach((b) => {
+          b.onclick = () => {
+            state.courseTypeFilter = b.dataset.courseTf;
+            renderCourseView();
+          };
+        });
+        els.mainContent.querySelectorAll('[data-course-start]').forEach((b) => {
+          b.onclick = () => openTopicQuiz(b.dataset.courseStart, 'learn', 'course');
+        });
+        els.mainContent.querySelectorAll('[data-course-quiz]').forEach((b) => {
+          b.onclick = () => openTopicQuiz(b.dataset.courseQuiz, 'quiz', 'practice');
+        });
+        els.mainContent.querySelectorAll('[data-course-ch]').forEach((b) => {
+          b.onclick = () => navigate('ch', b.dataset.courseCh);
+        });
+        els.mainContent.querySelectorAll('[data-course-vsyl]').forEach((b) => {
+          b.onclick = () => {
+            state.vocabLessonFilterLevel = curLvl;
+            navigate('vsyl', b.dataset.courseVsyl);
+          };
+        });
+        els.mainContent.querySelectorAll('[data-course-gram]').forEach((b) => {
+          b.onclick = () => {
+            state.grammarFilterLevel = curLvl === 'A0' ? 'Sounds' : curLvl;
+            navigate('gram', b.dataset.courseGram);
+          };
+        });
+      }
+
+      function renderPracticeTopBarHTML(rightExtraHTML = '') {
+        const dueCount = countDueVocab();
+        const tabs = [
+          { id: 'quizzes', label: `📝 Topic Quizzes (${GRAMMAR_QUIZZES.length})` },
+          { id: 'srs', label: `🗂️ SRS Flashcards (${dueCount} due)` },
+          { id: 'conjugation', label: '🔤 Conjugation' },
+          { id: 'cloze', label: '🧩 Connectors' },
+          { id: 'gender', label: '🎯 Gender' },
+          { id: 'dictation', label: '🎧 Dictée' },
+          { id: 'fauxamis', label: '⚠️ Faux Amis' },
+          { id: 'mistakes', label: `🔁 Missed & 错句本 (${state.mistakes.length + state.customErrors.length})` }
+        ];
+        return `
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 class="text-2xl font-bold text-[var(--foreground)]">⚡ Practice, Topic Quizzes &amp; SRS Review</h2>
+                <p class="text-sm text-[var(--muted-foreground)] mt-1">Test yourself on grammar topics, drill conjugation &amp; dictée, review flashcards, and clear missed mistakes.</p>
+              </div>
+              <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
+                Session Score: <span class="text-[var(--primary)]">${state.drillScore} / ${state.drillTotal}</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2.5 bg-[var(--card)] border border-[var(--card-border)] p-3 rounded-2xl">
+              <div class="flex flex-wrap gap-1.5">
+                ${tabs.map((m) => `
+                  <button type="button" data-practice-tab="${m.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
+                    state.practiceTab === m.id
+                      ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
+                      : m.id === 'mistakes' && state.mistakes.length > 0
+                        ? 'tint-error border-error-soft text-[var(--error)]'
+                        : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                  }">${m.label}</button>
+                `).join('')}
+              </div>
+              ${rightExtraHTML ? `<div class="flex flex-wrap items-center gap-2">${rightExtraHTML}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      function bindPracticeTopBar() {
+        els.mainContent.querySelectorAll('[data-practice-tab]').forEach((b) => {
+          b.onclick = () => {
+            stopAudio();
+            state.practiceTab = b.dataset.practiceTab;
+            if (state.practiceTab !== 'srs') {
+              state.drillMode = state.practiceTab;
+              state.drillInputMode = state.drillMode === 'dictation' ? 'type' : 'choices';
+              state.drillIdx = 0;
+              state.drillAnswered = null;
+              state.drillTypedValue = '';
+              if (state.drillMode === 'quizzes') {
+                state.activeTopicQuizId = null;
+                state.topicQuizFinished = false;
+              }
+            }
+            saveState();
+            renderPracticeView();
+          };
+        });
+      }
+
+      function renderPracticeView() {
+        const pt = state.practiceTab || 'quizzes';
+        if (pt === 'srs') {
+          renderVocabView();
+          return;
+        }
+        state.drillMode = pt === 'quizzes' ? 'topics' : pt;
+        renderDrillsView();
+      }
+
+      function renderExamTopBarHTML() {
+        const tabs = [
+          { id: 'mock', label: '🎯 Timed Mock Exams (CO / CE)' },
+          { id: 'output', label: '✍️ Writing (EE) & Speaking (EO)' },
+          { id: 'coach', label: '🤖 AI Coach & Immersion' }
+        ];
+        return `
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-[var(--card)] border border-[var(--card-border)] p-2.5 rounded-2xl">
+            <div class="flex flex-wrap gap-1.5">
+              ${tabs.map((t) => `
+                <button type="button" data-exam-tab="${t.id}" class="px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer border ${
+                  state.examTab === t.id
+                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
+                    : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                }">${t.label}</button>
+              `).join('')}
+            </div>
+            <span class="text-xs text-[var(--muted-foreground)] px-2">Target: CLB 7 / NCLC 7 (B2)</span>
+          </div>
+        `;
+      }
+
+      function bindExamTopBar() {
+        els.mainContent.querySelectorAll('[data-exam-tab]').forEach((b) => {
+          b.onclick = () => {
+            stopAudio();
+            clearTimers();
+            state.examTab = b.dataset.examTab;
+            saveState();
+            renderExamView();
+          };
+        });
+      }
+
+      function renderExamView() {
+        if (state.examTab === 'output') renderOutputView();
+        else if (state.examTab === 'coach') renderCoachView();
+        else renderMockView();
       }
 
       function renderDrillsView() {
@@ -6983,51 +7614,27 @@
           }
         }
 
+        const levelDropdownHTML = `
+          ${supportsTyping ? `
+            <div class="inline-flex p-0.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+              <button type="button" data-input-mode="choices" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer ${state.drillInputMode === 'choices' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">Choices</button>
+              <button type="button" data-input-mode="type" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer ${state.drillInputMode === 'type' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">⌨️ ${state.drillMode === 'dictation' ? 'True Dictée' : 'Type Answer'}</button>
+            </div>
+          ` : ''}
+          <select id="drillLevelSel" class="bg-[var(--content)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs font-semibold text-[var(--foreground)] cursor-pointer">
+            <option value="all" ${state.drillLevel === 'all' ? 'selected' : ''}>All Levels (A1–B2)</option>
+            <option value="A1" ${state.drillLevel === 'A1' ? 'selected' : ''}>A1 Only</option>
+            <option value="A2" ${state.drillLevel === 'A2' ? 'selected' : ''}>A2 Only</option>
+            <option value="B1" ${state.drillLevel === 'B1' ? 'selected' : ''}>B1 Only</option>
+            <option value="B2" ${state.drillLevel === 'B2' ? 'selected' : ''}>B2 Only</option>
+          </select>
+        `;
+
         els.mainContent.innerHTML = `
           <div class="space-y-5">
-            <div class="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h2 class="text-2xl font-bold">⚡ Active Drill Lab &amp; Grammar Quizzes</h2>
-                <p class="text-sm text-[var(--muted-foreground)] mt-1">Learn each grammar point first (rules, EN/中文 bridge &amp; audio examples), then test yourself with an 8-question quiz — or practice Dictée, Gender &amp; Mistakes.</p>
-              </div>
-              <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold">
-                Session Score: <span class="text-[var(--primary)]">${state.drillScore} / ${state.drillTotal}</span>
-              </div>
-            </div>
+            ${renderPracticeTopBarHTML(levelDropdownHTML)}
 
-            <!-- Mode Tabs + Input Mode + Level Filter -->
-            <div class="flex flex-wrap items-center justify-between gap-2.5 bg-[var(--card)] border border-[var(--card-border)] p-3 rounded-2xl">
-              <div class="flex flex-wrap gap-1.5">
-                ${modes.map((m) => `
-                  <button type="button" data-drill-mode="${m.id}" class="px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer border ${
-                    state.drillMode === m.id
-                      ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
-                      : m.id === 'mistakes' && state.mistakes.length > 0
-                        ? 'tint-error border-error-soft text-[var(--error)]'
-                        : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
-                  }">${m.label}</button>
-                `).join('')}
-              </div>
-
-              <div class="flex flex-wrap items-center gap-2">
-                ${supportsTyping ? `
-                  <div class="inline-flex p-0.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                    <button type="button" data-input-mode="choices" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer ${state.drillInputMode === 'choices' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">Choices</button>
-                    <button type="button" data-input-mode="type" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer ${state.drillInputMode === 'type' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">⌨️ ${state.drillMode === 'dictation' ? 'True Dictée' : 'Type Answer'}</button>
-                  </div>
-                ` : ''}
-
-                <select id="drillLevelSel" class="bg-[var(--content)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs font-semibold text-[var(--foreground)] cursor-pointer">
-                  <option value="all" ${state.drillLevel === 'all' ? 'selected' : ''}>All Levels (A1–B2)</option>
-                  <option value="A1" ${state.drillLevel === 'A1' ? 'selected' : ''}>A1 Only</option>
-                  <option value="A2" ${state.drillLevel === 'A2' ? 'selected' : ''}>A2 Only</option>
-                  <option value="B1" ${state.drillLevel === 'B1' ? 'selected' : ''}>B1 Only</option>
-                  <option value="B2" ${state.drillLevel === 'B2' ? 'selected' : ''}>B2 Only</option>
-                </select>
-              </div>
-            </div>
-
-            ${isTopics ? renderTopicQuizzesHTML() : !item ? `
+            ${isTopics ? renderTopicQuizzesHTML({ context: 'practice' }) : !item ? `
               <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-8 text-center space-y-2">
                 <div class="text-3xl">${state.drillMode === 'mistakes' ? '🎉' : '📚'}</div>
                 <div class="text-base font-bold">${state.drillMode === 'mistakes' ? 'Zero missed items left to review!' : 'No drills in this level filter.'}</div>
@@ -7211,6 +7818,7 @@
           </div>
         `;
 
+        bindPracticeTopBar();
         els.mainContent.querySelectorAll('[data-drill-mode]').forEach((b) => {
           b.onclick = () => {
             stopAudio();
@@ -7438,8 +8046,9 @@
 
         els.mainContent.innerHTML = `
           <div class="space-y-5">
+            ${state.activeView === 'practice' ? renderPracticeTopBarHTML() : ''}
             <div>
-              <h2 class="text-2xl font-bold">🗂️ SRS Flashcard Deck &amp; Faux Amis</h2>
+              <h2 class="text-xl font-bold">🗂️ SRS Flashcard Deck &amp; Faux Amis</h2>
               <p class="text-sm text-[var(--muted-foreground)] mt-1">
                 ${ALL_VOCAB.length} A1–B2 expressions • Due today: <strong class="text-[var(--primary)]">${dueTotal}</strong> • Mastered: <strong class="text-[var(--success)]">${countMasteredVocab()}</strong>
               </p>
@@ -7498,6 +8107,7 @@
         `;
 
         // Bind controls
+        if (state.activeView === 'practice') bindPracticeTopBar();
         els.mainContent.querySelectorAll('[data-vmode]').forEach((b) => (b.onclick = () => {
           state.vocabMode = b.dataset.vmode;
           state.flashFlipped = false;
@@ -7819,6 +8429,7 @@
         if (!state.mockRunning && !state.mockFinished) {
           els.mainContent.innerHTML = `
             <div class="space-y-5">
+              ${state.activeView === 'exam' ? renderExamTopBarHTML() : ''}
               <div>
                 <h2 class="text-2xl font-bold">🎯 TCF Canada Timed Mock Simulator</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">4 timed sets (40 total questions): start with A1→B2 Placement, then test CLB 7 readiness with the B1→B2+ Sprints. Missed items auto-save to your Mistake Review queue.</p>
@@ -7869,6 +8480,7 @@
               </div>
             </div>
           `;
+          if (state.activeView === 'exam') bindExamTopBar();
           els.mainContent.querySelectorAll('[data-pick-mock]').forEach((b) => (b.onclick = () => { state.mockType = b.dataset.pickMock; renderMockView(); }));
           const chkOnce = document.getElementById('chkMockPlayOnce');
           if (chkOnce) chkOnce.onchange = (e) => { state.mockPlayOnce = e.target.checked; };
@@ -7883,6 +8495,7 @@
           const res = computeTCFScore(exam, state.mockAnswers, state.mockType);
           els.mainContent.innerHTML = `
             <div class="space-y-5">
+              ${state.activeView === 'exam' ? renderExamTopBarHTML() : ''}
               <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <span class="px-2.5 py-1 rounded-full text-xs font-bold ${res.passed ? 'tint-success text-[var(--success)]' : 'tint-warning text-[var(--warning)]'}">
@@ -7926,8 +8539,9 @@
               </div>
             </div>
           `;
+          if (state.activeView === 'exam') bindExamTopBar();
           document.getElementById('btnRetryMock').onclick = () => { state.mockFinished = false; renderMockView(); };
-          els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
+        els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
         els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz)));
           return;
         }
@@ -8241,6 +8855,7 @@
         const isEE = state.outputTab === 'ee';
         els.mainContent.innerHTML = `
           <div class="space-y-5">
+            ${state.activeView === 'exam' ? renderExamTopBarHTML() : ''}
             <div class="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 class="text-2xl font-bold">✍️ Writing (EE) &amp; Speaking (EO) CLB 7 Studio</h2>
@@ -8264,8 +8879,9 @@
           </div>
         `;
 
+        if (state.activeView === 'exam') bindExamTopBar();
         const bOutCoach = document.getElementById('btnOutToCoach');
-        if (bOutCoach) bOutCoach.onclick = () => { state.coachTab = 'prompts'; navigate('ws', 'coach'); };
+        if (bOutCoach) bOutCoach.onclick = () => { state.coachTab = 'prompts'; state.examTab = 'coach'; navigate('ws', 'exam'); };
 
         els.mainContent.querySelectorAll('[data-out-tab]').forEach((b) => (b.onclick = () => {
           stopAudio();
@@ -8877,6 +9493,7 @@
         const isPrompts = state.coachTab === 'prompts';
         els.mainContent.innerHTML = `
           <div class="space-y-5">
+            ${state.activeView === 'exam' ? renderExamTopBarHTML() : ''}
             <div class="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 class="text-2xl font-bold text-[var(--foreground)]">🤖 AI Coach Toolkit &amp; Immersion Hub</h2>
@@ -8913,6 +9530,7 @@
           </div>
         `;
 
+        if (state.activeView === 'exam') bindExamTopBar();
         const bindCopyCoach = () => {
           els.mainContent.querySelectorAll('[data-copy-coach]').forEach((b) => {
             b.onclick = () => {
@@ -8994,10 +9612,12 @@
         }
       });
 
-      els.sidebarLevelFilter.onchange = (e) => {
-        state.sidebarLevelFilter = e.target.value;
-        renderSidebar();
-      };
+      if (els.sidebarLevelFilter) {
+        els.sidebarLevelFilter.onchange = (e) => {
+          state.sidebarLevelFilter = e.target.value;
+          renderSidebar();
+        };
+      }
 
       els.btnToggleZh.onclick = () => {
         state.showZh = !state.showZh;
