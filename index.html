@@ -329,6 +329,7 @@
 
   <script src="./data/syllabus_data.js"></script>
   <script src="./data/grammar_quizzes.js"></script>
+  <script src="./data/grammar_lessons.js"></script>
   <script src="./data/audio_manifest.js?v=2"></script>
 
   <!-- ========================================================= -->
@@ -2568,9 +2569,15 @@
         topicQuizCategory: 'all',
         activeTopicQuizId: null,
         topicQuizPhase: 'learn', // 'learn' | 'quiz'
+        topicLessonStep: 0,
+        topicLessonState: {},
         topicQuizIdx: 0,
         topicQuizAnswers: {},
         topicQuizFinished: false,
+        topicQuizInputMode: 'mcq', // 'mcq' | 'fib'
+        topicQuizTypedVal: '',
+        topicQuizRetrySubset: null,
+        grammarLessonPage: 1,
         // Vocab Bank state
         vocabMode: 'flashcards', // 'list' | 'flashcards' | 'quiz'
         vocabLevel: 'all',
@@ -2842,14 +2849,18 @@
 
       const GRAMMAR_SYLLABUS = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_SYLLABUS__)) ? window.__TCF_GRAMMAR_SYLLABUS__ : [];
       const GRAMMAR_QUIZZES = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_QUIZZES__)) ? window.__TCF_GRAMMAR_QUIZZES__ : [];
+      const GRAMMAR_LESSONS = (typeof window !== 'undefined' && window.__TCF_GRAMMAR_LESSONS__ && typeof window.__TCF_GRAMMAR_LESSONS__ === 'object') ? window.__TCF_GRAMMAR_LESSONS__ : {};
 
-      function openTopicQuiz(topicId, phase = 'quiz') {
+      function openTopicQuiz(topicId, phase = 'learn') {
         state.drillMode = 'topics';
         state.activeTopicQuizId = topicId || null;
-        state.topicQuizPhase = phase || 'quiz';
+        state.topicQuizPhase = phase || 'learn';
+        state.topicLessonStep = 0;
         state.topicQuizIdx = 0;
         state.topicQuizAnswers = {};
         state.topicQuizFinished = false;
+        state.topicQuizRetrySubset = null;
+        state.topicQuizTypedVal = '';
         navigate('ws', 'drills');
       }
 
@@ -3786,7 +3797,10 @@
           state.activeChapterId = id;
         } else if (kind === 'gram') {
           state.activeView = 'grammar';
-          if (id) state.activeGrammarId = id;
+          if (id) {
+            if (state.activeGrammarId !== id) state.grammarLessonPage = 1;
+            state.activeGrammarId = id;
+          }
         } else if (kind === 'vsyl') {
           state.activeView = 'vocabsyl';
           if (id) state.activeVocabLessonId = id;
@@ -4248,7 +4262,7 @@
 
         const bindEssBodySpeak = () => {
           els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
-          els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz)));
+          els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz, b.dataset.openPhase || 'quiz')));
         };
         bindEssBodySpeak();
 
@@ -4593,6 +4607,93 @@
         const nextG = GRAMMAR_SYLLABUS[fullIdx + 1] || null;
         const isDone = state.completedGrammar.includes(cur.id);
         const linkedQuiz = GRAMMAR_QUIZZES.find((tq) => (tq.grammarIds || []).includes(cur.id)) || null;
+        const gPage = [1, 2, 3].includes(state.grammarLessonPage) ? state.grammarLessonPage : 1;
+        state.grammarLessonPage = gPage;
+
+        const gStepsMeta = [
+          { num: 1, label: '1. Rule & Bridge' },
+          { num: 2, label: `2. Examples & Trap (${cur.examples.length})` },
+          { num: 3, label: `3. Quick Check (${cur.quiz.length} Q)` }
+        ];
+
+        const gPage1HTML = `
+          <!-- 1. Formula Card -->
+          <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Core Formula / Pattern</div>
+            <div class="text-sm font-semibold text-[var(--foreground)] mt-1.5 leading-relaxed">${esc(cur.formula)}</div>
+          </div>
+
+          <!-- 2. C1 English + Mandarin Bridge -->
+          <div class="p-4 rounded-xl tint-primary border border-primary-soft space-y-1.5">
+            <div class="text-xs font-bold text-[var(--primary)]">🌐 C1 English ${state.showZh ? '+ 中文 Native ' : ''}Bridge</div>
+            <p class="text-xs sm:text-sm text-[var(--foreground)]"><strong>EN:</strong> ${esc(cur.bridgeEn)}</p>
+            ${state.showZh ? `<p class="text-xs sm:text-sm text-[var(--foreground)]"><strong>中文:</strong> ${esc(cur.bridgeZh)}</p>` : ''}
+          </div>
+        `;
+
+        const gPage2HTML = `
+          <!-- 3. TCF Exam Trap -->
+          <div class="p-3.5 rounded-xl tint-warning border border-warning-soft">
+            <div class="text-xs font-bold text-[var(--warning)]">⚠️ TCF Canada Trap to Avoid</div>
+            <p class="text-xs sm:text-sm text-[var(--foreground)] mt-1">${esc(cur.trap)}</p>
+          </div>
+
+          <!-- 4. Spoken Human Neural Audio Examples -->
+          <div class="space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Spoken Examples (Tap to Hear Neural Human Audio)</div>
+            ${cur.examples.map((ex) => `
+              <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn w-full text-left p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover flex items-center justify-between gap-3 cursor-pointer">
+                <div>
+                  <div class="text-sm font-semibold text-[var(--foreground)]">${esc(ex.fr)}</div>
+                  <div class="text-xs text-[var(--muted-foreground)] mt-0.5">${esc(ex.en)}${state.showZh && ex.zh ? ` · ${esc(ex.zh)}` : ''}</div>
+                </div>
+                <span class="shrink-0 text-sm">🔊</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+
+        const gPage3HTML = `
+          <!-- 5. Instant Micro-Check -->
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="text-sm font-bold text-[var(--foreground)]">✅ Quick Check (${cur.quiz.length} Questions)</div>
+              ${linkedQuiz ? `
+                <button type="button" data-open-topic-quiz="${linkedQuiz.id}" data-open-phase="learn" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer">
+                  📝 Full Course &amp; 8-Q Quiz: ${esc(linkedQuiz.title)} →
+                </button>
+              ` : ''}
+            </div>
+            ${cur.quiz.map((q, qi) => {
+              const qKey = `${cur.id}_q${qi}`;
+              const chosen = state.grammarQuizAnswers[qKey];
+              const answered = typeof chosen === 'number';
+              const ok = chosen === q.ans;
+              return `
+                <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                  <div class="text-xs sm:text-sm font-semibold mb-2">Q${qi + 1}. ${esc(q.q)}</div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    ${getShuffledOrder(qKey, q.opts.length).map((oi) => {
+                      const opt = q.opts[oi];
+                      let cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                      if (answered) {
+                        if (oi === q.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                        else if (oi === chosen) cls = 'tint-error border-error-soft text-[var(--error)]';
+                        else cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] opacity-65';
+                      }
+                      return `<button type="button" data-gq-key="${qKey}" data-gq-opt="${oi}" data-gq-ans="${q.ans}" class="text-left px-3 py-2 rounded-xl border text-xs cursor-pointer transition ${cls}">${esc(opt)}</button>`;
+                    }).join('')}
+                  </div>
+                  ${answered ? `
+                    <div class="mt-2 p-2.5 rounded-lg text-xs border ${ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                      <strong>${ok ? 'Exact ! ✓' : 'Rule 💡'}</strong> ${esc(q.exp)}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
 
         els.mainContent.innerHTML = `
           <div class="space-y-5">
@@ -4601,7 +4702,7 @@
               <div>
                 <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 CEFR Grammar &amp; Sounds Syllabus</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  ${GRAMMAR_SYLLABUS.length} bite-sized 5-minute lessons — 1 focused grammar or sound rule per lesson, from Phonetics &amp; A1 all the way to B2 (CLB 7).
+                  ${GRAMMAR_SYLLABUS.length} bite-sized 5-minute lessons — step-by-step from Phonetics &amp; A1 all the way to B2 (CLB 7).
                 </p>
               </div>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold">
@@ -4649,106 +4750,54 @@
                 }).join('')}
               </div>
 
-              <!-- Right Column: Focused Micro-Lesson View -->
-              <article class="lg:col-span-8 xl:col-span-9 bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5 sm:p-6 space-y-5">
+              <!-- Right Column: Calm 3-Step Micro-Lesson View -->
+              <article class="lg:col-span-8 xl:col-span-9 studio-card p-5 sm:p-6 space-y-5">
                 <!-- Lesson Title -->
-                <div class="border-b border-[var(--border)] pb-4">
-                  <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                      <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(cur.level)}">${cur.code} • ${cur.level}</span>
-                      <span class="text-xs text-[var(--muted-foreground)]">⏱️ ${cur.duration}</span>
+                <div class="border-b border-[var(--border)] pb-4 space-y-3">
+                  <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(cur.level)}">${cur.code} • ${cur.level}</span>
+                        <span class="text-xs text-[var(--muted-foreground)]">⏱️ ${cur.duration}</span>
+                      </div>
+                      ${isDone ? '<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-xs font-bold">✓ Mastered</span>' : ''}
                     </div>
-                    ${isDone ? '<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-xs font-bold">✓ Mastered</span>' : ''}
+                    <h3 class="text-xl font-bold mt-2 text-[var(--foreground)]">${esc(cur.title)}</h3>
+                    <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">${esc(cur.summary)}</p>
                   </div>
-                  <h3 class="text-xl font-bold mt-2 text-[var(--foreground)]">${esc(cur.title)}</h3>
-                  <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">${esc(cur.summary)}</p>
-                </div>
 
-                <!-- 1. Formula Card -->
-                <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                  <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Core Formula / Pattern</div>
-                  <div class="text-sm font-semibold text-[var(--foreground)] mt-1.5 leading-relaxed">${esc(cur.formula)}</div>
-                </div>
-
-                <!-- 2. C1 English + Mandarin Bridge -->
-                <div class="p-4 rounded-xl tint-primary border border-primary-soft space-y-1.5">
-                  <div class="text-xs font-bold text-[var(--primary)]">🌐 C1 English ${state.showZh ? '+ 中文 Native ' : ''}Bridge</div>
-                  <p class="text-xs text-[var(--foreground)]"><strong>EN:</strong> ${esc(cur.bridgeEn)}</p>
-                  ${state.showZh ? `<p class="text-xs text-[var(--foreground)]"><strong>中文:</strong> ${esc(cur.bridgeZh)}</p>` : ''}
-                </div>
-
-                <!-- 3. TCF Exam Trap -->
-                <div class="p-3.5 rounded-xl tint-warning border border-warning-soft">
-                  <div class="text-xs font-bold text-[var(--warning)]">⚠️ TCF Canada Trap to Avoid</div>
-                  <p class="text-xs text-[var(--foreground)] mt-1">${esc(cur.trap)}</p>
-                </div>
-
-                <!-- 4. Spoken Human Neural Audio Examples -->
-                <div class="space-y-2">
-                  <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Spoken Examples (Tap to Hear Neural Human Audio)</div>
-                  ${cur.examples.map((ex) => `
-                    <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn w-full text-left p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover flex items-center justify-between gap-3 cursor-pointer">
-                      <div>
-                        <div class="text-sm font-semibold text-[var(--foreground)]">${esc(ex.fr)}</div>
-                        <div class="text-xs text-[var(--muted-foreground)] mt-0.5">${esc(ex.en)}${state.showZh && ex.zh ? ` · ${esc(ex.zh)}` : ''}</div>
-                      </div>
-                      <span class="shrink-0 text-sm">🔊</span>
-                    </button>
-                  `).join('')}
-                </div>
-
-                <!-- 5. Instant 2-Question Micro-Check -->
-                <div class="pt-2 border-t border-[var(--border)] space-y-3">
-                  <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="text-sm font-bold text-[var(--foreground)]">✅ Quick Check (${cur.quiz.length} Questions)</div>
-                    ${linkedQuiz ? `
-                      <button type="button" data-open-topic-quiz="${linkedQuiz.id}" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer">
-                        📝 Full 8-Q Quiz: ${esc(linkedQuiz.title)} →
-                      </button>
-                    ` : ''}
+                  <!-- 3-Step Lesson Stepper -->
+                  <div class="inline-flex flex-wrap gap-1 p-1 rounded-2xl bg-[var(--content)] border border-[var(--border)]">
+                    ${gStepsMeta.map((st) => `
+                      <button type="button" data-g-page="${st.num}" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                        gPage === st.num
+                          ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
+                          : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
+                      }">${st.label}</button>
+                    `).join('')}
                   </div>
-                  ${cur.quiz.map((q, qi) => {
-                    const qKey = `${cur.id}_q${qi}`;
-                    const chosen = state.grammarQuizAnswers[qKey];
-                    const answered = typeof chosen === 'number';
-                    const ok = chosen === q.ans;
-                    return `
-                      <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                        <div class="text-xs sm:text-sm font-semibold mb-2">Q${qi + 1}. ${esc(q.q)}</div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          ${getShuffledOrder(qKey, q.opts.length).map((oi) => {
-                            const opt = q.opts[oi];
-                            let cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
-                            if (answered) {
-                              if (oi === q.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
-                              else if (oi === chosen) cls = 'tint-error border-error-soft text-[var(--error)]';
-                              else cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] opacity-65';
-                            }
-                            return `<button type="button" data-gq-key="${qKey}" data-gq-opt="${oi}" data-gq-ans="${q.ans}" class="text-left px-3 py-2 rounded-xl border text-xs cursor-pointer transition ${cls}">${esc(opt)}</button>`;
-                          }).join('')}
-                        </div>
-                        ${answered ? `
-                          <div class="mt-2 p-2.5 rounded-lg text-xs border ${ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
-                            <strong>${ok ? 'Exact ! ✓' : 'Rule 💡'}</strong> ${esc(q.exp)}
-                          </div>
-                        ` : ''}
-                      </div>
-                    `;
-                  }).join('')}
                 </div>
 
-                <!-- Footer Controls -->
+                ${gPage === 1 ? gPage1HTML : gPage === 2 ? gPage2HTML : gPage3HTML}
+
+                <!-- Step & Lesson Footer Controls -->
                 <div class="pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
-                  <button id="btnMasterGrammar" type="button" class="px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer ${
-                    isDone ? 'tint-success border border-success-soft text-[var(--success)]' : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                  }">
-                    ${isDone ? '✓ Lesson Mastered (Undo)' : '✓ Mark Lesson Mastered (+15 XP)'}
-                  </button>
                   <div class="flex items-center gap-2">
-                    ${prevG ? `<button type="button" data-g-jump="${prevG.id}" class="px-3.5 py-2 rounded-xl bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] text-xs font-semibold cursor-pointer">← ${prevG.code}</button>` : ''}
-                    ${nextG
-                      ? `<button type="button" data-g-jump="${nextG.id}" data-auto-master="1" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-semibold cursor-pointer">Next: ${nextG.code} →</button>`
-                      : `<button type="button" data-go-drills="1" data-auto-master="1" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-semibold cursor-pointer">Test in Drill Lab →</button>`}
+                    ${gPage > 1
+                      ? `<button type="button" data-g-page="${gPage - 1}" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">← Previous Step</button>`
+                      : (prevG ? `<button type="button" data-g-jump="${prevG.id}" class="px-3.5 py-2 rounded-xl bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] text-xs font-semibold cursor-pointer">← ${prevG.code}</button>` : '')}
+                    <button id="btnMasterGrammar" type="button" class="px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer ${
+                      isDone ? 'tint-success border border-success-soft text-[var(--success)]' : 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                    }">
+                      ${isDone ? '✓ Mastered (Undo)' : '✓ Mark Mastered (+15 XP)'}
+                    </button>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    ${gPage < 3
+                      ? `<button type="button" data-g-page="${gPage + 1}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Next Step →</button>`
+                      : (nextG
+                        ? `<button type="button" data-g-jump="${nextG.id}" data-auto-master="1" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Next Lesson: ${nextG.code} →</button>`
+                        : `<button type="button" data-go-drills="1" data-auto-master="1" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Practice in Drill Lab →</button>`)}
                   </div>
                 </div>
               </article>
@@ -4762,8 +4811,16 @@
           const nextList = GRAMMAR_SYLLABUS.filter((g) => state.grammarFilterLevel === 'all' || g.level === state.grammarFilterLevel);
           if (nextList.length && !nextList.some((g) => g.id === state.activeGrammarId)) {
             state.activeGrammarId = nextList[0].id;
+            state.grammarLessonPage = 1;
           }
           renderGrammarView();
+        }));
+
+        els.mainContent.querySelectorAll('[data-g-page]').forEach((b) => (b.onclick = () => {
+          stopAudio();
+          state.grammarLessonPage = parseInt(b.dataset.gPage, 10) || 1;
+          renderGrammarView();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }));
 
         els.mainContent.querySelectorAll('[data-g-select], [data-g-jump]').forEach((b) => (b.onclick = () => {
@@ -4774,13 +4831,14 @@
             renderSidebar();
           }
           state.activeGrammarId = b.dataset.gSelect || b.dataset.gJump;
+          state.grammarLessonPage = 1;
           saveState();
           renderGrammarView();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }));
 
         els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
-        els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz)));
+        els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz, b.dataset.openPhase || 'quiz')));
 
         els.mainContent.querySelectorAll('[data-gq-key]').forEach((b) => (b.onclick = () => {
           const k = b.dataset.gqKey;
@@ -5934,6 +5992,13 @@
         }).join(' ');
       }
 
+      function getLessonSlideState(key) {
+        if (!state.topicLessonState[key]) {
+          state.topicLessonState[key] = { answered: false, ok: false, closeAccent: false, userVal: '', chosenOpt: null, builtIndices: [], showHint: false, visited: false };
+        }
+        return state.topicLessonState[key];
+      }
+
       function renderTopicQuizzesHTML() {
         if (GRAMMAR_QUIZZES.length === 0) {
           return '<div class="studio-card p-6 text-sm text-[var(--muted-foreground)]">Grammar quizzes loading...</div>';
@@ -5946,11 +6011,14 @@
         if (activeTopic) {
           const qs = activeTopic.questions || [];
           const total = qs.length;
+          const slides = GRAMMAR_LESSONS[activeTopic.id] || [];
           const linkedLessons = (activeTopic.grammarIds || [])
             .map((id) => GRAMMAR_SYLLABUS.find((g) => g.id === id))
             .filter(Boolean);
           const phase = state.topicQuizPhase === 'quiz' ? 'quiz' : 'learn';
-          const allLessonsStudied = linkedLessons.length > 0 && linkedLessons.every((g) => state.completedGrammar.includes(g.id));
+          const activeIndices = (Array.isArray(state.topicQuizRetrySubset) && state.topicQuizRetrySubset.length)
+            ? state.topicQuizRetrySubset
+            : qs.map((_, i) => i);
 
           const topStepNav = `
             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -5962,119 +6030,288 @@
                   phase === 'learn'
                     ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
                     : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
-                }">1. 📘 Study Notes (${linkedLessons.length})</button>
+                }">1. 📘 Guided Course (${slides.length || linkedLessons.length})</button>
                 <button type="button" data-tq-phase="quiz" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                   phase === 'quiz'
                     ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
                     : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
-                }">2. 📝 Quiz (${total} Q)</button>
+                }">2. 📝 Mastery Quiz (${total} Q)</button>
               </div>
             </div>
           `;
 
-          // 1. Step 1: Learn Materials Screen
-          if (phase === 'learn') {
+          // 1. Step 1: Paginated Step-by-Step Interactive Course
+          if (phase === 'learn' && slides.length > 0) {
+            const step = Math.max(0, Math.min(state.topicLessonStep || 0, slides.length - 1));
+            state.topicLessonStep = step;
+            const slide = slides[step];
+            const sKey = `${activeTopic.id}_${step}`;
+            const st = getLessonSlideState(sKey);
+            const pct = Math.round(((step + 1) / slides.length) * 100);
+            const typeIcon = (t) => (t === 'teach' ? '📘' : t === 'fib' ? '⌨️' : t === 'build' ? '🧩' : '🔍');
+
+            let slideBodyHTML = '';
+
+            if (slide.type === 'teach') {
+              slideBodyHTML = `
+                <div class="space-y-4">
+                  <p class="text-sm text-[var(--foreground)] leading-relaxed">${esc(slide.summary)}</p>
+                  ${state.showZh && slide.summaryZh ? `<p class="text-xs sm:text-sm text-[var(--primary)] leading-relaxed">${esc(slide.summaryZh)}</p>` : ''}
+
+                  ${activeTopic.id === 'pronouns_transform' && step === 0 ? `
+                    <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span>📌 Reference: Full <strong>Pronoun Transformation Table</strong> (Subject / COD / COI / Tonic / Reflexive / Possessive)</span>
+                      <button type="button" data-tq-essentials="pronouns" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Table →</button>
+                    </div>
+                  ` : activeTopic.id === 'present_tense' && step === 0 ? `
+                    <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span>📌 Reference: Full <strong>-ER / -IR / -RE Conjugation &amp; Top 4 Irregulars Table</strong></span>
+                      <button type="button" data-tq-essentials="verbs" class="px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Table →</button>
+                    </div>
+                  ` : ''}
+
+                  ${slide.table ? `
+                    <div class="overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--content)]">
+                      <table class="w-full text-xs text-left border-collapse">
+                        <thead>
+                          <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+                            ${slide.table.headers.map((h) => `<th class="py-2 px-3 font-bold">${esc(h)}</th>`).join('')}
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--border)]">
+                          ${slide.table.rows.map((row) => `
+                            <tr>
+                              ${row.map((cell, ci) => `<td class="py-2 px-3 ${ci === 0 ? 'font-semibold text-[var(--foreground)]' : 'text-[var(--foreground)]'}">${esc(cell)}</td>`).join('')}
+                            </tr>
+                          `).join('')}
+                        </tbody>
+                      </table>
+                    </div>
+                  ` : ''}
+
+                  ${slide.tip ? `
+                    <div class="p-3.5 rounded-xl tint-warning border border-warning-soft text-xs space-y-1">
+                      <div class="font-bold text-[var(--warning)]">💡 Key Rule / Trap</div>
+                      <div class="text-[var(--foreground)]">${esc(slide.tip)}</div>
+                      ${state.showZh && slide.tipZh ? `<div class="text-[var(--primary)]">${esc(slide.tipZh)}</div>` : ''}
+                    </div>
+                  ` : ''}
+
+                  ${slide.examples && slide.examples.length ? `
+                    <div class="space-y-2">
+                      <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Spoken Examples (Tap to Hear)</div>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        ${slide.examples.map((ex) => `
+                          <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn text-left p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover flex items-center justify-between gap-2.5 cursor-pointer">
+                            <div class="min-w-0">
+                              <div class="text-xs sm:text-sm font-semibold text-[var(--foreground)]">${esc(ex.fr)}</div>
+                              <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">${esc(ex.en)}${state.showZh && ex.zh ? ` · ${esc(ex.zh)}` : ''}</div>
+                            </div>
+                            <span class="shrink-0 text-xs">🔊</span>
+                          </button>
+                        `).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            } else if (slide.type === 'fib') {
+              const promptHtml = esc(slide.prompt).replace(/___/g, '<span class="px-2 py-0.5 mx-0.5 rounded bg-[var(--card)] border border-primary-soft text-[var(--primary)] font-bold">___</span>');
+              slideBodyHTML = `
+                <div class="space-y-4">
+                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+                    <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-snug">${promptHtml}</div>
+                    ${slide.hint ? `
+                      <div>
+                        <button type="button" id="btnSlideHint" class="text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">
+                          ${st.showHint ? 'Hide Hint' : '💡 Show Hint'}
+                        </button>
+                        ${st.showHint ? `<div class="text-xs text-[var(--muted-foreground)] mt-1">${esc(slide.hint)}</div>` : ''}
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  <form id="slideFibForm" class="space-y-2.5">
+                    <div class="flex flex-wrap items-center gap-1">
+                      <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                      ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-slide-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                    </div>
+                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                      <input
+                        id="slideFibInput"
+                        type="text"
+                        autocomplete="off"
+                        value="${escAttr(st.userVal || '')}"
+                        placeholder="Type the missing French word(s)..."
+                        ${st.answered ? 'disabled' : ''}
+                        class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      />
+                      <button type="submit" ${st.answered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                        Check Answer
+                      </button>
+                    </div>
+                  </form>
+
+                  ${st.answered ? `
+                    <div class="p-4 rounded-xl border space-y-2 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold">${st.ok ? (st.closeAccent ? 'Correct — watch accents! ✓ (+5 XP)' : 'Exact ! ✓ (+5 XP)') : `Expected: ${esc(slide.answers[0])}`}</span>
+                        <button type="button" data-speak="${escAttr(slide.frFull)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(slide.frFull)}</button>
+                      </div>
+                      <div class="text-xs text-[var(--foreground)]">${esc(slide.exp)}</div>
+                      ${state.showZh && slide.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.expZh)}</div>` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            } else if (slide.type === 'spot' || slide.type === 'mcq') {
+              slideBodyHTML = `
+                <div class="space-y-4">
+                  ${slide.wrongSentence ? `
+                    <div class="p-3.5 rounded-xl tint-error border border-error-soft text-xs sm:text-sm">
+                      <span class="font-bold text-[var(--error)]">❌ Common Mistake:</span>
+                      <span class="line-through ml-1 text-[var(--foreground)]">« ${esc(slide.wrongSentence)} »</span>
+                    </div>
+                  ` : ''}
+                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                    <div class="text-base font-bold text-[var(--foreground)]">${esc(slide.prompt)}</div>
+                  </div>
+                  <div class="grid grid-cols-1 gap-2.5">
+                    ${getShuffledOrder(`tls_${activeTopic.id}_${step}`, slide.opts.length).map((oi) => {
+                      const opt = slide.opts[oi];
+                      let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                      if (st.answered) {
+                        if (oi === slide.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                        else if (oi === st.chosenOpt) cls = 'tint-error border-error-soft text-[var(--error)]';
+                        else cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
+                      }
+                      return `<button type="button" data-slide-opt="${oi}" class="text-left px-4 py-3 rounded-xl border text-sm transition cursor-pointer ${cls}">${esc(opt)}</button>`;
+                    }).join('')}
+                  </div>
+                  ${st.answered ? `
+                    <div class="p-4 rounded-xl border space-y-2 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold">${st.ok ? 'Exact ! ✓ (+5 XP)' : `Correct: ${esc(slide.opts[slide.ans])}`}</span>
+                        <button type="button" data-speak="${escAttr(slide.frFull)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(slide.frFull)}</button>
+                      </div>
+                      <div class="text-xs text-[var(--foreground)]">${esc(slide.exp)}</div>
+                      ${state.showZh && slide.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.expZh)}</div>` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            } else if (slide.type === 'build') {
+              const placed = Array.isArray(st.builtIndices) ? st.builtIndices : [];
+              const shuffledOrder = getShuffledOrder(`tlb_${activeTopic.id}_${step}`, slide.tiles.length);
+              slideBodyHTML = `
+                <div class="space-y-4">
+                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-1">
+                    <div class="text-sm sm:text-base font-bold text-[var(--foreground)]">${esc(slide.prompt)}</div>
+                    ${state.showZh && slide.promptZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.promptZh)}</div>` : ''}
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Your Sentence (Tap a tile to remove it)</div>
+                    <div class="min-h-[54px] p-3 rounded-xl bg-[var(--content)] border border-dashed border-primary-soft flex flex-wrap gap-2 items-center">
+                      ${placed.length === 0
+                        ? '<span class="text-xs text-[var(--muted-foreground)]">Tap French word tiles below in order...</span>'
+                        : placed.map((origIdx, pos) => `
+                          <button type="button" data-build-remove="${pos}" ${st.answered ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg tint-primary border border-primary-soft text-[var(--primary)] text-sm font-semibold cursor-pointer disabled:cursor-default">
+                            ${esc(slide.tiles[origIdx])}
+                          </button>
+                        `).join('')}
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-2">
+                    ${shuffledOrder.map((origIdx) => {
+                      const used = placed.includes(origIdx);
+                      return `
+                        <button type="button" data-build-pick="${origIdx}" ${used || st.answered ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm font-semibold transition cursor-pointer ${
+                          used
+                            ? 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-35 cursor-not-allowed'
+                            : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                        }">${esc(slide.tiles[origIdx])}</button>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  ${!st.answered ? `
+                    <div class="flex items-center gap-2">
+                      <button type="button" id="btnBuildReset" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">↺ Reset</button>
+                      <button type="button" id="btnBuildCheck" ${placed.length === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer">Check Sentence</button>
+                    </div>
+                  ` : `
+                    <div class="p-4 rounded-xl border space-y-2 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold">${st.ok ? 'Exact ! ✓ (+8 XP)' : `Correct order: « ${esc(slide.answer)} »`}</span>
+                        <button type="button" data-speak="${escAttr(slide.frFull)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(slide.frFull)}</button>
+                      </div>
+                      <div class="text-xs text-[var(--foreground)]">${esc(slide.exp)}</div>
+                      ${state.showZh && slide.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.expZh)}</div>` : ''}
+                    </div>
+                  `}
+                </div>
+              `;
+            }
+
             return `
               <div class="space-y-4">
                 ${topStepNav}
 
-                <section class="studio-card p-5 space-y-3">
-                  <div class="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div class="flex flex-wrap items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(activeTopic.level)}">${esc(activeTopic.badge)}</span>
-                        <span class="text-xs font-semibold text-[var(--primary)]">Step 1 of 2 · Study Rules &amp; Examples First</span>
-                      </div>
-                      <h3 class="text-xl font-bold text-[var(--foreground)] mt-1.5">${activeTopic.icon} ${esc(activeTopic.title)}</h3>
-                      <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-0.5">${esc(activeTopic.subtitle)}</p>
+                <!-- Compact Page Stepper Strip -->
+                <div class="studio-card p-3.5 space-y-2.5">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                      ${slides.map((sl, si) => {
+                        const sSt = getLessonSlideState(`${activeTopic.id}_${si}`);
+                        const done = sl.type === 'teach' ? (sSt.visited || step > si) : sSt.answered;
+                        const active = si === step;
+                        return `
+                          <button type="button" data-lesson-step="${si}" class="px-2.5 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer tabular-nums ${
+                            active
+                              ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
+                              : done
+                                ? 'tint-success border-success-soft text-[var(--success)]'
+                                : 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] tint-muted-hover'
+                          }">
+                            ${typeIcon(sl.type)} ${si + 1}${done && !active ? ' ✓' : ''}
+                          </button>
+                        `;
+                      }).join('')}
                     </div>
-                    <button type="button" data-tq-phase="quiz" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer shrink-0">
-                      Skip to Quiz (${total} Q) →
+                    <span class="text-xs font-bold text-[var(--muted-foreground)] tabular-nums">Page ${step + 1} / ${slides.length}</span>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
+                    <div class="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style="width:${pct}%"></div>
+                  </div>
+                </div>
+
+                <!-- Single Focused Page Card -->
+                <section class="studio-card p-5 sm:p-6 space-y-4">
+                  <div class="border-b border-[var(--border)] pb-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">${esc(slide.stepTag)}</span>
+                      <span class="text-xs text-[var(--muted-foreground)]">${activeTopic.icon} ${esc(activeTopic.title)}</span>
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-[var(--foreground)] mt-2">${esc(slide.title)}</h3>
+                  </div>
+
+                  ${slideBodyHTML}
+
+                  <div class="pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
+                    <button type="button" id="btnPrevLessonSlide" ${step === 0 ? 'disabled' : ''} class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                      ← Previous Page
                     </button>
-                  </div>
-
-                  ${activeTopic.id === 'pronouns_transform' ? `
-                    <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <span>📌 Want the full <strong>Pronoun Transformation Table</strong> (Subject / COD / COI / Tonic / Reflexive / Possessive)?</span>
-                      <button type="button" data-tq-essentials="pronouns" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Pronoun Table →</button>
-                    </div>
-                  ` : activeTopic.id === 'present_tense' ? `
-                    <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <span>📌 Want the full <strong>-ER / -IR / -RE Conjugation &amp; Top 4 Irregulars Table</strong>?</span>
-                      <button type="button" data-tq-essentials="verbs" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Verb Endings Table →</button>
-                    </div>
-                  ` : ''}
-                </section>
-
-                ${linkedLessons.map((g) => {
-                  const gDone = state.completedGrammar.includes(g.id);
-                  return `
-                    <section class="studio-card p-5 space-y-3.5">
-                      <div class="flex flex-wrap items-start justify-between gap-2 pb-3 border-b border-[var(--border)]">
-                        <div>
-                          <div class="flex items-center gap-2">
-                            <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(g.level)}">${esc(g.code)}</span>
-                            <span class="text-xs text-[var(--muted-foreground)]">⏱️ ${esc(g.duration)}</span>
-                            ${gDone ? '<span class="px-2 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✓ Studied</span>' : ''}
-                          </div>
-                          <h4 class="text-base font-bold text-[var(--foreground)] mt-1.5">${esc(g.title)}</h4>
-                          <p class="text-xs text-[var(--muted-foreground)] mt-0.5">${esc(g.summary)}</p>
-                        </div>
-                        <button type="button" data-tq-open-gram="${g.id}" class="px-2.5 py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] tint-muted-hover cursor-pointer shrink-0">
-                          Open in Syllabus →
-                        </button>
-                      </div>
-
-                      <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                        <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">Core Formula / Pattern</div>
-                        <div class="text-xs sm:text-sm font-semibold text-[var(--foreground)] mt-1 leading-relaxed">${esc(g.formula)}</div>
-                      </div>
-
-                      <div class="p-3.5 rounded-xl tint-primary border border-primary-soft space-y-1 text-xs">
-                        <div class="font-bold text-[var(--primary)]">🌐 C1 English ${state.showZh ? '+ 中文 Native ' : ''}Bridge</div>
-                        <p class="text-[var(--foreground)]"><strong>EN:</strong> ${esc(g.bridgeEn)}</p>
-                        ${state.showZh && g.bridgeZh ? `<p class="text-[var(--foreground)]"><strong>中文:</strong> ${esc(g.bridgeZh)}</p>` : ''}
-                      </div>
-
-                      <div class="p-3 rounded-xl tint-warning border border-warning-soft text-xs">
-                        <div class="font-bold text-[var(--warning)]">⚠️ TCF Canada Trap to Avoid</div>
-                        <p class="text-[var(--foreground)] mt-0.5">${esc(g.trap)}</p>
-                      </div>
-
-                      ${g.examples && g.examples.length ? `
-                        <div class="space-y-1.5">
-                          <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Spoken Examples (Tap to Hear)</div>
-                          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            ${g.examples.map((ex) => `
-                              <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn text-left p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover flex items-center justify-between gap-2.5 cursor-pointer">
-                                <div class="min-w-0">
-                                  <div class="text-xs sm:text-sm font-semibold text-[var(--foreground)]">${esc(ex.fr)}</div>
-                                  <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">${esc(ex.en)}${state.showZh && ex.zh ? ` · ${esc(ex.zh)}` : ''}</div>
-                                </div>
-                                <span class="shrink-0 text-xs">🔊</span>
-                              </button>
-                            `).join('')}
-                          </div>
-                        </div>
-                      ` : ''}
-                    </section>
-                  `;
-                }).join('')}
-
-                <section class="studio-card p-5 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <div class="text-sm font-bold text-[var(--foreground)]">Ready to test yourself on ${esc(activeTopic.title)}?</div>
-                    <div class="text-xs text-[var(--muted-foreground)]">8 targeted questions with instant EN/中文 explanations &amp; audio.</div>
-                  </div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    ${!allLessonsStudied && linkedLessons.length > 0 ? `
-                      <button type="button" id="btnMarkTopicStudied" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                        ✓ Mark Lessons Studied (+15 XP)
+                    ${step + 1 < slides.length ? `
+                      <button type="button" id="btnNextLessonSlide" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                        Next Page (${step + 2}/${slides.length}) →
                       </button>
-                    ` : ''}
-                    <button type="button" id="btnStartQuizFromLearn" class="px-4 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                      I’ve Studied This — Start ${total}-Question Quiz →
-                    </button>
+                    ` : `
+                      <button type="button" id="btnStartQuizFromLearn" class="px-4 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                        Start ${total}-Question Mastery Quiz →
+                      </button>
+                    `}
                   </div>
                 </section>
               </div>
@@ -6083,9 +6320,11 @@
 
           // 2. Step 2: Finished Summary Screen
           if (state.topicQuizFinished) {
-            const score = qs.filter((q, i) => state.topicQuizAnswers[i] === q.ans).length;
-            const pct = total ? Math.round((score / total) * 100) : 0;
-            const mastered = score >= 7;
+            const subTotal = activeIndices.length;
+            const score = activeIndices.filter((ri) => state.topicQuizAnswers[ri] && state.topicQuizAnswers[ri].ok).length;
+            const missedIndices = activeIndices.filter((ri) => !(state.topicQuizAnswers[ri] && state.topicQuizAnswers[ri].ok));
+            const pct = subTotal ? Math.round((score / subTotal) * 100) : 0;
+            const mastered = !state.topicQuizRetrySubset && score >= 7;
             const curIdx = GRAMMAR_QUIZZES.findIndex((t) => t.id === activeTopic.id);
             const nextTopic = GRAMMAR_QUIZZES[curIdx + 1] || null;
 
@@ -6096,32 +6335,36 @@
                 <section class="studio-card p-5 sm:p-6 space-y-5">
                   <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[var(--border)]">
                     <div>
-                      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}</div>
+                      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}${state.topicQuizRetrySubset ? ' · Missed-Only Drill' : ''}</div>
                       <h3 class="text-xl font-bold text-[var(--foreground)] mt-1">
-                        ${mastered ? '🎉 Topic Mastered!' : score >= 5 ? '👍 Good Progress — Review Misses & Retry' : '💡 Keep Practicing — Review Study Notes & Retry'}
+                        ${mastered ? '🎉 Topic Mastered!' : missedIndices.length === 0 ? '🎉 All Missed Items Cleared!' : score >= Math.ceil(subTotal * 0.6) ? '👍 Good Progress — Practice Your Misses' : '💡 Review Guided Course & Retry'}
                       </h3>
-                      <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Score ≥ 7/${total} to earn the Mastery badge for this grammar point.</p>
+                      <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Score ≥ 7/${total} on the full quiz to earn the Mastery badge.</p>
                     </div>
                     <div class="text-right">
-                      <div class="text-3xl font-bold tabular-nums ${mastered ? 'text-[var(--success)]' : 'text-[var(--primary)]'}">${score} / ${total}</div>
+                      <div class="text-3xl font-bold tabular-nums ${missedIndices.length === 0 || mastered ? 'text-[var(--success)]' : 'text-[var(--primary)]'}">${score} / ${subTotal}</div>
                       <div class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${pct}%</div>
                     </div>
                   </div>
 
                   <div class="space-y-2.5">
-                    ${qs.map((q, i) => {
-                      const chosen = state.topicQuizAnswers[i];
-                      const ok = chosen === q.ans;
+                    ${activeIndices.map((ri) => {
+                      const q = qs[ri];
+                      const ansObj = state.topicQuizAnswers[ri] || {};
+                      const ok = Boolean(ansObj.ok);
+                      const yourDisplay = ansObj.userText != null
+                        ? ansObj.userText
+                        : (typeof ansObj.chosenOpt === 'number' ? q.opts[ansObj.chosenOpt] : '—');
                       return `
                         <div class="p-3.5 rounded-xl border space-y-1.5 ${ok ? 'tint-success border-success-soft' : 'tint-error border-error-soft'}">
                           <div class="flex flex-wrap items-start justify-between gap-2">
                             <div class="text-xs font-semibold text-[var(--foreground)]">
-                              <span class="font-bold mr-1">${ok ? '✓' : '✕'} Q${i + 1}.</span>${esc(q.q)}
+                              <span class="font-bold mr-1">${ok ? '✓' : '✕'} Q${ri + 1}.</span>${esc(q.q)}
                             </div>
                             ${q.frFull ? `<button type="button" data-speak="${escAttr(q.frFull)}" class="speak-btn px-2 py-0.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer shrink-0">🔊 Hear</button>` : ''}
                           </div>
                           <div class="text-xs">
-                            ${!ok ? `<span class="text-[var(--error)] mr-2">Your answer: <strong>${esc(typeof chosen === 'number' ? q.opts[chosen] : '—')}</strong></span>` : ''}
+                            ${!ok ? `<span class="text-[var(--error)] mr-2">Your answer: <strong>${esc(yourDisplay)}</strong></span>` : ''}
                             <span class="text-[var(--success)]">Correct: <strong>${esc(q.opts[q.ans])}</strong></span>
                             ${q.frFull ? `<span class="text-[var(--muted-foreground)] ml-2">« ${esc(q.frFull)} »</span>` : ''}
                           </div>
@@ -6134,15 +6377,20 @@
 
                   <div class="pt-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
                     <div class="flex flex-wrap items-center gap-2">
+                      ${missedIndices.length > 0 ? `
+                        <button type="button" id="btnRetryMissedOnly" class="px-3.5 py-2 rounded-xl tint-warning border border-warning-soft text-[var(--warning)] text-xs font-bold cursor-pointer">
+                          🔁 Practice Only Missed (${missedIndices.length} Q)
+                        </button>
+                      ` : ''}
                       <button type="button" data-tq-phase="learn" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                        📘 Review Study Notes
+                        📘 Review Guided Course
                       </button>
                       <button type="button" id="btnRetryTopicQuiz" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                        🔄 Retry Quiz
+                        🔄 Full Quiz Again
                       </button>
                     </div>
                     <div class="flex items-center gap-2">
-                      ${nextTopic ? `<button type="button" data-learn-topic="${nextTopic.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Next Topic (Study First): ${esc(nextTopic.title)} →</button>` : ''}
+                      ${nextTopic ? `<button type="button" data-learn-topic="${nextTopic.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Next Topic: ${esc(nextTopic.title)} →</button>` : ''}
                     </div>
                   </div>
                 </section>
@@ -6150,26 +6398,35 @@
             `;
           }
 
-          // 3. Step 2: Active Question Runner Screen
-          const idx = Math.min(state.topicQuizIdx, Math.max(0, total - 1));
-          const q = qs[idx];
-          const chosen = state.topicQuizAnswers[idx];
-          const isAnswered = typeof chosen === 'number';
-          const ok = isAnswered && chosen === q.ans;
-          const pct = total ? Math.round(((idx + (isAnswered ? 1 : 0)) / total) * 100) : 0;
+          // 3. Step 2: Active Question Runner Screen (MCQ or FIB)
+          const pos = Math.min(state.topicQuizIdx, Math.max(0, activeIndices.length - 1));
+          const realIdx = activeIndices[pos];
+          const q = qs[realIdx];
+          const ansObj = state.topicQuizAnswers[realIdx];
+          const isAnswered = Boolean(ansObj && typeof ansObj.ok === 'boolean');
+          const ok = isAnswered && ansObj.ok;
+          const pct = activeIndices.length ? Math.round(((pos + (isAnswered ? 1 : 0)) / activeIndices.length) * 100) : 0;
+          const isFib = state.topicQuizInputMode === 'fib';
 
           return `
             <div class="space-y-4">
               ${topStepNav}
 
               <section class="studio-card p-5 sm:p-6 space-y-5">
-                <div class="space-y-2">
+                <div class="space-y-2.5">
                   <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
                       <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(activeTopic.level)}">${esc(activeTopic.badge)}</span>
                       <span class="text-xs font-bold text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}</span>
+                      ${state.topicQuizRetrySubset ? `<span class="px-2 py-0.5 rounded-full tint-warning text-[var(--warning)] text-[11px] font-bold">Missed Drill</span>` : ''}
                     </div>
-                    <div class="text-xs font-bold text-[var(--muted-foreground)] tabular-nums">Question ${idx + 1} / ${total} (${pct}%)</div>
+                    <div class="flex items-center gap-2">
+                      <div class="inline-flex p-0.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                        <button type="button" data-tq-input-mode="mcq" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer ${!isFib ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">Choices</button>
+                        <button type="button" data-tq-input-mode="fib" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer ${isFib ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'text-[var(--muted-foreground)]'}">⌨️ Type Answer</button>
+                      </div>
+                      <span class="text-xs font-bold text-[var(--muted-foreground)] tabular-nums">${pos + 1} / ${activeIndices.length}</span>
+                    </div>
                   </div>
                   <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
                     <div class="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style="width:${pct}%"></div>
@@ -6180,30 +6437,53 @@
                   <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-snug">${esc(q.q)}</div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  ${getShuffledOrder(`tq_${activeTopic.id}_${idx}`, q.opts.length).map((oi) => {
-                    const opt = q.opts[oi];
-                    let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
-                    if (isAnswered) {
-                      if (oi === q.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
-                      else if (oi === chosen) cls = 'tint-error border-error-soft text-[var(--error)]';
-                      else cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
-                    }
-                    return `<button type="button" data-tq-opt="${oi}" class="text-left px-4 py-3 rounded-xl border text-sm transition cursor-pointer ${cls}">${esc(opt)}</button>`;
-                  }).join('')}
-                </div>
+                ${isFib ? `
+                  <form id="tqFibForm" class="space-y-2.5">
+                    <div class="flex flex-wrap items-center gap-1">
+                      <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                      ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-tq-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                    </div>
+                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                      <input
+                        id="tqFibInput"
+                        type="text"
+                        autocomplete="off"
+                        value="${escAttr(isAnswered ? (ansObj.userText || '') : (state.topicQuizTypedVal || ''))}"
+                        placeholder="Type the missing French answer..."
+                        ${isAnswered ? 'disabled' : ''}
+                        class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                      />
+                      <button type="submit" ${isAnswered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                        Check Answer
+                      </button>
+                    </div>
+                  </form>
+                ` : `
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    ${getShuffledOrder(`tq_${activeTopic.id}_${realIdx}`, q.opts.length).map((oi) => {
+                      const opt = q.opts[oi];
+                      let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                      if (isAnswered) {
+                        if (oi === q.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                        else if (oi === ansObj.chosenOpt) cls = 'tint-error border-error-soft text-[var(--error)]';
+                        else cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
+                      }
+                      return `<button type="button" data-tq-opt="${oi}" class="text-left px-4 py-3 rounded-xl border text-sm transition cursor-pointer ${cls}">${esc(opt)}</button>`;
+                    }).join('')}
+                  </div>
+                `}
 
                 ${isAnswered ? `
                   <div class="p-4 rounded-xl border space-y-2 ${ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
                     <div class="flex flex-wrap items-center justify-between gap-2">
-                      <span class="text-xs font-bold">${ok ? 'Exact ! ✓ (+5 XP)' : `Answer: ${esc(q.opts[q.ans])}`}</span>
+                      <span class="text-xs font-bold">${ok ? (ansObj.closeAccent ? 'Correct — watch accents! ✓ (+5 XP)' : 'Exact ! ✓ (+5 XP)') : `Answer: ${esc(q.opts[q.ans])}`}</span>
                       ${q.frFull ? `<button type="button" data-speak="${escAttr(q.frFull)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(q.frFull)}</button>` : ''}
                     </div>
                     <div class="text-xs text-[var(--foreground)]">${esc(q.exp)}</div>
                     ${state.showZh && q.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(q.expZh)}</div>` : ''}
                     <div class="pt-1 flex justify-end">
                       <button type="button" id="btnNextTopicQ" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                        ${idx + 1 < total ? 'Next Question →' : 'See Results →'}
+                        ${pos + 1 < activeIndices.length ? 'Next Question →' : 'See Results →'}
                       </button>
                     </div>
                   </div>
@@ -6261,11 +6541,12 @@
                   const best = rec ? rec.best : null;
                   const total = (t.questions || []).length;
                   const mastered = best !== null && best >= 7;
-                  const linked = (t.grammarIds || []).map((id) => GRAMMAR_SYLLABUS.find((g) => g.id === id)).filter(Boolean);
-                  const studiedCnt = linked.filter((g) => state.completedGrammar.includes(g.id)).length;
-                  const allStudied = linked.length > 0 && studiedCnt === linked.length;
-                  const codesText = linked.map((g) => g.code).join(', ');
-                  const studyFirstPrimary = best === null && !allStudied;
+                  const slides = GRAMMAR_LESSONS[t.id] || [];
+                  const donePages = slides.filter((sl, si) => {
+                    const sSt = state.topicLessonState[`${t.id}_${si}`];
+                    return sSt && (sl.type === 'teach' ? sSt.visited : sSt.answered);
+                  }).length;
+                  const studyFirstPrimary = best === null && donePages < slides.length;
 
                   return `
                     <div class="studio-card p-4 flex flex-col justify-between gap-3">
@@ -6283,11 +6564,9 @@
                         </div>
                         <h3 class="text-sm font-bold text-[var(--foreground)]">${esc(t.title)}</h3>
                         <p class="text-xs text-[var(--muted-foreground)] leading-snug">${esc(t.subtitle)}</p>
-                        ${linked.length ? `
-                          <div class="text-[11px] text-[var(--muted-foreground)] tabular-nums">
-                            📘 Lessons: <span class="font-semibold text-[var(--foreground)]">${esc(codesText)}</span> · ${studiedCnt}/${linked.length} studied
-                          </div>
-                        ` : ''}
+                        <div class="text-[11px] text-[var(--muted-foreground)] tabular-nums">
+                          📘 ${slides.length} interactive pages (Teach + FIB + Spot + Build)${donePages > 0 ? ` · ${donePages}/${slides.length} done` : ''}
+                        </div>
                       </div>
                       <div class="pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
                         <button type="button" data-learn-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
@@ -6295,7 +6574,7 @@
                             ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                             : 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
                         }">
-                          📘 Study First
+                          📘 Study (${slides.length} Pages)
                         </button>
                         <button type="button" data-start-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
                           studyFirstPrimary
@@ -6328,9 +6607,12 @@
             stopAudio();
             state.activeTopicQuizId = b.dataset.learnTopic;
             state.topicQuizPhase = 'learn';
+            state.topicLessonStep = 0;
             state.topicQuizIdx = 0;
             state.topicQuizAnswers = {};
             state.topicQuizFinished = false;
+            state.topicQuizRetrySubset = null;
+            state.topicQuizTypedVal = '';
             renderDrillsView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
@@ -6343,6 +6625,8 @@
             state.topicQuizIdx = 0;
             state.topicQuizAnswers = {};
             state.topicQuizFinished = false;
+            state.topicQuizRetrySubset = null;
+            state.topicQuizTypedVal = '';
             renderDrillsView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
@@ -6355,12 +6639,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         });
-        els.mainContent.querySelectorAll('[data-tq-open-gram]').forEach((b) => {
-          b.onclick = () => {
-            state.grammarFilterLevel = 'all';
-            navigate('gram', b.dataset.tqOpenGram);
-          };
-        });
         els.mainContent.querySelectorAll('[data-tq-essentials]').forEach((b) => {
           b.onclick = () => {
             state.essentialsTab = b.dataset.tqEssentials;
@@ -6368,16 +6646,6 @@
             navigate('ws', 'essentials');
           };
         });
-        const btnStartFromLearn = document.getElementById('btnStartQuizFromLearn');
-        if (btnStartFromLearn) {
-          btnStartFromLearn.onclick = () => {
-            stopAudio();
-            state.topicQuizPhase = 'quiz';
-            state.topicQuizFinished = false;
-            renderDrillsView();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          };
-        }
         const btnBack = document.getElementById('btnBackToTopics');
         if (btnBack) {
           btnBack.onclick = () => {
@@ -6385,9 +6653,183 @@
             state.activeTopicQuizId = null;
             state.topicQuizPhase = 'learn';
             state.topicQuizFinished = false;
+            state.topicQuizRetrySubset = null;
             renderDrillsView();
           };
         }
+
+        const activeTopic = state.activeTopicQuizId
+          ? GRAMMAR_QUIZZES.find((t) => t.id === state.activeTopicQuizId) || null
+          : null;
+
+        if (!activeTopic) return;
+
+        // Bindings for Step 1 Guided Course Slides
+        const slides = GRAMMAR_LESSONS[activeTopic.id] || [];
+        const step = Math.max(0, Math.min(state.topicLessonStep || 0, Math.max(0, slides.length - 1)));
+        const slide = slides[step];
+        const sKey = `${activeTopic.id}_${step}`;
+        const st = getLessonSlideState(sKey);
+
+        const markCurVisited = () => {
+          if (slide && slide.type === 'teach') st.visited = true;
+        };
+
+        els.mainContent.querySelectorAll('[data-lesson-step]').forEach((b) => {
+          b.onclick = () => {
+            stopAudio();
+            markCurVisited();
+            state.topicLessonStep = parseInt(b.dataset.lessonStep, 10) || 0;
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        });
+
+        const btnPrevSlide = document.getElementById('btnPrevLessonSlide');
+        if (btnPrevSlide) {
+          btnPrevSlide.onclick = () => {
+            stopAudio();
+            markCurVisited();
+            if (step > 0) state.topicLessonStep = step - 1;
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        }
+
+        const btnNextSlide = document.getElementById('btnNextLessonSlide');
+        if (btnNextSlide) {
+          btnNextSlide.onclick = () => {
+            stopAudio();
+            markCurVisited();
+            if (step + 1 < slides.length) state.topicLessonStep = step + 1;
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        }
+
+        const btnStartFromLearn = document.getElementById('btnStartQuizFromLearn');
+        if (btnStartFromLearn) {
+          btnStartFromLearn.onclick = () => {
+            stopAudio();
+            markCurVisited();
+            state.topicQuizPhase = 'quiz';
+            state.topicQuizFinished = false;
+            state.topicQuizIdx = 0;
+            state.topicQuizAnswers = {};
+            state.topicQuizRetrySubset = null;
+            state.topicQuizTypedVal = '';
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        }
+
+        if (slide && slide.type === 'fib') {
+          const btnHint = document.getElementById('btnSlideHint');
+          if (btnHint) {
+            btnHint.onclick = () => {
+              st.showHint = !st.showHint;
+              renderDrillsView();
+            };
+          }
+          const fibForm = document.getElementById('slideFibForm');
+          const fibInp = document.getElementById('slideFibInput');
+          if (fibForm && fibInp) {
+            if (!st.answered) fibInp.focus();
+            fibInp.oninput = () => { st.userVal = fibInp.value; };
+            els.mainContent.querySelectorAll('[data-slide-accent]').forEach((b) => {
+              b.onclick = () => {
+                const ins = b.dataset.slideAccent;
+                const posStart = fibInp.selectionStart || fibInp.value.length;
+                const posEnd = fibInp.selectionEnd || fibInp.value.length;
+                fibInp.value = fibInp.value.slice(0, posStart) + ins + fibInp.value.slice(posEnd);
+                fibInp.focus();
+                fibInp.selectionStart = fibInp.selectionEnd = posStart + ins.length;
+                st.userVal = fibInp.value;
+              };
+            });
+            fibForm.onsubmit = (e) => {
+              e.preventDefault();
+              const val = fibInp.value.trim();
+              if (!val || st.answered) return;
+              st.userVal = val;
+              const nVal = normalizeFr(val);
+              const exactOk = (slide.answers || []).some((a) => normalizeFr(a) === nVal);
+              const accentOk = exactOk || (slide.answers || []).some((a) => stripAccents(normalizeFr(a)) === stripAccents(nVal));
+              st.answered = true;
+              st.ok = accentOk;
+              st.closeAccent = !exactOk && accentOk;
+              if (accentOk) addXP(5);
+              if (slide.frFull) speakPhrase(slide.frFull);
+              renderDrillsView();
+            };
+          }
+        } else if (slide && (slide.type === 'spot' || slide.type === 'mcq')) {
+          els.mainContent.querySelectorAll('[data-slide-opt]').forEach((b) => {
+            b.onclick = () => {
+              if (st.answered) return;
+              const oi = parseInt(b.dataset.slideOpt, 10);
+              st.answered = true;
+              st.chosenOpt = oi;
+              st.ok = oi === slide.ans;
+              if (st.ok) addXP(5);
+              if (slide.frFull) speakPhrase(slide.frFull);
+              renderDrillsView();
+            };
+          });
+        } else if (slide && slide.type === 'build') {
+          els.mainContent.querySelectorAll('[data-build-pick]').forEach((b) => {
+            b.onclick = () => {
+              if (st.answered) return;
+              const origIdx = parseInt(b.dataset.buildPick, 10);
+              if (!Array.isArray(st.builtIndices)) st.builtIndices = [];
+              if (!st.builtIndices.includes(origIdx)) st.builtIndices.push(origIdx);
+              renderDrillsView();
+            };
+          });
+          els.mainContent.querySelectorAll('[data-build-remove]').forEach((b) => {
+            b.onclick = () => {
+              if (st.answered) return;
+              const pos = parseInt(b.dataset.buildRemove, 10);
+              if (Array.isArray(st.builtIndices)) st.builtIndices.splice(pos, 1);
+              renderDrillsView();
+            };
+          });
+          const btnBuildReset = document.getElementById('btnBuildReset');
+          if (btnBuildReset) {
+            btnBuildReset.onclick = () => {
+              if (st.answered) return;
+              st.builtIndices = [];
+              renderDrillsView();
+            };
+          }
+          const btnBuildCheck = document.getElementById('btnBuildCheck');
+          if (btnBuildCheck) {
+            btnBuildCheck.onclick = () => {
+              if (st.answered || !Array.isArray(st.builtIndices) || st.builtIndices.length === 0) return;
+              const built = st.builtIndices.map((idx) => slide.tiles[idx]).join(' ');
+              const ok = normalizeFr(built) === normalizeFr(slide.answer);
+              st.answered = true;
+              st.ok = ok;
+              if (ok) addXP(8);
+              if (slide.frFull) speakPhrase(slide.frFull);
+              renderDrillsView();
+            };
+          }
+        }
+
+        // Bindings for Step 2 Mastery Quiz
+        const qs = activeTopic.questions || [];
+        const activeIndices = (Array.isArray(state.topicQuizRetrySubset) && state.topicQuizRetrySubset.length)
+          ? state.topicQuizRetrySubset
+          : qs.map((_, i) => i);
+
+        els.mainContent.querySelectorAll('[data-tq-input-mode]').forEach((b) => {
+          b.onclick = () => {
+            state.topicQuizInputMode = b.dataset.tqInputMode === 'fib' ? 'fib' : 'mcq';
+            renderDrillsView();
+          };
+        });
+
         const btnRetry = document.getElementById('btnRetryTopicQuiz');
         if (btnRetry) {
           btnRetry.onclick = () => {
@@ -6396,80 +6838,112 @@
             state.topicQuizIdx = 0;
             state.topicQuizAnswers = {};
             state.topicQuizFinished = false;
+            state.topicQuizRetrySubset = null;
+            state.topicQuizTypedVal = '';
             renderDrillsView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         }
 
-        const activeTopic = state.activeTopicQuizId
-          ? GRAMMAR_QUIZZES.find((t) => t.id === state.activeTopicQuizId) || null
-          : null;
+        const btnRetryMissed = document.getElementById('btnRetryMissedOnly');
+        if (btnRetryMissed) {
+          btnRetryMissed.onclick = () => {
+            stopAudio();
+            const missed = activeIndices.filter((ri) => !(state.topicQuizAnswers[ri] && state.topicQuizAnswers[ri].ok));
+            state.topicQuizRetrySubset = missed.length ? missed : null;
+            state.topicQuizIdx = 0;
+            state.topicQuizAnswers = {};
+            state.topicQuizFinished = false;
+            state.topicQuizTypedVal = '';
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        }
 
-        if (activeTopic) {
-          const btnMarkStudied = document.getElementById('btnMarkTopicStudied');
-          if (btnMarkStudied) {
-            btnMarkStudied.onclick = () => {
-              let newly = 0;
-              (activeTopic.grammarIds || []).forEach((gid) => {
-                if (!state.completedGrammar.includes(gid)) {
-                  state.completedGrammar.push(gid);
-                  newly++;
-                }
-              });
-              if (newly > 0) addXP(15 * newly);
-              else saveState();
-              renderSidebar();
-              renderDrillsView();
-            };
+        const pos = Math.min(state.topicQuizIdx, Math.max(0, activeIndices.length - 1));
+        const realIdx = activeIndices[pos];
+        const curQ = qs[realIdx];
+
+        const recordQuizResult = (ok, chosenOpt, userText, closeAccent) => {
+          state.topicQuizAnswers[realIdx] = { ok, chosenOpt, userText, closeAccent: Boolean(closeAccent) };
+          if (ok) {
+            addXP(5);
+          } else if (curQ) {
+            recordMistake({
+              id: `tq_${activeTopic.id}_${realIdx}`,
+              source: activeTopic.title,
+              level: activeTopic.level,
+              prompt: curQ.q,
+              choices: curQ.opts,
+              answer: curQ.opts[curQ.ans],
+              exp: curQ.exp
+            });
+            renderSidebar();
           }
+          if (curQ && curQ.frFull) speakPhrase(curQ.frFull);
+          renderDrillsView();
+        };
 
-          els.mainContent.querySelectorAll('[data-tq-opt]').forEach((b) => {
+        els.mainContent.querySelectorAll('[data-tq-opt]').forEach((b) => {
+          b.onclick = () => {
+            if (!curQ || state.topicQuizAnswers[realIdx]) return;
+            const opt = parseInt(b.dataset.tqOpt, 10);
+            recordQuizResult(opt === curQ.ans, opt, null, false);
+          };
+        });
+
+        const tqFibForm = document.getElementById('tqFibForm');
+        const tqFibInp = document.getElementById('tqFibInput');
+        if (tqFibForm && tqFibInp && curQ) {
+          if (!state.topicQuizAnswers[realIdx]) tqFibInp.focus();
+          tqFibInp.oninput = () => { state.topicQuizTypedVal = tqFibInp.value; };
+          els.mainContent.querySelectorAll('[data-tq-accent]').forEach((b) => {
             b.onclick = () => {
-              const idx = state.topicQuizIdx;
-              if (typeof state.topicQuizAnswers[idx] === 'number') return;
-              const opt = parseInt(b.dataset.tqOpt, 10);
-              const q = activeTopic.questions[idx];
-              state.topicQuizAnswers[idx] = opt;
-              if (opt === q.ans) {
-                addXP(5);
-              } else {
-                recordMistake({
-                  id: `tq_${activeTopic.id}_${idx}`,
-                  source: activeTopic.title,
-                  level: activeTopic.level,
-                  prompt: q.q,
-                  choices: q.opts,
-                  answer: q.opts[q.ans],
-                  exp: q.exp
-                });
-                renderSidebar();
-              }
-              if (q.frFull) speakPhrase(q.frFull);
-              renderDrillsView();
+              const ins = b.dataset.tqAccent;
+              const s = tqFibInp.selectionStart || tqFibInp.value.length;
+              const ePos = tqFibInp.selectionEnd || tqFibInp.value.length;
+              tqFibInp.value = tqFibInp.value.slice(0, s) + ins + tqFibInp.value.slice(ePos);
+              tqFibInp.focus();
+              tqFibInp.selectionStart = tqFibInp.selectionEnd = s + ins.length;
+              state.topicQuizTypedVal = tqFibInp.value;
             };
           });
+          tqFibForm.onsubmit = (e) => {
+            e.preventDefault();
+            if (state.topicQuizAnswers[realIdx]) return;
+            const val = tqFibInp.value.trim();
+            if (!val) return;
+            const expected = curQ.opts[curQ.ans];
+            const nVal = normalizeFr(val);
+            const nExp = normalizeFr(expected);
+            const exactOk = nVal === nExp;
+            const accentOk = exactOk || stripAccents(nVal) === stripAccents(nExp);
+            recordQuizResult(accentOk, null, val, !exactOk && accentOk);
+          };
+        }
 
-          const btnNextQ = document.getElementById('btnNextTopicQ');
-          if (btnNextQ) {
-            btnNextQ.onclick = () => {
-              stopAudio();
-              const qs = activeTopic.questions || [];
-              if (state.topicQuizIdx + 1 < qs.length) {
-                state.topicQuizIdx++;
-              } else {
-                const score = qs.filter((q, i) => state.topicQuizAnswers[i] === q.ans).length;
+        const btnNextQ = document.getElementById('btnNextTopicQ');
+        if (btnNextQ) {
+          btnNextQ.onclick = () => {
+            stopAudio();
+            state.topicQuizTypedVal = '';
+            if (pos + 1 < activeIndices.length) {
+              state.topicQuizIdx = pos + 1;
+            } else {
+              if (!state.topicQuizRetrySubset) {
+                const score = qs.filter((_, i) => state.topicQuizAnswers[i] && state.topicQuizAnswers[i].ok).length;
                 const prev = state.topicQuizBest[activeTopic.id];
                 const prevBest = prev ? prev.best : 0;
                 state.topicQuizBest[activeTopic.id] = { best: Math.max(prevBest, score), total: qs.length };
                 addXP(15);
                 if (score >= 7 && prevBest < 7) addXP(20);
                 saveState();
-                state.topicQuizFinished = true;
               }
-              renderDrillsView();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            };
-          }
+              state.topicQuizFinished = true;
+            }
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
         }
       }
 
@@ -8644,8 +9118,13 @@
         state.topicQuizBest = {};
         state.activeTopicQuizId = null;
         state.topicQuizPhase = 'learn';
+        state.topicLessonStep = 0;
+        state.topicLessonState = {};
         state.topicQuizAnswers = {};
         state.topicQuizFinished = false;
+        state.topicQuizRetrySubset = null;
+        state.topicQuizTypedVal = '';
+        state.grammarLessonPage = 1;
         state.eeDrafts = {};
         state.dailyOutputDoneDate = '';
         state.xp = 0;
