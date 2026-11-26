@@ -328,7 +328,7 @@
   </div>
 
   <script src="./data/syllabus_data.js"></script>
-  <script src="./data/audio_manifest.js"></script>
+  <script src="./data/audio_manifest.js?v=2"></script>
 
   <!-- ========================================================= -->
   <!-- APPLICATION DATA & ENGINE                                 -->
@@ -2878,7 +2878,7 @@
         if (AUDIO_PACK_PROMISES[packId]) return AUDIO_PACK_PROMISES[packId];
         const p = new Promise((resolve, reject) => {
           const s = document.createElement('script');
-          s.src = `./data/audio_packs/${packId}.js`;
+          s.src = `./data/audio_packs/${packId}.js?v=2`;
           s.async = true;
           s.onload = () => {
             const loaded = window.__TCF_AUDIO_PACKS__ && window.__TCF_AUDIO_PACKS__[packId];

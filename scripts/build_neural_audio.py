@@ -32,11 +32,12 @@ JSC_BIN = Path("/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/H
 MAX_PACK_B64_BYTES = 1_850_000
 
 VOICES = {
-    "vivienne": ("fr-FR-VivienneMultilingualNeural", "Vivienne · FR"),
-    "remy": ("fr-FR-RemyMultilingualNeural", "Rémy · FR"),
+    "denise": ("fr-FR-DeniseNeural", "Denise · FR"),
+    "henri": ("fr-FR-HenriNeural", "Henri · FR"),
     "sylvie": ("fr-CA-SylvieNeural", "Sylvie · CA"),
     "thierry": ("fr-CA-ThierryNeural", "Thierry · CA"),
 }
+VALID_VOICE_LABELS = {label for _, label in VOICES.values()}
 
 
 def fnv1a(s: str) -> str:
@@ -90,101 +91,101 @@ function add(text, voiceKey, group) {
 
 CHAPTERS.forEach((ch, cIdx) => {
   const isCanada = ch.id === 'a2_3' || ch.id === 'a1_2';
-  const defaultV = isCanada ? 'sylvie' : (cIdx % 2 === 0 ? 'vivienne' : 'remy');
-  ch.examples.forEach((e, i) => add(e.fr, i % 2 === 0 ? defaultV : (defaultV === 'vivienne' ? 'remy' : 'sylvie')));
-  ch.vocab.forEach((v, i) => add(v.fr, v.cat === 'Canada' ? 'sylvie' : (i % 2 === 0 ? 'vivienne' : 'thierry')));
+  const defaultV = isCanada ? 'sylvie' : (cIdx % 2 === 0 ? 'denise' : 'henri');
+  ch.examples.forEach((e, i) => add(e.fr, i % 2 === 0 ? defaultV : (defaultV === 'denise' ? 'henri' : 'sylvie')));
+  ch.vocab.forEach((v, i) => add(v.fr, v.cat === 'Canada' ? 'sylvie' : (i % 2 === 0 ? 'denise' : 'thierry')));
   ch.passages.forEach((p, pIdx) => {
     const pv = /Montréal|Québec|Canada|Clinique|logement|3 ½/i.test(p.title + ' ' + p.sentences.join(' '))
       ? (pIdx % 2 === 0 ? 'sylvie' : 'thierry')
-      : (pIdx % 2 === 0 ? 'remy' : 'vivienne');
+      : (pIdx % 2 === 0 ? 'henri' : 'denise');
     p.sentences.forEach((s) => add(s, pv));
   });
-  if (ch.clockTimes) ch.clockTimes.forEach((t) => add(t.fr, 'vivienne'));
-  if (ch.comparisons) ch.comparisons.forEach((c) => { add(c.posFr, 'vivienne'); add(c.negFr, 'remy'); });
-  if (ch.aspectPairs) ch.aspectPairs.forEach((a) => { add(a.pc, 'remy'); add(a.imp, 'vivienne'); });
-  if (ch.subjBuilder) ch.subjBuilder.forEach((s) => add(s.trigger + ' ' + s.clause, 'vivienne'));
+  if (ch.clockTimes) ch.clockTimes.forEach((t) => add(t.fr, 'denise'));
+  if (ch.comparisons) ch.comparisons.forEach((c) => { add(c.posFr, 'denise'); add(c.negFr, 'henri'); });
+  if (ch.aspectPairs) ch.aspectPairs.forEach((a) => { add(a.pc, 'henri'); add(a.imp, 'denise'); });
+  if (ch.subjBuilder) ch.subjBuilder.forEach((s) => add(s.trigger + ' ' + s.clause, 'denise'));
 });
 
 GRAMMAR_SYLLABUS.forEach((g, gIdx) => {
-  const gv = gIdx % 2 === 0 ? 'vivienne' : 'remy';
+  const gv = gIdx % 2 === 0 ? 'denise' : 'henri';
   if (g.examples) g.examples.forEach((e, i) => add(e.fr, i % 2 === 0 ? gv : 'sylvie', 'grammar'));
-  if (g.sounds) g.sounds.forEach((s) => add(s.sample || s.ex, 'vivienne', 'grammar'));
+  if (g.sounds) g.sounds.forEach((s) => add(s.sample || s.ex, 'denise', 'grammar'));
   if (g.quiz) g.quiz.forEach((q) => { if (q.audio) add(q.audio, gv, 'grammar'); });
 });
 
 VOCAB_SYLLABUS.forEach((vl, vIdx) => {
   const vv = vIdx % 2 === 0 ? 'sylvie' : 'thierry';
   if (vl.words) vl.words.forEach((w, i) => {
-    add(w.fr, /QC|Canada/i.test(w.fr + ' ' + (w.tag || '')) ? 'sylvie' : (i % 2 === 0 ? 'vivienne' : 'remy'), 'vocab_syllabus');
+    add(w.fr, /QC|Canada/i.test(w.fr + ' ' + (w.tag || '')) ? 'sylvie' : (i % 2 === 0 ? 'denise' : 'henri'), 'vocab_syllabus');
     if (w.ex) add(w.ex, vv, 'vocab_syllabus');
   });
 });
 
-EXTRA_VOCAB.forEach((v, i) => add(v.fr, v.cat === 'Canada' ? 'thierry' : (i % 2 === 0 ? 'vivienne' : 'remy')));
+EXTRA_VOCAB.forEach((v, i) => add(v.fr, v.cat === 'Canada' ? 'thierry' : (i % 2 === 0 ? 'denise' : 'henri')));
 
 if (typeof DRILLS !== 'undefined') {
   (DRILLS.conjugation || []).forEach((d, i) => {
     const full = d.prompt.replace('___', d.answer).replace(/^[^:]+:\s*/, '');
-    add(full, i % 2 === 0 ? 'vivienne' : 'remy');
+    add(full, i % 2 === 0 ? 'denise' : 'henri');
   });
-  (DRILLS.cloze || []).forEach((d, i) => add(d.prompt.replace('___', d.answer), i % 2 === 0 ? 'remy' : 'sylvie'));
-  (DRILLS.dictation || []).forEach((d, i) => add(d.audio, ['sylvie', 'thierry', 'vivienne', 'remy'][i % 4]));
-  (DRILLS.fauxamis || []).forEach((d, i) => add(d.context, i % 2 === 0 ? 'vivienne' : 'thierry'));
-  (DRILLS.gender || []).forEach((d, i) => add(d.word, i % 2 === 0 ? 'vivienne' : 'sylvie', 'drills_gender'));
+  (DRILLS.cloze || []).forEach((d, i) => add(d.prompt.replace('___', d.answer), i % 2 === 0 ? 'henri' : 'sylvie'));
+  (DRILLS.dictation || []).forEach((d, i) => add(d.audio, ['sylvie', 'thierry', 'denise', 'henri'][i % 4]));
+  (DRILLS.fauxamis || []).forEach((d, i) => add(d.context, i % 2 === 0 ? 'denise' : 'thierry'));
+  (DRILLS.gender || []).forEach((d, i) => add(d.word, i % 2 === 0 ? 'denise' : 'sylvie', 'drills_gender'));
 }
 
 if (typeof MOCK_EXAMS !== 'undefined') {
   if (MOCK_EXAMS.co && MOCK_EXAMS.co.questions) {
-    MOCK_EXAMS.co.questions.forEach((q, i) => add(q.audio, ['vivienne', 'sylvie', 'thierry', 'remy'][i % 4]));
+    MOCK_EXAMS.co.questions.forEach((q, i) => add(q.audio, ['denise', 'sylvie', 'thierry', 'henri'][i % 4]));
   }
   if (MOCK_EXAMS.coSet2 && MOCK_EXAMS.coSet2.questions) {
-    MOCK_EXAMS.coSet2.questions.forEach((q, i) => add(q.audio, ['sylvie', 'remy', 'vivienne', 'thierry'][i % 4]));
+    MOCK_EXAMS.coSet2.questions.forEach((q, i) => add(q.audio, ['sylvie', 'henri', 'denise', 'thierry'][i % 4]));
   }
 }
 
 EE_TASKS.forEach((t, i) => {
-  const v = i % 3 === 0 ? 'sylvie' : (i % 3 === 1 ? 'thierry' : 'vivienne');
-  add(t.prompt, 'remy');
+  const v = i % 3 === 0 ? 'sylvie' : (i % 3 === 1 ? 'thierry' : 'denise');
+  add(t.prompt, 'henri');
   add(t.model, v);
 });
 
 EO_TASKS.forEach((t, i) => {
-  const v = i % 3 === 0 ? 'thierry' : (i % 3 === 1 ? 'sylvie' : 'vivienne');
+  const v = i % 3 === 0 ? 'thierry' : (i % 3 === 1 ? 'sylvie' : 'denise');
   if (t.modelSentences) t.modelSentences.forEach((s) => add(s, v));
 });
 
 if (typeof QUICK_ESSENTIALS !== 'undefined') {
   (QUICK_ESSENTIALS.pronounMatrix || []).forEach((r, idx) => {
-    const v = idx % 2 === 0 ? 'vivienne' : 'sylvie';
+    const v = idx % 2 === 0 ? 'denise' : 'sylvie';
     [r.subject, r.cod, r.coi, r.tonic, r.reflexive, r.possessive].forEach((cell) => {
       add(String(cell).split('/')[0].trim(), v, 'quick_essentials');
     });
-    add(r.example, idx % 2 === 0 ? 'remy' : 'thierry', 'quick_essentials');
+    add(r.example, idx % 2 === 0 ? 'henri' : 'thierry', 'quick_essentials');
   });
-  (QUICK_ESSENTIALS.pronounExamples || []).forEach((ex, i) => add(ex.fr, i % 2 === 0 ? 'vivienne' : 'sylvie', 'quick_essentials'));
-  (QUICK_ESSENTIALS.pronounDemos || []).forEach((d, i) => add(d.fr, i % 2 === 0 ? 'remy' : 'vivienne', 'quick_essentials'));
+  (QUICK_ESSENTIALS.pronounExamples || []).forEach((ex, i) => add(ex.fr, i % 2 === 0 ? 'denise' : 'sylvie', 'quick_essentials'));
+  (QUICK_ESSENTIALS.pronounDemos || []).forEach((d, i) => add(d.fr, i % 2 === 0 ? 'henri' : 'denise', 'quick_essentials'));
   const vc = QUICK_ESSENTIALS.verbConjugation || {};
   (vc.regularRows || []).forEach((r, i) => {
-    const v = i % 2 === 0 ? 'vivienne' : 'remy';
+    const v = i % 2 === 0 ? 'denise' : 'henri';
     add(r.erEx, v, 'quick_essentials');
     add(r.irEx, 'sylvie', 'quick_essentials');
     add(r.reEx, 'thierry', 'quick_essentials');
   });
   (vc.groupExamples || []).forEach((vg) => {
-    (vg.examples || []).forEach((ex, i) => add(ex.fr, i % 2 === 0 ? 'vivienne' : 'sylvie', 'quick_essentials'));
+    (vg.examples || []).forEach((ex, i) => add(ex.fr, i % 2 === 0 ? 'denise' : 'sylvie', 'quick_essentials'));
   });
   (vc.irregularRows || []).forEach((ir) => {
     const subj = ir.pronoun === 'je / j’' ? 'je' : ir.pronoun.split('/')[0].trim();
     [ir.etre, ir.avoir, ir.aller, ir.faire].forEach((vf, idx) => {
       const phrase = (subj === 'je' && /^[aeêéo]/i.test(vf)) ? ('j’' + vf) : (subj + ' ' + vf);
-      add(phrase, idx % 2 === 0 ? 'vivienne' : 'thierry', 'quick_essentials');
+      add(phrase, idx % 2 === 0 ? 'denise' : 'thierry', 'quick_essentials');
     });
   });
   (QUICK_ESSENTIALS.groups || []).forEach((grp) => {
     (grp.sections || []).forEach((sec) => {
       (sec.items || []).forEach((it, idx) => {
         const isQc = /\(QC\)|Québec|Canada/i.test(it.fr);
-        add(it.fr, isQc ? 'sylvie' : (idx % 2 === 0 ? 'vivienne' : 'remy'), 'quick_essentials');
+        add(it.fr, isQc ? 'sylvie' : (idx % 2 === 0 ? 'denise' : 'henri'), 'quick_essentials');
       });
     });
   });
@@ -284,6 +285,8 @@ def load_existing_clips() -> dict[str, tuple[str, str]]:
         for key, entry in manifest.items():
             if isinstance(entry, list) and len(entry) == 2:
                 voice_label, pack_id = entry
+                if voice_label not in VALID_VOICE_LABELS:
+                    continue
                 if pack_id not in loaded_packs:
                     p_file = PACKS_DIR / f"{pack_id}.js"
                     loaded_packs[pack_id] = _parse_pack_js(p_file) if p_file.exists() else {}
@@ -291,6 +294,8 @@ def load_existing_clips() -> dict[str, tuple[str, str]]:
                 if b64:
                     clips[key] = (voice_label, b64)
             elif isinstance(entry, str):
+                if entry not in VALID_VOICE_LABELS:
+                    continue
                 mp3_path = LEGACY_AUDIO_DIR / f"{key}.mp3"
                 if mp3_path.exists() and mp3_path.stat().st_size > 100:
                     b64 = base64.b64encode(mp3_path.read_bytes()).decode("ascii")
@@ -395,21 +400,21 @@ async def synth_one(sem: asyncio.Semaphore, item: dict, has_ffmpeg: bool) -> tup
     voice_name, voice_label = VOICES[voice_key]
     key = fnv1a(raw_text)
     MP3_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    mp3_final = MP3_CACHE_DIR / f"{key}.mp3"
+    mp3_final = MP3_CACHE_DIR / f"{key}_{voice_key}.mp3"
 
     if not mp3_final.exists() or mp3_final.stat().st_size <= 100:
         async with sem:
             spoken = clean_for_speech(raw_text)
-            raw_mp3 = MP3_CACHE_DIR / f".{key}_raw.mp3"
-            for attempt in range(3):
+            raw_mp3 = MP3_CACHE_DIR / f".{key}_{voice_key}_raw.mp3"
+            for attempt in range(5):
                 try:
                     comm = edge_tts.Communicate(spoken, voice_name)
                     await comm.save(str(raw_mp3))
                     break
                 except Exception as exc:
-                    if attempt == 2:
+                    if attempt == 4:
                         raise exc
-                    await asyncio.sleep(1.0 * (attempt + 1))
+                    await asyncio.sleep(1.5 * (attempt + 1))
 
             if has_ffmpeg:
                 cmd = [
@@ -420,7 +425,7 @@ async def synth_one(sem: asyncio.Semaphore, item: dict, has_ffmpeg: bool) -> tup
                     "-i",
                     str(raw_mp3),
                     "-af",
-                    "silenceremove=start_periods=1:start_silence=0.04:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_silence=0.05:start_threshold=-45dB,areverse",
+                    "silenceremove=start_periods=1:start_silence=0.02:start_threshold=-55dB,areverse,silenceremove=start_periods=1:start_silence=0.04:start_threshold=-55dB,areverse",
                     "-ac",
                     "1",
                     "-ar",
@@ -475,7 +480,7 @@ async def run_build(rebuild: bool, dry_run: bool, repack: bool) -> int:
 
             has_ffmpeg = shutil.which("ffmpeg") is not None
             print(f"Synthesizing {len(missing)} missing phrases (ffmpeg={'yes' if has_ffmpeg else 'no'})...", flush=True)
-            sem = asyncio.Semaphore(6)
+            sem = asyncio.Semaphore(5)
             tasks = [synth_one(sem, it, has_ffmpeg) for it in missing]
             done = 0
             for coro in asyncio.as_completed(tasks):

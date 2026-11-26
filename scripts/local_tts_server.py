@@ -3,7 +3,7 @@
 Local real-time Microsoft Neural French TTS server (edge-tts) for TCF Canada Studio.
 
 Features:
-- Free lifelike fr-FR (Vivienne, Rémy) and fr-CA (Sylvie, Thierry) voices via edge-tts
+- Free lifelike fr-FR (Denise, Henri) and fr-CA (Sylvie, Thierry) voices via edge-tts
 - Persistent on-disk MP3 cache (.tts_cache/live/) with atomic writes for instant replay
 - Full CORS + Chrome Private Network Access headers so file:// or localhost works cleanly
 - Built-in static file server for index.html and data/ when accessed at http://127.0.0.1:8765
@@ -28,12 +28,13 @@ ROOT = Path(__file__).resolve().parent.parent
 CACHE_DIR = ROOT / ".tts_cache" / "live"
 
 VOICES = {
-    "vivienne": ("fr-FR-VivienneMultilingualNeural", "Vivienne · FR"),
-    "remy": ("fr-FR-RemyMultilingualNeural", "Rémy · FR"),
+    "denise": ("fr-FR-DeniseNeural", "Denise · FR"),
+    "henri": ("fr-FR-HenriNeural", "Henri · FR"),
     "sylvie": ("fr-CA-SylvieNeural", "Sylvie · CA"),
     "thierry": ("fr-CA-ThierryNeural", "Thierry · CA"),
 }
-DEFAULT_CYCLE = ["vivienne", "sylvie", "remy", "thierry"]
+DEFAULT_CYCLE = ["denise", "sylvie", "henri", "thierry"]
+VOICE_ALIASES = {"vivienne": "denise", "remy": "henri"}
 CANADA_HINT_RE = re.compile(
     r"\(\s*QC\s*\)|Québec|Montréal|Canada|\b811\b|3\s*½|dépanneur|fin de semaine",
     re.IGNORECASE,
@@ -77,6 +78,7 @@ def clean_for_speech(text: str) -> str:
 
 def choose_voice(raw_text: str, requested: str = "auto") -> tuple[str, str, str]:
     req = (requested or "auto").strip().lower()
+    req = VOICE_ALIASES.get(req, req)
     if req in VOICES:
         name, label = VOICES[req]
         return req, name, label
