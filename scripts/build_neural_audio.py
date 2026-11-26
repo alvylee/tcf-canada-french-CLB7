@@ -262,7 +262,10 @@ var fetch = function() { return { then: function(){ return { catch: function(){}
 
 def _parse_pack_js(pack_path: Path) -> dict[str, str]:
     raw = pack_path.read_text(encoding="utf-8").strip()
-    eq_idx = raw.rfind("=")
+    m = re.search(r"\]\s*=\s*(\{.*\})\s*;?\s*$", raw, re.S)
+    if m:
+        return json.loads(m.group(1))
+    eq_idx = raw.find("=")
     if eq_idx == -1:
         return {}
     payload = raw[eq_idx + 1 :].strip().rstrip(";")
