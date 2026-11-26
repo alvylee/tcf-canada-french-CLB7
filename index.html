@@ -7728,22 +7728,34 @@
               </div>
             ` : '';
 
+            const cartoonHTML = (sec.cartoon && sec.cartoon.src) ? `
+              <figure class="shrink-0 mx-auto sm:mx-0 max-w-[260px] rounded-2xl bg-white p-2.5 border border-[var(--border)] shadow-sm text-center space-y-1.5">
+                <img src="${escAttr(sec.cartoon.src)}" alt="${escAttr(sec.cartoon.alt || sec.cartoon.caption || '')}" loading="lazy" class="mx-auto max-h-[190px] w-auto rounded-lg object-contain" />
+                ${sec.cartoon.caption ? `<figcaption class="text-[11px] font-semibold text-slate-700 leading-snug">${esc(sec.cartoon.caption)}${state.showZh && sec.cartoon.captionZh ? `<div class="text-[10px] text-indigo-600 mt-0.5">${esc(sec.cartoon.captionZh)}</div>` : ''}</figcaption>` : ''}
+              </figure>
+            ` : '';
+
             return `
               <section id="deep-sec-${sec.id}" class="studio-card p-5 sm:p-6 space-y-4">
                 <div class="space-y-1">
                   <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(sec.heading)}</h3>
                   ${state.showZh && sec.headingZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(sec.headingZh)}</div>` : ''}
                 </div>
-                <div class="space-y-1">
-                  <p class="text-sm text-[var(--foreground)] leading-relaxed">${esc(sec.lead)}</p>
-                  ${state.showZh && sec.leadZh ? `<p class="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">${esc(sec.leadZh)}</p>` : ''}
-                </div>
-                ${sec.tip ? `
-                  <div class="p-3 rounded-xl tint-warning border border-warning-soft text-xs space-y-0.5">
-                    <div class="font-bold text-[var(--foreground)]">💡 Tip: ${esc(sec.tip)}</div>
-                    ${state.showZh && sec.tipZh ? `<div class="text-[var(--muted-foreground)]">${esc(sec.tipZh)}</div>` : ''}
+                <div class="${cartoonHTML ? 'flex flex-col sm:flex-row sm:items-start gap-4' : 'space-y-3'}">
+                  <div class="flex-1 min-w-0 space-y-3">
+                    <div class="space-y-1">
+                      <p class="text-sm text-[var(--foreground)] leading-relaxed">${esc(sec.lead)}</p>
+                      ${state.showZh && sec.leadZh ? `<p class="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">${esc(sec.leadZh)}</p>` : ''}
+                    </div>
+                    ${sec.tip ? `
+                      <div class="p-3 rounded-xl tint-warning border border-warning-soft text-xs space-y-0.5">
+                        <div class="font-bold text-[var(--foreground)]">💡 Tip: ${esc(sec.tip)}</div>
+                        ${state.showZh && sec.tipZh ? `<div class="text-[var(--muted-foreground)]">${esc(sec.tipZh)}</div>` : ''}
+                      </div>
+                    ` : ''}
                   </div>
-                ` : ''}
+                  ${cartoonHTML}
+                </div>
                 ${tableHTML}
                 ${examplesHTML}
                 ${dialogueHTML}
@@ -8005,6 +8017,10 @@
                 `).join('')}
               </div>
             ` : ''}
+
+            <div class="text-[11px] text-[var(--muted-foreground)] text-center pt-1">
+              Illustrations &amp; grammar examples adapted from <a href="https://www.laits.utexas.edu/tex/" target="_blank" rel="noopener" class="text-[var(--link)] hover:underline">Tex’s French Grammar</a> (COERLL, The University of Texas at Austin), licensed under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener" class="text-[var(--link)] hover:underline">CC BY 3.0</a>.
+            </div>
           </div>
         `;
 

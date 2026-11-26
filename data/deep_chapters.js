@@ -251,6 +251,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'count_mass',
             heading: '2. Count Nouns vs. Mass Nouns',
             headingZh: '二、可数名词 vs 不可数（物质）名词',
+            cartoon: {
+              src: './assets/tex_cartoons/no1_pain.gif',
+              alt: 'Tex mange du pain',
+              caption: 'Tex mange du pain. (Mass noun)',
+              captionZh: 'Tex 在吃面包（不可数物质名词）'
+            },
             lead: 'Count nouns identify separate objects that can be counted (1, 2, 3...). Mass nouns treat something as an uncountable whole or substance. Just like in English ("eat bread" vs. "two loaves"), a normally countable thing can even become a mass noun when viewed as substance rather than whole units!',
             leadZh: '可数名词可以一个个计数（一个、两个……）；不可数名词（物质名词）则表示无法拆分计数的整体或材料。有时同一个东西，整只看是可数，按材料/肉块看就成了不可数。',
             examples: [
@@ -642,6 +648,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 's_x_z',
             heading: '2. Nouns Ending in -s, -x, or -z Do Not Change',
             headingZh: '二、词尾已是 -s, -x, -z 的名词：复数保持原形！',
+            cartoon: {
+              src: './assets/tex_cartoons/no2_souris.gif',
+              alt: 'Les chats mangent des souris',
+              caption: 'Les chats mangent des souris. (-s unchanged)',
+              captionZh: '猫吃老鼠（以 -s 结尾复数不变）'
+            },
             lead: 'If a singular noun already ends in -s, -x, or -z, French does NOT add a second -s. Keep the noun identical and change ONLY the determiner (and any adjective)!',
             leadZh: '如果单数名词本身已经以 -s、-x 或 -z 结尾，变复数时不再重复加 -s！名词拼写原封不动，只需改前面的冠词和修饰形容词。',
             table: {
@@ -860,6 +872,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'ou_nouns',
             heading: '3. Nouns Ending in -ou: Regular +s vs. The 7 Famous -oux',
             headingZh: '三、以 -ou 结尾：多数加 -s，只有 7 个明星词加 -x',
+            cartoon: {
+              src: './assets/tex_cartoons/no2_hiboux.gif',
+              alt: 'un hibou, des hiboux',
+              caption: 'un hibou → des hiboux (one of the 7 -oux nouns!)',
+              captionZh: '猫头鹰：7 个加 -x 的 -ou 名词之一'
+            },
             lead: 'Most -ou nouns are completely regular and add -s ("des clous", "des sous", "des trous"). Only SEVEN nouns in the entire French language add -x in -oux—you can memorize all 7 right now!',
             leadZh: '大多数 -ou 名词乖乖加 -s（例如钉子 clous、钱币 sous、洞 trous）。全法语只有 7 个 -ou 名词变复数加 -x，一次就能打包记住！',
             table: {
@@ -1266,6 +1284,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'people_shifts',
             heading: '2. People & Professions: Ending Transformations',
             headingZh: '二、职业与身份词尾大变形表（必背 6 组）',
+            cartoon: {
+              src: './assets/tex_cartoons/no3_musicien.gif',
+              alt: 'Trey est musicien',
+              caption: 'Trey est musicien / Tammy n’est pas musicienne.',
+              captionZh: '-ien → -ienne 职业阴阳性变化'
+            },
             lead: 'Many common professions and human roles change their ending more dramatically in the feminine. Listen to Tex’s pairs below:',
             leadZh: '许多高频职业和人物名词变阴性时词尾会跟着一起改，请对照 Tex 例句熟悉这 6 组最常考的模式：',
             table: {
@@ -1292,6 +1316,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'unchanged_family',
             heading: '3. Unchanged -e Endings & Distinct Family Pairs',
             headingZh: '三、以 -e 结尾同形词与不同词根的亲属词',
+            cartoon: {
+              src: './assets/tex_cartoons/no3_ritatex.gif',
+              alt: 'Tex est poète. Rita est secrétaire.',
+              caption: 'Tex est poète. Rita est secrétaire. (Unchanged -e)',
+              captionZh: '词尾已有 -e 的职业男女同形'
+            },
             lead: 'When the masculine noun ALREADY ends in -e, it stays unchanged in the feminine—only the article tells you whether the person is a man or a woman! Meanwhile, basic family nouns use completely separate words.',
             leadZh: '如果阳性名词本身已经以 -e 结尾，变阴性时单词本身不再多加一个 -e，单靠前面的冠词或上下文来辨别！亲属称谓则各有独立单词。',
             examples: [
@@ -1475,6 +1505,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'masc_suffixes',
             heading: '1. Typically Masculine Word Endings (le / un)',
             headingZh: '一、通常为阳性（le / un）的 6 大词尾',
+            cartoon: {
+              src: './assets/tex_cartoons/no3_sentiment.gif',
+              alt: 'le sentiment',
+              caption: 'le sentiment (-ment ending → masculine!)',
+              captionZh: '-ment 词尾通常为阳性'
+            },
             lead: 'Even though object gender is arbitrary, a noun’s ENDING is a huge clue! Words ending in -age, -ment, -eau, -phone, -scope, and -isme are overwhelmingly masculine:',
             leadZh: '虽然物体本质没有性别，但法语单词的“词尾”藏着极高准确率的密码！记住下面这 6 个典型的阳性词尾：',
             table: {
@@ -1764,6 +1800,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'ilya_neg',
             heading: '2. Negating il y a: pas de · plus de · jamais de',
             headingZh: '二、il y a 的三种否定形式（特别留意 n’ 与 de）',
+            cartoon: {
+              src: './assets/tex_cartoons/no4_neige.gif',
+              alt: 'À Austin, il n’y a jamais de neige',
+              caption: 'À Austin, il n’y a jamais de neige (et pas de pingouin !)',
+              captionZh: '奥斯汀从没有雪，也没有企鹅！'
+            },
             lead: 'To negate "il y a", wrap "y a" with ne...pas, ne...plus, or ne...jamais—remember "ne" contracts to "n’" before "y"! And after a negative, indefinite/partitive articles (un, une, des, du, de la) turn into "de" (or "d’" before a vowel).',
             leadZh: '否定 il y a 时，把 n’ 放在 y 前面，把 pas / plus / jamais 放在 a 后面。同时牢记：否定之后，原本的 un / une / des / du / de la 要变成介词 de（元音前 d’）！',
             examples: [
@@ -2311,6 +2353,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             id: 'heure_sec',
             heading: '1. l’heure (f.) — Clock Time & "Time For / Time To..."',
             headingZh: '一、l’heure（阴性）：几点钟、日程时刻与“到点了”',
+            cartoon: {
+              src: './assets/tex_cartoons/no5_oprah.gif',
+              alt: 'Il est 4 heures — c’est l’heure d’Oprah !',
+              caption: 'Il est 4 heures — c’est l’heure d’Oprah !',
+              captionZh: '四点了——到看节目时间啦！'
+            },
             lead: 'Heure is feminine and can be singular or plural (Il est une heure / Il est 4 heures). Use it whenever you look at a clock, ask when something starts, or say "It is time for / to...".',
             leadZh: 'heure 是阴性名词，指表盘时间或固定时刻（一点用单数 heure，两点以上用复数 heures）。问现在几点、几点开始上课、以及“到点做某事了”全用 heure：',
             examples: [
