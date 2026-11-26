@@ -2567,6 +2567,7 @@
         topicQuizBest: (persisted.topicQuizBest && typeof persisted.topicQuizBest === 'object') ? persisted.topicQuizBest : {},
         topicQuizCategory: 'all',
         activeTopicQuizId: null,
+        topicQuizPhase: 'learn', // 'learn' | 'quiz'
         topicQuizIdx: 0,
         topicQuizAnswers: {},
         topicQuizFinished: false,
@@ -2842,9 +2843,10 @@
       const GRAMMAR_SYLLABUS = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_SYLLABUS__)) ? window.__TCF_GRAMMAR_SYLLABUS__ : [];
       const GRAMMAR_QUIZZES = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_QUIZZES__)) ? window.__TCF_GRAMMAR_QUIZZES__ : [];
 
-      function openTopicQuiz(topicId) {
+      function openTopicQuiz(topicId, phase = 'quiz') {
         state.drillMode = 'topics';
         state.activeTopicQuizId = topicId || null;
+        state.topicQuizPhase = phase || 'quiz';
         state.topicQuizIdx = 0;
         state.topicQuizAnswers = {};
         state.topicQuizFinished = false;
@@ -5941,104 +5943,233 @@
           ? GRAMMAR_QUIZZES.find((t) => t.id === state.activeTopicQuizId) || null
           : null;
 
-        // 1. Active Quiz Finished Summary Screen
-        if (activeTopic && state.topicQuizFinished) {
-          const qs = activeTopic.questions || [];
-          const total = qs.length;
-          const score = qs.filter((q, i) => state.topicQuizAnswers[i] === q.ans).length;
-          const pct = total ? Math.round((score / total) * 100) : 0;
-          const mastered = score >= 7;
-          const curIdx = GRAMMAR_QUIZZES.findIndex((t) => t.id === activeTopic.id);
-          const nextTopic = GRAMMAR_QUIZZES[curIdx + 1] || null;
-
-          return `
-            <div class="space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <button type="button" id="btnBackToTopics" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                  ← All Grammar Quizzes
-                </button>
-                <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(activeTopic.level)}">${esc(activeTopic.badge)}</span>
-              </div>
-
-              <section class="studio-card p-5 sm:p-6 space-y-5">
-                <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[var(--border)]">
-                  <div>
-                    <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}</div>
-                    <h3 class="text-xl font-bold text-[var(--foreground)] mt-1">
-                      ${mastered ? '🎉 Topic Mastered!' : score >= 5 ? '👍 Good Progress — Review Misses & Retry' : '💡 Keep Practicing — Review the Rules Below'}
-                    </h3>
-                    <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Score ≥ 7/${total} to earn the Mastery badge for this grammar point.</p>
-                  </div>
-                  <div class="text-right">
-                    <div class="text-3xl font-bold tabular-nums ${mastered ? 'text-[var(--success)]' : 'text-[var(--primary)]'}">${score} / ${total}</div>
-                    <div class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${pct}%</div>
-                  </div>
-                </div>
-
-                <div class="space-y-2.5">
-                  ${qs.map((q, i) => {
-                    const chosen = state.topicQuizAnswers[i];
-                    const ok = chosen === q.ans;
-                    return `
-                      <div class="p-3.5 rounded-xl border space-y-1.5 ${ok ? 'tint-success border-success-soft' : 'tint-error border-error-soft'}">
-                        <div class="flex flex-wrap items-start justify-between gap-2">
-                          <div class="text-xs font-semibold text-[var(--foreground)]">
-                            <span class="font-bold mr-1">${ok ? '✓' : '✕'} Q${i + 1}.</span>${esc(q.q)}
-                          </div>
-                          ${q.frFull ? `<button type="button" data-speak="${escAttr(q.frFull)}" class="speak-btn px-2 py-0.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer shrink-0">🔊 Hear</button>` : ''}
-                        </div>
-                        <div class="text-xs">
-                          ${!ok ? `<span class="text-[var(--error)] mr-2">Your answer: <strong>${esc(typeof chosen === 'number' ? q.opts[chosen] : '—')}</strong></span>` : ''}
-                          <span class="text-[var(--success)]">Correct: <strong>${esc(q.opts[q.ans])}</strong></span>
-                          ${q.frFull ? `<span class="text-[var(--muted-foreground)] ml-2">« ${esc(q.frFull)} »</span>` : ''}
-                        </div>
-                        <div class="text-xs text-[var(--foreground)]">${esc(q.exp)}</div>
-                        ${state.showZh && q.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(q.expZh)}</div>` : ''}
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-
-                <div class="pt-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
-                  <button type="button" id="btnRetryTopicQuiz" class="px-4 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                    🔄 Retry ${esc(activeTopic.title)}
-                  </button>
-                  <div class="flex items-center gap-2">
-                    ${nextTopic ? `<button type="button" data-start-topic="${nextTopic.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Next Topic: ${esc(nextTopic.title)} →</button>` : ''}
-                  </div>
-                </div>
-              </section>
-            </div>
-          `;
-        }
-
-        // 2. Active Question Runner Screen
         if (activeTopic) {
           const qs = activeTopic.questions || [];
-          const idx = Math.min(state.topicQuizIdx, Math.max(0, qs.length - 1));
+          const total = qs.length;
+          const linkedLessons = (activeTopic.grammarIds || [])
+            .map((id) => GRAMMAR_SYLLABUS.find((g) => g.id === id))
+            .filter(Boolean);
+          const phase = state.topicQuizPhase === 'quiz' ? 'quiz' : 'learn';
+          const allLessonsStudied = linkedLessons.length > 0 && linkedLessons.every((g) => state.completedGrammar.includes(g.id));
+
+          const topStepNav = `
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <button type="button" id="btnBackToTopics" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                ← All Grammar Topics
+              </button>
+              <div class="inline-flex p-1 rounded-2xl bg-[var(--content)] border border-[var(--border)]">
+                <button type="button" data-tq-phase="learn" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  phase === 'learn'
+                    ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
+                }">1. 📘 Study Notes (${linkedLessons.length})</button>
+                <button type="button" data-tq-phase="quiz" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  phase === 'quiz'
+                    ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
+                }">2. 📝 Quiz (${total} Q)</button>
+              </div>
+            </div>
+          `;
+
+          // 1. Step 1: Learn Materials Screen
+          if (phase === 'learn') {
+            return `
+              <div class="space-y-4">
+                ${topStepNav}
+
+                <section class="studio-card p-5 space-y-3">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(activeTopic.level)}">${esc(activeTopic.badge)}</span>
+                        <span class="text-xs font-semibold text-[var(--primary)]">Step 1 of 2 · Study Rules &amp; Examples First</span>
+                      </div>
+                      <h3 class="text-xl font-bold text-[var(--foreground)] mt-1.5">${activeTopic.icon} ${esc(activeTopic.title)}</h3>
+                      <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-0.5">${esc(activeTopic.subtitle)}</p>
+                    </div>
+                    <button type="button" data-tq-phase="quiz" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer shrink-0">
+                      Skip to Quiz (${total} Q) →
+                    </button>
+                  </div>
+
+                  ${activeTopic.id === 'pronouns_transform' ? `
+                    <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span>📌 Want the full <strong>Pronoun Transformation Table</strong> (Subject / COD / COI / Tonic / Reflexive / Possessive)?</span>
+                      <button type="button" data-tq-essentials="pronouns" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Pronoun Table →</button>
+                    </div>
+                  ` : activeTopic.id === 'present_tense' ? `
+                    <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <span>📌 Want the full <strong>-ER / -IR / -RE Conjugation &amp; Top 4 Irregulars Table</strong>?</span>
+                      <button type="button" data-tq-essentials="verbs" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-bold text-[var(--link)] cursor-pointer">Open Verb Endings Table →</button>
+                    </div>
+                  ` : ''}
+                </section>
+
+                ${linkedLessons.map((g) => {
+                  const gDone = state.completedGrammar.includes(g.id);
+                  return `
+                    <section class="studio-card p-5 space-y-3.5">
+                      <div class="flex flex-wrap items-start justify-between gap-2 pb-3 border-b border-[var(--border)]">
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(g.level)}">${esc(g.code)}</span>
+                            <span class="text-xs text-[var(--muted-foreground)]">⏱️ ${esc(g.duration)}</span>
+                            ${gDone ? '<span class="px-2 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✓ Studied</span>' : ''}
+                          </div>
+                          <h4 class="text-base font-bold text-[var(--foreground)] mt-1.5">${esc(g.title)}</h4>
+                          <p class="text-xs text-[var(--muted-foreground)] mt-0.5">${esc(g.summary)}</p>
+                        </div>
+                        <button type="button" data-tq-open-gram="${g.id}" class="px-2.5 py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] tint-muted-hover cursor-pointer shrink-0">
+                          Open in Syllabus →
+                        </button>
+                      </div>
+
+                      <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">Core Formula / Pattern</div>
+                        <div class="text-xs sm:text-sm font-semibold text-[var(--foreground)] mt-1 leading-relaxed">${esc(g.formula)}</div>
+                      </div>
+
+                      <div class="p-3.5 rounded-xl tint-primary border border-primary-soft space-y-1 text-xs">
+                        <div class="font-bold text-[var(--primary)]">🌐 C1 English ${state.showZh ? '+ 中文 Native ' : ''}Bridge</div>
+                        <p class="text-[var(--foreground)]"><strong>EN:</strong> ${esc(g.bridgeEn)}</p>
+                        ${state.showZh && g.bridgeZh ? `<p class="text-[var(--foreground)]"><strong>中文:</strong> ${esc(g.bridgeZh)}</p>` : ''}
+                      </div>
+
+                      <div class="p-3 rounded-xl tint-warning border border-warning-soft text-xs">
+                        <div class="font-bold text-[var(--warning)]">⚠️ TCF Canada Trap to Avoid</div>
+                        <p class="text-[var(--foreground)] mt-0.5">${esc(g.trap)}</p>
+                      </div>
+
+                      ${g.examples && g.examples.length ? `
+                        <div class="space-y-1.5">
+                          <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Spoken Examples (Tap to Hear)</div>
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            ${g.examples.map((ex) => `
+                              <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn text-left p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover flex items-center justify-between gap-2.5 cursor-pointer">
+                                <div class="min-w-0">
+                                  <div class="text-xs sm:text-sm font-semibold text-[var(--foreground)]">${esc(ex.fr)}</div>
+                                  <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">${esc(ex.en)}${state.showZh && ex.zh ? ` · ${esc(ex.zh)}` : ''}</div>
+                                </div>
+                                <span class="shrink-0 text-xs">🔊</span>
+                              </button>
+                            `).join('')}
+                          </div>
+                        </div>
+                      ` : ''}
+                    </section>
+                  `;
+                }).join('')}
+
+                <section class="studio-card p-5 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-bold text-[var(--foreground)]">Ready to test yourself on ${esc(activeTopic.title)}?</div>
+                    <div class="text-xs text-[var(--muted-foreground)]">8 targeted questions with instant EN/中文 explanations &amp; audio.</div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    ${!allLessonsStudied && linkedLessons.length > 0 ? `
+                      <button type="button" id="btnMarkTopicStudied" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                        ✓ Mark Lessons Studied (+15 XP)
+                      </button>
+                    ` : ''}
+                    <button type="button" id="btnStartQuizFromLearn" class="px-4 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                      I’ve Studied This — Start ${total}-Question Quiz →
+                    </button>
+                  </div>
+                </section>
+              </div>
+            `;
+          }
+
+          // 2. Step 2: Finished Summary Screen
+          if (state.topicQuizFinished) {
+            const score = qs.filter((q, i) => state.topicQuizAnswers[i] === q.ans).length;
+            const pct = total ? Math.round((score / total) * 100) : 0;
+            const mastered = score >= 7;
+            const curIdx = GRAMMAR_QUIZZES.findIndex((t) => t.id === activeTopic.id);
+            const nextTopic = GRAMMAR_QUIZZES[curIdx + 1] || null;
+
+            return `
+              <div class="space-y-4">
+                ${topStepNav}
+
+                <section class="studio-card p-5 sm:p-6 space-y-5">
+                  <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[var(--border)]">
+                    <div>
+                      <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}</div>
+                      <h3 class="text-xl font-bold text-[var(--foreground)] mt-1">
+                        ${mastered ? '🎉 Topic Mastered!' : score >= 5 ? '👍 Good Progress — Review Misses & Retry' : '💡 Keep Practicing — Review Study Notes & Retry'}
+                      </h3>
+                      <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Score ≥ 7/${total} to earn the Mastery badge for this grammar point.</p>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-3xl font-bold tabular-nums ${mastered ? 'text-[var(--success)]' : 'text-[var(--primary)]'}">${score} / ${total}</div>
+                      <div class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${pct}%</div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2.5">
+                    ${qs.map((q, i) => {
+                      const chosen = state.topicQuizAnswers[i];
+                      const ok = chosen === q.ans;
+                      return `
+                        <div class="p-3.5 rounded-xl border space-y-1.5 ${ok ? 'tint-success border-success-soft' : 'tint-error border-error-soft'}">
+                          <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div class="text-xs font-semibold text-[var(--foreground)]">
+                              <span class="font-bold mr-1">${ok ? '✓' : '✕'} Q${i + 1}.</span>${esc(q.q)}
+                            </div>
+                            ${q.frFull ? `<button type="button" data-speak="${escAttr(q.frFull)}" class="speak-btn px-2 py-0.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer shrink-0">🔊 Hear</button>` : ''}
+                          </div>
+                          <div class="text-xs">
+                            ${!ok ? `<span class="text-[var(--error)] mr-2">Your answer: <strong>${esc(typeof chosen === 'number' ? q.opts[chosen] : '—')}</strong></span>` : ''}
+                            <span class="text-[var(--success)]">Correct: <strong>${esc(q.opts[q.ans])}</strong></span>
+                            ${q.frFull ? `<span class="text-[var(--muted-foreground)] ml-2">« ${esc(q.frFull)} »</span>` : ''}
+                          </div>
+                          <div class="text-xs text-[var(--foreground)]">${esc(q.exp)}</div>
+                          ${state.showZh && q.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(q.expZh)}</div>` : ''}
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  <div class="pt-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <button type="button" data-tq-phase="learn" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                        📘 Review Study Notes
+                      </button>
+                      <button type="button" id="btnRetryTopicQuiz" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                        🔄 Retry Quiz
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      ${nextTopic ? `<button type="button" data-learn-topic="${nextTopic.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">Next Topic (Study First): ${esc(nextTopic.title)} →</button>` : ''}
+                    </div>
+                  </div>
+                </section>
+              </div>
+            `;
+          }
+
+          // 3. Step 2: Active Question Runner Screen
+          const idx = Math.min(state.topicQuizIdx, Math.max(0, total - 1));
           const q = qs[idx];
           const chosen = state.topicQuizAnswers[idx];
           const isAnswered = typeof chosen === 'number';
           const ok = isAnswered && chosen === q.ans;
-          const pct = qs.length ? Math.round(((idx + (isAnswered ? 1 : 0)) / qs.length) * 100) : 0;
+          const pct = total ? Math.round(((idx + (isAnswered ? 1 : 0)) / total) * 100) : 0;
 
           return `
             <div class="space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <button type="button" id="btnBackToTopics" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                  ← All Grammar Quizzes
-                </button>
-                <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-full border text-xs font-bold ${levelBadgeStyle(activeTopic.level)}">${esc(activeTopic.badge)}</span>
-                  <span class="text-xs font-bold text-[var(--foreground)] tabular-nums">Question ${idx + 1} / ${qs.length}</span>
-                </div>
-              </div>
+              ${topStepNav}
 
               <section class="studio-card p-5 sm:p-6 space-y-5">
                 <div class="space-y-2">
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="text-xs font-bold text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}</div>
-                    <div class="text-[11px] text-[var(--muted-foreground)] tabular-nums">${pct}%</div>
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(activeTopic.level)}">${esc(activeTopic.badge)}</span>
+                      <span class="text-xs font-bold text-[var(--primary)]">${activeTopic.icon} ${esc(activeTopic.title)}</span>
+                    </div>
+                    <div class="text-xs font-bold text-[var(--muted-foreground)] tabular-nums">Question ${idx + 1} / ${total} (${pct}%)</div>
                   </div>
                   <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
                     <div class="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style="width:${pct}%"></div>
@@ -6072,7 +6203,7 @@
                     ${state.showZh && q.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(q.expZh)}</div>` : ''}
                     <div class="pt-1 flex justify-end">
                       <button type="button" id="btnNextTopicQ" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                        ${idx + 1 < qs.length ? 'Next Question →' : 'See Results →'}
+                        ${idx + 1 < total ? 'Next Question →' : 'See Results →'}
                       </button>
                     </div>
                   </div>
@@ -6082,7 +6213,7 @@
           `;
         }
 
-        // 3. Topic Catalog Screen
+        // 4. Topic Catalog Screen
         const cats = [
           { id: 'all', label: `All Topics (${GRAMMAR_QUIZZES.length})` },
           { id: 'pronouns', label: '👤 Pronouns' },
@@ -6130,6 +6261,12 @@
                   const best = rec ? rec.best : null;
                   const total = (t.questions || []).length;
                   const mastered = best !== null && best >= 7;
+                  const linked = (t.grammarIds || []).map((id) => GRAMMAR_SYLLABUS.find((g) => g.id === id)).filter(Boolean);
+                  const studiedCnt = linked.filter((g) => state.completedGrammar.includes(g.id)).length;
+                  const allStudied = linked.length > 0 && studiedCnt === linked.length;
+                  const codesText = linked.map((g) => g.code).join(', ');
+                  const studyFirstPrimary = best === null && !allStudied;
+
                   return `
                     <div class="studio-card p-4 flex flex-col justify-between gap-3">
                       <div class="space-y-1.5">
@@ -6146,13 +6283,28 @@
                         </div>
                         <h3 class="text-sm font-bold text-[var(--foreground)]">${esc(t.title)}</h3>
                         <p class="text-xs text-[var(--muted-foreground)] leading-snug">${esc(t.subtitle)}</p>
+                        ${linked.length ? `
+                          <div class="text-[11px] text-[var(--muted-foreground)] tabular-nums">
+                            📘 Lessons: <span class="font-semibold text-[var(--foreground)]">${esc(codesText)}</span> · ${studiedCnt}/${linked.length} studied
+                          </div>
+                        ` : ''}
                       </div>
-                      <div class="pt-2 border-t border-[var(--border)] flex items-center justify-between gap-2">
-                        <span class="text-[11px] text-[var(--muted-foreground)]">${total} TCF-style questions</span>
-                        <button type="button" data-start-topic="${t.id}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
-                          mastered ? 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover' : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                      <div class="pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
+                        <button type="button" data-learn-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
+                          studyFirstPrimary
+                            ? 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                            : 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
                         }">
-                          ${best !== null ? 'Retake Quiz →' : 'Start Quiz →'}
+                          📘 Study First
+                        </button>
+                        <button type="button" data-start-topic="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${
+                          studyFirstPrimary
+                            ? 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                            : mastered
+                              ? 'bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                              : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                        }">
+                          ${best !== null ? 'Retake Quiz →' : `Quiz (${total} Q) →`}
                         </button>
                       </div>
                     </div>
@@ -6171,10 +6323,11 @@
             renderDrillsView();
           };
         });
-        els.mainContent.querySelectorAll('[data-start-topic]').forEach((b) => {
+        els.mainContent.querySelectorAll('[data-learn-topic]').forEach((b) => {
           b.onclick = () => {
             stopAudio();
-            state.activeTopicQuizId = b.dataset.startTopic;
+            state.activeTopicQuizId = b.dataset.learnTopic;
+            state.topicQuizPhase = 'learn';
             state.topicQuizIdx = 0;
             state.topicQuizAnswers = {};
             state.topicQuizFinished = false;
@@ -6182,11 +6335,55 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
         });
+        els.mainContent.querySelectorAll('[data-start-topic]').forEach((b) => {
+          b.onclick = () => {
+            stopAudio();
+            state.activeTopicQuizId = b.dataset.startTopic;
+            state.topicQuizPhase = 'quiz';
+            state.topicQuizIdx = 0;
+            state.topicQuizAnswers = {};
+            state.topicQuizFinished = false;
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        });
+        els.mainContent.querySelectorAll('[data-tq-phase]').forEach((b) => {
+          b.onclick = () => {
+            stopAudio();
+            state.topicQuizPhase = b.dataset.tqPhase === 'quiz' ? 'quiz' : 'learn';
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        });
+        els.mainContent.querySelectorAll('[data-tq-open-gram]').forEach((b) => {
+          b.onclick = () => {
+            state.grammarFilterLevel = 'all';
+            navigate('gram', b.dataset.tqOpenGram);
+          };
+        });
+        els.mainContent.querySelectorAll('[data-tq-essentials]').forEach((b) => {
+          b.onclick = () => {
+            state.essentialsTab = b.dataset.tqEssentials;
+            state.essentialsSearch = '';
+            navigate('ws', 'essentials');
+          };
+        });
+        const btnStartFromLearn = document.getElementById('btnStartQuizFromLearn');
+        if (btnStartFromLearn) {
+          btnStartFromLearn.onclick = () => {
+            stopAudio();
+            state.topicQuizPhase = 'quiz';
+            state.topicQuizFinished = false;
+            renderDrillsView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        }
         const btnBack = document.getElementById('btnBackToTopics');
         if (btnBack) {
           btnBack.onclick = () => {
             stopAudio();
             state.activeTopicQuizId = null;
+            state.topicQuizPhase = 'learn';
             state.topicQuizFinished = false;
             renderDrillsView();
           };
@@ -6195,6 +6392,7 @@
         if (btnRetry) {
           btnRetry.onclick = () => {
             stopAudio();
+            state.topicQuizPhase = 'quiz';
             state.topicQuizIdx = 0;
             state.topicQuizAnswers = {};
             state.topicQuizFinished = false;
@@ -6208,6 +6406,23 @@
           : null;
 
         if (activeTopic) {
+          const btnMarkStudied = document.getElementById('btnMarkTopicStudied');
+          if (btnMarkStudied) {
+            btnMarkStudied.onclick = () => {
+              let newly = 0;
+              (activeTopic.grammarIds || []).forEach((gid) => {
+                if (!state.completedGrammar.includes(gid)) {
+                  state.completedGrammar.push(gid);
+                  newly++;
+                }
+              });
+              if (newly > 0) addXP(15 * newly);
+              else saveState();
+              renderSidebar();
+              renderDrillsView();
+            };
+          }
+
           els.mainContent.querySelectorAll('[data-tq-opt]').forEach((b) => {
             b.onclick = () => {
               const idx = state.topicQuizIdx;
@@ -6299,7 +6514,7 @@
             <div class="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 class="text-2xl font-bold">⚡ Active Drill Lab &amp; Grammar Quizzes</h2>
-                <p class="text-sm text-[var(--muted-foreground)] mt-1">Take dedicated 8-question quizzes for each grammar point (pronouns, every tense, subjunctive, connectors) — or practice Dictée, Gender &amp; Mistakes.</p>
+                <p class="text-sm text-[var(--muted-foreground)] mt-1">Learn each grammar point first (rules, EN/中文 bridge &amp; audio examples), then test yourself with an 8-question quiz — or practice Dictée, Gender &amp; Mistakes.</p>
               </div>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold">
                 Session Score: <span class="text-[var(--primary)]">${state.drillScore} / ${state.drillTotal}</span>
@@ -8428,6 +8643,7 @@
         state.quizAnswers = {};
         state.topicQuizBest = {};
         state.activeTopicQuizId = null;
+        state.topicQuizPhase = 'learn';
         state.topicQuizAnswers = {};
         state.topicQuizFinished = false;
         state.eeDrafts = {};
