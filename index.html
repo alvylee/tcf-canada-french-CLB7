@@ -7,12 +7,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --background: #FAF8F5;
-      --sidebar: #FFFFFF;
+      --background: #FAF9F6;
+      --sidebar: #F6F4EF;
       --card: #FFFFFF;
-      --content: #F6F4EF;
-      --border: #E5E0D6;
-      --card-border: #E2DDD3;
+      --content: #F4F2EC;
+      --border: #E8E4DC;
+      --card-border: #E6E2DA;
       --foreground: #18212F;
       --muted-foreground: #5B6678;
       --primary: #3730A3;
@@ -25,12 +25,12 @@
       --error: #B91C1C;
     }
     html.dark {
-      --background: #0F141E;
-      --sidebar: #141B29;
-      --card: #182131;
-      --content: #111826;
-      --border: #28354D;
-      --card-border: #2B3952;
+      --background: #0D1117;
+      --sidebar: #111620;
+      --card: #161C27;
+      --content: #121822;
+      --border: #253042;
+      --card-border: #263245;
       --foreground: #F1F5F9;
       --muted-foreground: #94A3B8;
       --primary: #818CF8;
@@ -59,6 +59,29 @@
       padding: 0;
       overflow-x: clip;
     }
+    h1, h2, h3 { letter-spacing: -0.015em; }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+
+    .studio-card {
+      background-color: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    html.dark .studio-card {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+    .audio-popover {
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.06);
+    }
+    html.dark .audio-popover {
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+    }
+    details.sidebar-units > summary { list-style: none; }
+    details.sidebar-units > summary::-webkit-details-marker { display: none; }
+    details.sidebar-units[open] .units-chevron { transform: rotate(90deg); }
+    details.sidebar-data-menu > summary { list-style: none; }
+    details.sidebar-data-menu > summary::-webkit-details-marker { display: none; }
 
     /* Subtle tinted semantic surfaces that adapt to light & dark themes */
     .tint-primary { background-color: color-mix(in srgb, var(--primary) 12%, transparent); }
@@ -123,77 +146,86 @@
   <!-- Mobile Sidebar Backdrop -->
   <div id="mobileBackdrop" class="fixed inset-0 z-40 hidden lg:hidden" style="background: rgba(0,0,0,0.45);"></div>
 
-  <div class="flex flex-1 min-h-screen w-full max-w-[1800px] mx-auto 2xl:border-x 2xl:border-[var(--border)]">
+  <div class="flex flex-1 min-h-screen w-full max-w-[1600px] mx-auto 2xl:border-x 2xl:border-[var(--border)]">
     <!-- ========================================================= -->
     <!-- LEFT NAVIGATION SIDEBAR                                   -->
     <!-- ========================================================= -->
     <aside
       id="sidebar"
-      class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 xl:w-[18.5rem] 2xl:w-80 bg-[var(--sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out shrink-0"
+      class="fixed lg:sticky top-0 left-0 z-50 h-screen w-64 xl:w-[16.5rem] bg-[var(--sidebar)] border-r border-[var(--border)] flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out shrink-0"
       aria-label="Course Navigation"
     >
-      <!-- Brand Header -->
-      <div class="p-4 border-b border-[var(--border)]">
+      <!-- Brand Header & Compact Readiness -->
+      <div class="px-4 pt-4 pb-3 border-b border-[var(--border)]">
         <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="w-8 h-8 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-bold text-sm">FR</span>
-            <div>
-              <h1 class="text-sm font-bold leading-tight text-[var(--foreground)]">TCF Canada Studio</h1>
-              <p class="text-xs text-[var(--muted-foreground)]">A1 → B2 (CLB 7) Fast Track</p>
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-bold text-xs shrink-0">FR</span>
+            <div class="flex items-center gap-1.5 min-w-0">
+              <h1 class="text-sm font-bold leading-tight text-[var(--foreground)] truncate">TCF Canada</h1>
+              <span class="px-1.5 py-0.5 rounded-md tint-primary text-[var(--primary)] text-[10px] font-bold shrink-0">CLB 7</span>
             </div>
           </div>
           <button id="btnCloseSidebar" type="button" class="lg:hidden p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] cursor-pointer" aria-label="Close sidebar">✕</button>
         </div>
 
-        <!-- Overall Progress Bar -->
-        <div class="mt-3.5 p-2.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)]">
-          <div class="flex items-center justify-between text-xs mb-1.5">
+        <div class="mt-3 space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
             <span class="text-[var(--muted-foreground)] font-medium">CLB 7 Readiness</span>
-            <span id="sidebarProgressText" class="font-bold text-[var(--primary)]">0%</span>
+            <span id="sidebarProgressText" class="font-bold text-[var(--primary)] tabular-nums">0%</span>
           </div>
-          <div class="w-full h-2 rounded-full tint-muted overflow-hidden">
+          <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
             <div id="sidebarProgressBar" class="h-full rounded-full bg-[var(--primary)] transition-all duration-300" style="width: 0%;"></div>
           </div>
-          <div class="mt-1.5 flex items-center justify-between text-xs text-[var(--muted-foreground)]">
-            <span id="sidebarChaptersStat">0/12 chapters</span>
-            <span id="sidebarVocabStat">0 mastered</span>
+          <div class="flex items-center justify-between text-[11px] text-[var(--muted-foreground)]">
+            <span id="sidebarChaptersStat">0/38 gram · 0/16 voc</span>
+            <span id="sidebarVocabStat">0/12 units</span>
           </div>
         </div>
       </div>
 
       <!-- Navigation Links -->
-      <nav class="flex-1 overflow-y-auto p-3 space-y-4">
-        <!-- Core Workspaces -->
-        <div>
-          <div class="px-2.5 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5">Workspaces</div>
-          <div id="sidebarWorkspaces" class="space-y-1"></div>
-        </div>
+      <nav class="flex-1 overflow-y-auto px-2.5 py-3 space-y-3">
+        <!-- Grouped Workspaces -->
+        <div id="sidebarWorkspaces" class="space-y-3"></div>
 
-        <!-- Thematic Listening & Reading Units -->
-        <div>
-          <div class="px-2.5 flex items-center justify-between mb-1.5">
-            <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Thematic Units (CO/CE)</span>
-            <select id="sidebarLevelFilter" class="text-xs bg-[var(--card)] border border-[var(--border)] rounded-md px-1.5 py-0.5 text-[var(--foreground)] cursor-pointer" aria-label="Filter chapters by CEFR level">
-              <option value="all">All</option>
-              <option value="A1">A1</option>
-              <option value="A2">A2</option>
-              <option value="B1">B1</option>
-              <option value="B2">B2</option>
-            </select>
+        <!-- Collapsible Thematic Listening & Reading Units -->
+        <details id="sidebarUnitsDetails" class="sidebar-units pt-2 border-t border-[var(--border)]">
+          <summary class="px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] tint-muted-hover cursor-pointer select-none">
+            <span class="flex items-center gap-1.5">
+              <span class="units-chevron inline-block transition-transform duration-150">▸</span>
+              <span>Thematic Units</span>
+            </span>
+            <span id="sidebarUnitsCount" class="px-1.5 py-0.5 rounded-full tint-muted text-[11px] font-semibold tabular-nums">0/12</span>
+          </summary>
+
+          <div class="mt-1.5 space-y-1.5">
+            <div class="px-2 flex items-center justify-between">
+              <span class="text-[11px] text-[var(--muted-foreground)]">CEFR Level</span>
+              <select id="sidebarLevelFilter" class="text-xs bg-[var(--card)] border border-[var(--border)] rounded-md px-1.5 py-0.5 text-[var(--foreground)] cursor-pointer" aria-label="Filter chapters by CEFR level">
+                <option value="all">All</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+              </select>
+            </div>
+            <div id="sidebarChaptersList" class="space-y-0.5"></div>
           </div>
-          <div id="sidebarChaptersList" class="space-y-1"></div>
-        </div>
+        </details>
       </nav>
 
-      <!-- Footer -->
-      <div class="p-3 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-1.5 text-xs text-[var(--muted-foreground)]">
-        <span id="streakDisplay" class="font-semibold">🔥 0 XP</span>
-        <div class="flex items-center gap-2">
-          <button id="btnExportProgress" type="button" class="hover:underline text-[var(--muted-foreground)] cursor-pointer" title="Download local progress backup (.json)">Export</button>
-          <button id="btnImportProgress" type="button" class="hover:underline text-[var(--muted-foreground)] cursor-pointer" title="Restore progress from backup (.json)">Import</button>
-          <button id="btnResetProgress" type="button" class="hover:underline text-[var(--muted-foreground)] cursor-pointer" title="Reset saved local progress">Reset</button>
-          <input id="importProgressFile" type="file" accept=".json" class="hidden" />
-        </div>
+      <!-- Minimal Footer -->
+      <div class="px-3.5 py-2.5 border-t border-[var(--border)] flex items-center justify-between gap-2 text-xs text-[var(--muted-foreground)]">
+        <span id="streakDisplay" class="font-semibold tabular-nums">🔥 0 XP</span>
+        <details id="sidebarDataMenu" class="sidebar-data-menu relative">
+          <summary class="px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer select-none">⋯ Data</summary>
+          <div class="audio-popover absolute bottom-full right-0 mb-2 w-40 p-1.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] z-50 flex flex-col gap-0.5">
+            <button id="btnExportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Download local progress backup (.json)">Export Backup</button>
+            <button id="btnImportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Restore progress from backup (.json)">Import Backup</button>
+            <button id="btnResetProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--error)] cursor-pointer" title="Reset saved local progress">Reset Progress</button>
+          </div>
+        </details>
+        <input id="importProgressFile" type="file" accept=".json" class="hidden" />
       </div>
     </aside>
 
@@ -201,53 +233,73 @@
     <!-- RIGHT MAIN COLUMN                                         -->
     <!-- ========================================================= -->
     <div class="flex-1 flex flex-col min-w-0">
-      <!-- Sticky Top Audio & Learning Preferences Bar -->
-      <header class="sticky top-0 z-30 bg-[var(--background)]/95 backdrop-blur-sm border-b border-[var(--border)]">
-        <div class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
-          <!-- Left: Mobile Menu + Audio Wave + Stop -->
-          <div class="flex items-center gap-2">
-            <button id="btnOpenSidebar" type="button" class="lg:hidden px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer" aria-label="Open menu">☰ Menu</button>
+      <!-- Calm Sticky Top Bar -->
+      <header class="sticky top-0 z-30 bg-[var(--background)]/92 backdrop-blur-md border-b border-[var(--border)]">
+        <div class="w-full max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
+          <!-- Left: Mobile Menu + Active View Title + Live Audio Pill -->
+          <div class="flex items-center gap-2.5 min-w-0">
+            <button id="btnOpenSidebar" type="button" class="lg:hidden px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer shrink-0" aria-label="Open menu">☰</button>
 
-            <div id="globalWaveIndicator" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg tint-muted text-[var(--muted-foreground)] transition-colors">
-              <div class="flex items-end gap-0.5 h-3.5" aria-hidden="true">
-                <span class="wave-bar w-1 h-3.5 bg-current rounded-full"></span>
-                <span class="wave-bar w-1 h-3.5 bg-current rounded-full"></span>
-                <span class="wave-bar w-1 h-3.5 bg-current rounded-full"></span>
-                <span class="wave-bar w-1 h-3.5 bg-current rounded-full"></span>
+            <span id="topbarViewTitle" class="text-sm font-semibold text-[var(--foreground)] truncate">Today &amp; Plan</span>
+
+            <div id="globalWaveIndicator" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full tint-muted text-[var(--muted-foreground)] transition-colors shrink-0">
+              <div class="flex items-end gap-0.5 h-3" aria-hidden="true">
+                <span class="wave-bar w-0.5 h-3 bg-current rounded-full"></span>
+                <span class="wave-bar w-0.5 h-3 bg-current rounded-full"></span>
+                <span class="wave-bar w-0.5 h-3 bg-current rounded-full"></span>
+                <span class="wave-bar w-0.5 h-3 bg-current rounded-full"></span>
               </div>
-              <span id="globalWaveText" class="text-xs font-semibold whitespace-nowrap">Audio Ready</span>
+              <span id="globalWaveText" class="text-[11px] font-medium whitespace-nowrap">Human Audio</span>
             </div>
 
-            <button id="btnGlobalStop" type="button" disabled class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer">
+            <button id="btnGlobalStop" type="button" disabled class="hidden px-2.5 py-1 rounded-full text-xs font-semibold border border-error-soft tint-error text-[var(--error)] disabled:opacity-45 cursor-pointer shrink-0">
               ■ Stop
             </button>
           </div>
 
-          <!-- Right: EN/中文 Bridge Toggle + Speed + Voice -->
-          <div class="flex flex-wrap items-center gap-2">
-            <button id="btnToggleTheme" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] cursor-pointer" title="Switch Light / Dark theme">🌙</button>
+          <!-- Right: 3 Clean Controls (Language + Audio Popover + Theme) -->
+          <div class="flex items-center gap-2 shrink-0">
             <button id="btnToggleZh" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer" title="Toggle Mandarin Chinese contrastive explanations & glosses">
               EN + 中文
             </button>
 
-            <div class="inline-flex p-0.5 rounded-lg bg-[var(--card)] border border-[var(--border)]" role="group" aria-label="Speech Speed">
-              <button type="button" data-speed="0.72" class="speed-btn px-2 py-1 rounded-md text-xs font-semibold cursor-pointer">0.7x</button>
-              <button type="button" data-speed="0.88" class="speed-btn px-2 py-1 rounded-md text-xs font-semibold cursor-pointer">0.88x</button>
-              <button type="button" data-speed="1.0" class="speed-btn px-2 py-1 rounded-md text-xs font-semibold cursor-pointer">1.0x</button>
-              <button type="button" data-speed="1.15" class="speed-btn px-2 py-1 rounded-md text-xs font-semibold cursor-pointer">1.15x</button>
+            <div id="audioPopoverWrap" class="relative">
+              <button id="btnAudioPopover" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover flex items-center gap-1.5 cursor-pointer" title="Speed, voice & audio settings">
+                <span>🔊</span>
+                <span id="audioPopoverSpeedLabel" class="tabular-nums">0.88x</span>
+                <span class="opacity-60 text-[10px]">▾</span>
+              </button>
+
+              <div id="audioPopoverPanel" class="hidden audio-popover absolute right-0 top-full mt-2 w-72 p-3.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
+                <div>
+                  <div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5">Playback Speed</div>
+                  <div class="grid grid-cols-4 gap-1 p-0.5 rounded-xl bg-[var(--content)] border border-[var(--border)]" role="group" aria-label="Speech Speed">
+                    <button type="button" data-speed="0.72" class="speed-btn px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer">0.7x</button>
+                    <button type="button" data-speed="0.88" class="speed-btn px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer">0.88x</button>
+                    <button type="button" data-speed="1.0" class="speed-btn px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer">1.0x</button>
+                    <button type="button" data-speed="1.15" class="speed-btn px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer">1.15x</button>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5">French Voice</div>
+                  <select id="voiceSelect" aria-label="Select French Voice" class="w-full bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] text-xs font-medium rounded-xl px-2.5 py-2 cursor-pointer">
+                    <option value="__neural__">✨ Studio Human (FR+CA)</option>
+                  </select>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1 border-t border-[var(--border)]">
+                  <button id="btnTestVoice" type="button" class="flex-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--content)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Test selected voice">🔊 Test Voice</button>
+                  <button id="btnLiveTtsStatus" type="button" class="hidden px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--content)] text-[var(--muted-foreground)] tint-muted-hover cursor-pointer whitespace-nowrap" title="Local Live AI Voice Server (click to connect or view setup)">⚪ Live AI</button>
+                </div>
+              </div>
             </div>
 
-            <div class="inline-flex items-center gap-1">
-              <select id="voiceSelect" aria-label="Select French Voice" class="bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-medium rounded-lg px-2 py-1.5 max-w-[220px] xl:max-w-[260px] cursor-pointer">
-                <option value="__neural__">✨ Studio Human (FR+CA)</option>
-              </select>
-              <button id="btnTestVoice" type="button" class="px-2 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-85 cursor-pointer" title="Test selected voice">🔊 Test</button>
-              <button id="btnLiveTtsStatus" type="button" class="hidden px-2 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:opacity-85 cursor-pointer whitespace-nowrap" title="Local Live AI Voice Server (click to connect or view setup)">⚪ Live AI</button>
-            </div>
+            <button id="btnToggleTheme" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Switch Light / Dark theme">🌙</button>
           </div>
         </div>
 
-        <div id="speechWarning" class="hidden w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 pb-2">
+        <div id="speechWarning" class="hidden w-full max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-2">
           <div class="p-2 rounded-lg tint-warning border border-warning-soft text-xs text-[var(--foreground)] flex items-center justify-between gap-2">
             <span id="speechWarningText"></span>
             <button type="button" id="btnDismissSpeechWarn" class="font-bold cursor-pointer px-1">✕</button>
@@ -256,7 +308,7 @@
       </header>
 
       <!-- Main Dynamic Content -->
-      <main id="mainContent" class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-6 lg:py-8"></main>
+      <main id="mainContent" class="flex-1 w-full max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"></main>
     </div>
   </div>
 
@@ -2438,6 +2490,7 @@
 
       const state = {
         activeView: persisted.activeView || 'roadmap', // 'roadmap' | 'chapter' | 'drills' | 'vocab' | 'mock' | 'output'
+        roadmapTab: 'today', // 'today' | 'sprint' | 'plan'
         activeChapterId: persisted.activeChapterId || 'a1_1',
         sidebarLevelFilter: 'all',
         showZh: persisted.showZh !== undefined ? persisted.showZh : true,
@@ -2700,6 +2753,8 @@
         btnOpenSidebar: document.getElementById('btnOpenSidebar'),
         btnCloseSidebar: document.getElementById('btnCloseSidebar'),
         sidebarWorkspaces: document.getElementById('sidebarWorkspaces'),
+        sidebarUnitsDetails: document.getElementById('sidebarUnitsDetails'),
+        sidebarUnitsCount: document.getElementById('sidebarUnitsCount'),
         sidebarChaptersList: document.getElementById('sidebarChaptersList'),
         sidebarLevelFilter: document.getElementById('sidebarLevelFilter'),
         sidebarProgressText: document.getElementById('sidebarProgressText'),
@@ -2711,10 +2766,15 @@
         btnImportProgress: document.getElementById('btnImportProgress'),
         importProgressFile: document.getElementById('importProgressFile'),
         btnResetProgress: document.getElementById('btnResetProgress'),
+        topbarViewTitle: document.getElementById('topbarViewTitle'),
         globalWaveIndicator: document.getElementById('globalWaveIndicator'),
         globalWaveText: document.getElementById('globalWaveText'),
         btnGlobalStop: document.getElementById('btnGlobalStop'),
         btnToggleZh: document.getElementById('btnToggleZh'),
+        audioPopoverWrap: document.getElementById('audioPopoverWrap'),
+        btnAudioPopover: document.getElementById('btnAudioPopover'),
+        audioPopoverPanel: document.getElementById('audioPopoverPanel'),
+        audioPopoverSpeedLabel: document.getElementById('audioPopoverSpeedLabel'),
         speedBtns: document.querySelectorAll('.speed-btn'),
         voiceSelect: document.getElementById('voiceSelect'),
         btnTestVoice: document.getElementById('btnTestVoice'),
@@ -3074,13 +3134,15 @@
           els.globalWaveIndicator.classList.remove('tint-muted', 'text-[var(--muted-foreground)]');
           els.globalWaveText.textContent = state.activeSpeakerLabel ? `🎙️ ${state.activeSpeakerLabel}` : 'Speaking...';
           els.btnGlobalStop.disabled = false;
+          els.btnGlobalStop.classList.remove('hidden');
         } else {
           els.globalWaveIndicator.classList.remove('is-playing', 'tint-primary', 'text-[var(--primary)]');
           els.globalWaveIndicator.classList.add('tint-muted', 'text-[var(--muted-foreground)]');
           els.globalWaveText.textContent = (state.selectedVoiceURI === '__neural__')
-            ? (state.liveTtsOnline ? 'Live Studio Ready' : (hasNeuralPack() ? 'Human Audio Ready' : 'Audio Ready'))
+            ? (state.liveTtsOnline ? 'Live Studio' : (hasNeuralPack() ? 'Human Audio' : 'Audio Ready'))
             : 'Audio Ready';
           els.btnGlobalStop.disabled = true;
+          els.btnGlobalStop.classList.add('hidden');
         }
 
         document.querySelectorAll('[data-passage-play]').forEach((btn) => {
@@ -3488,26 +3550,30 @@
         els.speedBtns.forEach((btn) => {
           const active = Math.abs(parseFloat(btn.dataset.speed) - state.speed) < 0.01;
           btn.className = active
-            ? 'speed-btn px-2 py-1 rounded-md text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] cursor-pointer'
-            : 'speed-btn px-2 py-1 rounded-md text-xs font-medium text-[var(--muted-foreground)] tint-muted-hover cursor-pointer';
+            ? 'speed-btn px-2 py-1 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] cursor-pointer'
+            : 'speed-btn px-2 py-1 rounded-lg text-xs font-medium text-[var(--muted-foreground)] tint-muted-hover cursor-pointer';
         });
+
+        if (els.audioPopoverSpeedLabel) {
+          els.audioPopoverSpeedLabel.textContent = `${Math.abs(state.speed - 0.72) < 0.01 ? '0.7' : state.speed}x`;
+        }
 
         els.btnToggleZh.className = state.showZh
           ? 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-primary-soft tint-primary text-[var(--primary)] cursor-pointer'
           : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] cursor-pointer';
-        els.btnToggleZh.textContent = state.showZh ? 'EN + 中文 ON' : 'EN Only';
+        els.btnToggleZh.textContent = state.showZh ? 'EN + 中文' : 'EN Only';
       }
 
       const WORKSPACES = [
-        { id: 'roadmap', icon: '🗺️', label: 'CLB 7 Roadmap & Plan' },
-        { id: 'essentials', icon: '📌', label: 'Quick Essentials & Pronouns' },
-        { id: 'grammar', icon: '📘', label: `Grammar & Sounds (${GRAMMAR_SYLLABUS.length || 38})` },
-        { id: 'vocabsyl', icon: '📚', label: `Vocab Syllabus (${VOCAB_SYLLABUS.length || 16})` },
-        { id: 'drills', icon: '⚡', label: 'Active Drill Lab' },
-        { id: 'vocab', icon: '🗂️', label: 'SRS Flashcard Deck' },
-        { id: 'mock', icon: '🎯', label: 'TCF Mock Exam (CO/CE)' },
-        { id: 'output', icon: '✍️', label: 'Writing & Speaking Lab' },
-        { id: 'coach', icon: '🤖', label: 'AI Coach & Immersion' }
+        { id: 'roadmap', icon: '🗺️', label: 'Today & Plan', group: 'plan' },
+        { id: 'essentials', icon: '📌', label: 'Quick Essentials', group: 'learn' },
+        { id: 'grammar', icon: '📘', label: 'Grammar & Sounds', group: 'learn' },
+        { id: 'vocabsyl', icon: '📚', label: 'Vocab Syllabus', group: 'learn' },
+        { id: 'drills', icon: '⚡', label: 'Active Drill Lab', group: 'practice' },
+        { id: 'vocab', icon: '🗂️', label: 'SRS Flashcards', group: 'practice' },
+        { id: 'mock', icon: '🎯', label: 'TCF Mock Exam', group: 'practice' },
+        { id: 'output', icon: '✍️', label: 'Writing & Speaking', group: 'practice' },
+        { id: 'coach', icon: '🤖', label: 'AI Coach', group: 'practice' }
       ];
 
       function renderSidebar() {
@@ -3526,29 +3592,57 @@
         els.sidebarProgressBar.style.width = `${readiness}%`;
         els.sidebarChaptersStat.textContent = `${gDone}/${GRAMMAR_SYLLABUS.length} gram · ${vlDone}/${VOCAB_SYLLABUS.length} voc`;
         els.sidebarVocabStat.textContent = `${chDone}/${CHAPTERS.length} units`;
+        if (els.sidebarUnitsCount) els.sidebarUnitsCount.textContent = `${chDone}/${CHAPTERS.length}`;
+        if (els.sidebarUnitsDetails && state.activeView === 'chapter') {
+          els.sidebarUnitsDetails.open = true;
+        }
+
+        if (els.topbarViewTitle) {
+          if (state.activeView === 'chapter') {
+            const curCh = CHAPTERS.find((c) => c.id === state.activeChapterId) || CHAPTERS[0];
+            els.topbarViewTitle.textContent = `${curCh.code} · ${curCh.shortTitle}`;
+          } else {
+            const curWs = WORKSPACES.find((w) => w.id === state.activeView);
+            els.topbarViewTitle.textContent = curWs ? curWs.label : 'TCF Canada Studio';
+          }
+        }
+
         const st = getStudyStreak();
         els.streakDisplay.textContent = st > 0 ? `🔥 ${st}d · ${state.xp} XP` : `🔥 ${state.xp} XP`;
 
-        els.sidebarWorkspaces.innerHTML = WORKSPACES.map((w) => {
-          const active = state.activeView === w.id;
-          let badge = '';
-          if (w.id === 'grammar') badge = `<span class="text-xs px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold shrink-0">${gDone}/${GRAMMAR_SYLLABUS.length}</span>`;
-          else if (w.id === 'vocabsyl') badge = `<span class="text-xs px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold shrink-0">${vlDone}/${VOCAB_SYLLABUS.length}</span>`;
-          else if (w.id === 'drills' && state.mistakes.length > 0) badge = `<span class="text-xs px-1.5 py-0.5 rounded-full tint-error text-[var(--error)] font-bold shrink-0" title="Missed items to review">${state.mistakes.length} fix</span>`;
-          else if (w.id === 'vocab') badge = `<span class="text-xs px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold shrink-0">${vDone}/${ALL_VOCAB.length}</span>`;
-          return `
-            <button type="button" data-nav-ws="${w.id}" class="w-full text-left px-3 py-2 rounded-xl flex items-center justify-between gap-2 text-sm transition cursor-pointer border ${
-              active
-                ? 'tint-primary text-[var(--primary)] border-primary-soft font-semibold'
-                : 'border-transparent text-[var(--foreground)] tint-muted-hover font-medium'
-            }">
-              <span class="flex items-center gap-2.5 min-w-0">
-                <span>${w.icon}</span>
-                <span class="truncate">${w.label}</span>
-              </span>
-              ${badge}
-            </button>
-          `;
+        const groupsMeta = [
+          { key: 'plan', title: '' },
+          { key: 'learn', title: 'Learn' },
+          { key: 'practice', title: 'Practice & Exam' }
+        ];
+
+        els.sidebarWorkspaces.innerHTML = groupsMeta.map((grp) => {
+          const items = WORKSPACES.filter((w) => w.group === grp.key);
+          const heading = grp.title
+            ? `<div class="px-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1">${grp.title}</div>`
+            : '';
+          const rows = items.map((w) => {
+            const active = state.activeView === w.id;
+            let badge = '';
+            if (w.id === 'grammar') badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${gDone}/${GRAMMAR_SYLLABUS.length}</span>`;
+            else if (w.id === 'vocabsyl') badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${vlDone}/${VOCAB_SYLLABUS.length}</span>`;
+            else if (w.id === 'drills' && state.mistakes.length > 0) badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-error text-[var(--error)] font-bold tabular-nums shrink-0" title="Missed items to review">${state.mistakes.length} fix</span>`;
+            else if (w.id === 'vocab') badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${vDone}/${ALL_VOCAB.length}</span>`;
+            return `
+              <button type="button" data-nav-ws="${w.id}" class="w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between gap-2 text-[13px] transition cursor-pointer border ${
+                active
+                  ? 'tint-primary text-[var(--primary)] border-primary-soft font-semibold'
+                  : 'border-transparent text-[var(--foreground)] tint-muted-hover font-medium'
+              }">
+                <span class="flex items-center gap-2.5 min-w-0">
+                  <span class="text-sm">${w.icon}</span>
+                  <span class="truncate">${w.label}</span>
+                </span>
+                ${badge}
+              </button>
+            `;
+          }).join('');
+          return `<div>${heading}<div class="space-y-0.5">${rows}</div></div>`;
         }).join('');
 
         const filteredCh = CHAPTERS.filter((c) => state.sidebarLevelFilter === 'all' || c.level === state.sidebarLevelFilter);
@@ -3556,13 +3650,13 @@
           const active = state.activeView === 'chapter' && state.activeChapterId === ch.id;
           const done = state.completedChapters.includes(ch.id);
           return `
-            <button type="button" data-nav-ch="${ch.id}" class="w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between gap-2 text-xs transition cursor-pointer border ${
+            <button type="button" data-nav-ch="${ch.id}" class="w-full text-left px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-2 text-xs transition cursor-pointer border ${
               active
                 ? 'tint-primary text-[var(--primary)] border-primary-soft font-semibold'
                 : 'border-transparent text-[var(--foreground)] tint-muted-hover'
             }">
               <span class="flex items-center gap-2 min-w-0">
-                <span class="px-1.5 py-0.5 rounded border text-xs font-bold shrink-0 ${levelBadgeStyle(ch.level)}">${ch.code}</span>
+                <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold shrink-0 ${levelBadgeStyle(ch.level)}">${ch.code}</span>
                 <span class="truncate">${esc(ch.shortTitle)}</span>
               </span>
               ${done ? '<span class="text-[var(--success)] font-bold shrink-0">✓</span>' : ''}
@@ -4622,6 +4716,13 @@
         const nextUnit = CHAPTERS.find((c) => !state.completedChapters.includes(c.id)) || CHAPTERS[0];
         const dueCount = countDueVocab();
         const mistakeCount = state.mistakes.length;
+        const streak = getStudyStreak();
+        const audioClipCount = Object.keys(AUDIO_MANIFEST).length || 882;
+
+        const doneWeeks = TWELVE_WEEK_PLAN.filter((wk) => {
+          const p = state.weeklyPlan[wk.w] || {};
+          return p.rec && p.text && p.err;
+        }).length;
 
         const levelStats = ['A1', 'A2', 'B1', 'B2'].map((lvl) => {
           const chs = CHAPTERS.filter((c) => c.level === lvl);
@@ -4641,405 +4742,429 @@
         const soundLessons = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
         const soundDone = soundLessons.filter((g) => state.completedGrammar.includes(g.id)).length;
 
-        els.mainContent.innerHTML = `
-          <div class="space-y-6">
-            <!-- TODAY'S GUIDED 25-MIN SESSION (Zero Decision Fatigue) -->
-            <section class="bg-[var(--card)] border border-primary-soft rounded-2xl p-5">
-              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        const outputDoneToday = state.dailyOutputDoneDate === todayISO();
+        const dailyOutputPrompts = [
+          { tab: 'ee', taskId: 'ee1', label: 'Write 3–4 sentences in French about your plans this weekend using « aller + inf. » or « venir de ».' },
+          { tab: 'eo', taskId: 'eo2', label: 'Shadow 3 sentences aloud in EO Studio & ask 3 varied questions using « Pourriez-vous… ? ».' },
+          { tab: 'ee', taskId: 'ee2', label: 'Write a 5-sentence mini-story mixing Passé Composé + Imparfait about yesterday.' },
+          { tab: 'eo', taskId: 'eo3', label: 'Speak 60 seconds aloud on a B2 topic using « Certes… toutefois » and « En somme ».' }
+        ];
+        const daySeed = Math.floor(Date.now() / (24 * 3600 * 1000)) % dailyOutputPrompts.length;
+        const dailyOut = dailyOutputPrompts[daySeed];
+
+        const placementPanelHTML = state.placementOpen ? (() => {
+          const PLACEMENT_QS = [
+            { id: 'pl1', lvl: 'A1', q: 'Complete: « J’___ vingt-huit ans et j’habite ___ Canada. »', opts: ['suis / en', 'ai / au', 'ai / en', 'suis / au'], ans: 1 },
+            { id: 'pl2', lvl: 'A1', q: 'Negate: « Il a une voiture. » → « Il n’a pas ___ voiture. »', opts: ['une', 'la', 'de', 'des'], ans: 2 },
+            { id: 'pl3', lvl: 'A2', q: 'Passé Composé (fem.): « Hier, Marie ___ tôt. »', opts: ['a parti', 'est parti', 'est partie', 'partait'], ans: 2 },
+            { id: 'pl4', lvl: 'A2', q: '« Tu vas souvent à la bibliothèque ? Oui, j’___ vais tous les samedis. »', opts: ['en', 'y', 'lui', 'la'], ans: 1 },
+            { id: 'pl5', lvl: 'B1', q: '« Le projet ___ je t’ai parlé vient d’être approuvé. »', opts: ['que', 'qui', 'dont', 'où'], ans: 2 },
+            { id: 'pl6', lvl: 'B1', q: '« ___ la tempête de neige, les bus circulent normalement. »', opts: ['Bien que', 'Malgré', 'Pourtant', 'Parce que'], ans: 1 },
+            { id: 'pl7', lvl: 'B2', q: '« Bien qu’il ___ difficile de tout prévoir, il faut agir dès maintenant. »', opts: ['est', 'soit', 'sera', 'était'], ans: 1 },
+            { id: 'pl8', lvl: 'B2', q: '« J’espère que vous ___ votre objectif cette année. »', opts: ['atteignez', 'atteindrez', 'atteigniez', 'ayez atteint'], ans: 1 }
+          ];
+          const answeredCount = PLACEMENT_QS.filter((pq) => typeof state.placementAnswers[pq.id] === 'number').length;
+          const allDone = answeredCount === PLACEMENT_QS.length;
+          const score = PLACEMENT_QS.filter((pq) => state.placementAnswers[pq.id] === pq.ans).length;
+          const recLvl = score <= 2 ? 'A1' : score <= 4 ? 'A2' : score <= 6 ? 'B1' : 'B2';
+          return `
+            <div class="studio-card p-5 border-primary-soft space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-xs font-bold">✨ Today’s Guided Session (~25 min)</span>
-                  <h2 class="text-lg font-bold mt-1 text-[var(--foreground)]">Pick up right where you left off — zero guesswork</h2>
+                  <div class="text-sm font-bold text-[var(--foreground)]">🧭 Diagnostic Level Check (${answeredCount}/${PLACEMENT_QS.length})</div>
+                  <div class="text-xs text-[var(--muted-foreground)]">Quickly calibrate where to start in the A1 → B2 syllabus.</div>
                 </div>
-                <span class="text-xs font-semibold text-[var(--muted-foreground)]">
-                  ${getStudyStreak() > 0 ? `🔥 ${getStudyStreak()}-day streak` : 'Complete any step to start your streak'}
-                </span>
+                ${allDone ? `<span class="px-3 py-1 rounded-full tint-success text-[var(--success)] text-xs font-bold">Score: ${score}/${PLACEMENT_QS.length} → Recommended Start: ${recLvl}</span>` : ''}
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                ${nextGram ? `
-                  <button type="button" data-today-gram="${nextGram.id}" class="text-left p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2">
-                    <div>
-                      <div class="flex items-center justify-between text-xs">
-                        <span class="font-bold text-[var(--primary)]">1. Grammar · 5m</span>
-                        <span class="px-1.5 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(nextGram.level)}">${nextGram.code}</span>
-                      </div>
-                      <div class="text-xs font-semibold text-[var(--foreground)] mt-1.5 leading-snug">${esc(nextGram.title)}</div>
-                    </div>
-                    <span class="text-xs font-bold text-[var(--link)]">Start Lesson →</span>
-                  </button>
-                ` : ''}
-
-                ${nextVocab ? `
-                  <button type="button" data-today-vsyl="${nextVocab.id}" class="text-left p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2">
-                    <div>
-                      <div class="flex items-center justify-between text-xs">
-                        <span class="font-bold text-[var(--success)]">2. Vocab · 5m</span>
-                        <span class="px-1.5 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(nextVocab.level)}">${nextVocab.code}</span>
-                      </div>
-                      <div class="text-xs font-semibold text-[var(--foreground)] mt-1.5 leading-snug">${esc(nextVocab.title)}</div>
-                    </div>
-                    <span class="text-xs font-bold text-[var(--link)]">Learn Theme →</span>
-                  </button>
-                ` : ''}
-
-                <button type="button" id="btnTodayReview" class="text-left p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2">
-                  <div>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--warning)]">3. Active Recall · 5m</span>
-                      <span class="px-1.5 py-0.5 rounded text-xs font-bold ${mistakeCount > 0 ? 'tint-error text-[var(--error)]' : 'tint-primary text-[var(--primary)]'}">
-                        ${mistakeCount > 0 ? `${mistakeCount} missed` : `${dueCount} due`}
-                      </span>
-                    </div>
-                    <div class="text-xs font-semibold text-[var(--foreground)] mt-1.5 leading-snug">
-                      ${mistakeCount > 0 ? 'Fix your recent missed questions before moving on' : 'Review due SRS flashcards with neural audio'}
-                    </div>
-                  </div>
-                  <span class="text-xs font-bold text-[var(--link)]">${mistakeCount > 0 ? 'Fix Mistakes →' : 'Open Due Deck →'}</span>
-                </button>
-
-                <button type="button" data-go-ch="${nextUnit.id}" class="text-left p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2">
-                  <div>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--primary)]">4. Listen/Read · 10m</span>
-                      <span class="px-1.5 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(nextUnit.level)}">${nextUnit.code}</span>
-                    </div>
-                    <div class="text-xs font-semibold text-[var(--foreground)] mt-1.5 leading-snug">${esc(nextUnit.shortTitle)}</div>
-                  </div>
-                  <span class="text-xs font-bold text-[var(--link)]">Open Unit →</span>
-                </button>
-              </div>
-
-              <!-- 5. Daily Active Output Micro-Task (Fixes Passive/Active Gap) -->
-              ${(() => {
-                const outputDoneToday = state.dailyOutputDoneDate === todayISO();
-                const dailyOutputPrompts = [
-                  { tab: 'ee', taskId: 'ee1', label: 'Write 3–4 sentences in French about your plans this weekend using « aller + inf. » or « venir de ».' },
-                  { tab: 'eo', taskId: 'eo2', label: 'Shadow 3 sentences aloud in EO Studio & ask 3 varied questions using « Pourriez-vous… ? ».' },
-                  { tab: 'ee', taskId: 'ee2', label: 'Write a 5-sentence mini-story mixing Passé Composé + Imparfait about yesterday.' },
-                  { tab: 'eo', taskId: 'eo3', label: 'Speak 60 seconds aloud on a B2 topic using « Certes… toutefois » and « En somme ».' }
-                ];
-                const daySeed = Math.floor(Date.now() / (24 * 3600 * 1000)) % dailyOutputPrompts.length;
-                const dailyOut = dailyOutputPrompts[daySeed];
-                return `
-                  <div class="mt-2.5 p-3.5 rounded-xl border flex flex-wrap items-center justify-between gap-3 ${
-                    outputDoneToday ? 'tint-success border-success-soft' : 'bg-[var(--content)] border-[var(--border)]'
-                  }">
-                    <div class="space-y-0.5 min-w-0 flex-1">
-                      <div class="flex items-center gap-2 text-xs">
-                        <span class="font-bold ${outputDoneToday ? 'text-[var(--success)]' : 'text-[var(--primary)]'}">5. Active Output · 5m (Writing/Speaking Habit)</span>
-                        ${outputDoneToday ? '<span class="px-2 py-0.5 rounded-full tint-success text-[var(--success)] font-bold">✓ Done Today</span>' : ''}
-                      </div>
-                      <div class="text-xs text-[var(--foreground)]">${esc(dailyOut.label)}</div>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                      <button type="button" id="btnDailyOutOpen" data-out-jump="${dailyOut.tab}" data-out-task="${dailyOut.taskId}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] cursor-pointer">
-                        Open ${dailyOut.tab.toUpperCase()} Studio →
-                      </button>
-                      <button type="button" id="btnDailyOutDone" class="px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
-                        outputDoneToday ? 'tint-success border border-success-soft text-[var(--success)]' : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
-                      }">
-                        ${outputDoneToday ? '✓ Completed' : 'Mark Done (+15 XP)'}
-                      </button>
-                    </div>
-                  </div>
-                `;
-              })()}
-            </section>
-
-            <!-- CEFR Syllabus Overview -->
-            <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5 sm:p-6">
-              <div class="flex flex-wrap items-start justify-between gap-4">
-                <div class="max-w-3xl xl:max-w-4xl">
-                  <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full tint-primary border border-primary-soft text-xs font-semibold text-[var(--primary)]">
-                    <span>C1 English + 中文 Native Fast-Track</span>
-                    <span>•</span>
-                    <span>A1 → B2 (CLB 7) Complete Syllabus</span>
-                  </div>
-                  <h2 class="text-xl font-bold mt-2 text-[var(--foreground)]">TCF Canada Curriculum Progress</h2>
-                  <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">
-                    ${GRAMMAR_SYLLABUS.length || 38} Grammar &amp; Sounds lessons · ${VOCAB_SYLLABUS.length || 16} Thematic Vocab lessons · 12 4-step Listening/Reading Units · 539 neural human French audio clips (FR + CA).
-                  </p>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                  <button type="button" data-go-ws="essentials" class="px-4 py-2 rounded-xl bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] text-xs font-semibold cursor-pointer">
-                    📌 Quick Essentials
-                  </button>
-                  <button type="button" id="btnTogglePlacement" class="px-4 py-2 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-bold cursor-pointer">
-                    🧭 ${state.placementOpen ? 'Hide Level Check' : '3-Min Level Check (8 Q)'}
-                  </button>
-                  <button type="button" data-go-ws="mock" class="px-4 py-2 rounded-xl bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] text-xs font-semibold cursor-pointer">
-                    🎯 TCF Mock Sprint
-                  </button>
-                  <button type="button" data-go-ws="output" class="px-4 py-2 rounded-xl bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] text-xs font-semibold cursor-pointer">
-                    ✍️ EE / EO Studio
-                  </button>
-                </div>
-              </div>
-
-              ${state.placementOpen ? (() => {
-                const PLACEMENT_QS = [
-                  { id: 'pl1', lvl: 'A1', q: 'Complete: « J’___ vingt-huit ans et j’habite ___ Canada. »', opts: ['suis / en', 'ai / au', 'ai / en', 'suis / au'], ans: 1 },
-                  { id: 'pl2', lvl: 'A1', q: 'Negate: « Il a une voiture. » → « Il n’a pas ___ voiture. »', opts: ['une', 'la', 'de', 'des'], ans: 2 },
-                  { id: 'pl3', lvl: 'A2', q: 'Passé Composé (fem.): « Hier, Marie ___ tôt. »', opts: ['a parti', 'est parti', 'est partie', 'partait'], ans: 2 },
-                  { id: 'pl4', lvl: 'A2', q: '« Tu vas souvent à la bibliothèque ? Oui, j’___ vais tous les samedis. »', opts: ['en', 'y', 'lui', 'la'], ans: 1 },
-                  { id: 'pl5', lvl: 'B1', q: '« Le projet ___ je t’ai parlé vient d’être approuvé. »', opts: ['que', 'qui', 'dont', 'où'], ans: 2 },
-                  { id: 'pl6', lvl: 'B1', q: '« ___ la tempête de neige, les bus circulent normalement. »', opts: ['Bien que', 'Malgré', 'Pourtant', 'Parce que'], ans: 1 },
-                  { id: 'pl7', lvl: 'B2', q: '« Bien qu’il ___ difficile de tout prévoir, il faut agir dès maintenant. »', opts: ['est', 'soit', 'sera', 'était'], ans: 1 },
-                  { id: 'pl8', lvl: 'B2', q: '« J’espère que vous ___ votre objectif cette année. »', opts: ['atteignez', 'atteindrez', 'atteigniez', 'ayez atteint'], ans: 1 }
-                ];
-                const answeredCount = PLACEMENT_QS.filter((pq) => typeof state.placementAnswers[pq.id] === 'number').length;
-                const allDone = answeredCount === PLACEMENT_QS.length;
-                const score = PLACEMENT_QS.filter((pq) => state.placementAnswers[pq.id] === pq.ans).length;
-                const recLvl = score <= 2 ? 'A1' : score <= 4 ? 'A2' : score <= 6 ? 'B1' : 'B2';
-                return `
-                  <div class="mt-4 p-4 rounded-2xl bg-[var(--content)] border border-primary-soft space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <div class="text-sm font-bold text-[var(--foreground)]">🧭 Diagnostic Level Check (${answeredCount}/${PLACEMENT_QS.length})</div>
-                        <div class="text-xs text-[var(--muted-foreground)]">Quickly calibrate where to start in the A1 → B2 syllabus.</div>
-                      </div>
-                      ${allDone ? `<span class="px-3 py-1 rounded-full tint-success text-[var(--success)] text-xs font-bold">Score: ${score}/${PLACEMENT_QS.length} → Recommended Start: ${recLvl}</span>` : ''}
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                      ${PLACEMENT_QS.map((pq, idx) => {
-                        const chosen = state.placementAnswers[pq.id];
-                        const isAns = typeof chosen === 'number';
-                        return `
-                          <div class="p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] space-y-2">
-                            <div class="text-xs font-semibold"><span class="text-[var(--primary)] font-bold">[${pq.lvl}] Q${idx + 1}.</span> ${esc(pq.q)}</div>
-                            <div class="grid grid-cols-2 gap-1.5">
-                              ${getShuffledOrder(pq.id, pq.opts.length).map((oi) => {
-                                let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
-                                if (isAns) {
-                                  if (oi === pq.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
-                                  else if (oi === chosen) cls = 'tint-error border-error-soft text-[var(--error)]';
-                                }
-                                return `<button type="button" data-pl-id="${pq.id}" data-pl-opt="${oi}" class="text-left px-2.5 py-1.5 rounded-lg border text-xs cursor-pointer ${cls}">${esc(pq.opts[oi])}</button>`;
-                              }).join('')}
-                            </div>
-                          </div>
-                        `;
-                      }).join('')}
-                    </div>
-                    ${allDone ? `
-                      <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
-                        <span><strong>Recommended Track: ${recLvl}</strong> — Start at your exact growth edge (and review Sounds P.1–P.7 anytime).</span>
-                        <div class="flex flex-wrap gap-2">
-                          <button type="button" data-go-gram-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-bold cursor-pointer">Open ${recLvl} Grammar →</button>
-                          <button type="button" data-go-vsyl-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-semibold cursor-pointer">Open ${recLvl} Vocab →</button>
-                        </div>
-                      </div>
-                    ` : ''}
-                  </div>
-                `;
-              })() : ''}
-
-              <!-- Phonetics Starter Strip -->
-              <div class="mt-4 p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                  <span class="px-2 py-0.5 rounded border text-xs font-bold tint-primary text-[var(--primary)] border-primary-soft">P.1–P.7</span>
-                  <span class="text-xs sm:text-sm font-semibold">Pronunciation &amp; Listening Foundation (Mandarin ü/u, Nasals, Voicing, é/è, Liaisons, Québécois)</span>
-                </div>
-                <button type="button" data-go-gram="p_1" class="text-xs font-bold text-[var(--link)] hover:underline cursor-pointer">
-                  ${soundDone}/${soundLessons.length} done • Start P.1 →
-                </button>
-              </div>
-
-              <!-- 4 CEFR Band Progress Cards -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3.5">
-                ${levelStats.map((s) => {
-                  const total = s.chTotal + s.gTotal + s.vTotal;
-                  const done = s.chDone + s.gDone + s.vDone;
-                  const pct = total ? Math.round((done / total) * 100) : 0;
-                  const desc = { A1: 'Gender, Present, Schedules, Errands', A2: 'Past, Futur, Housing, Canada Life', B1: 'Dont, Conditionnel, Work, Collocations', B2: 'Subjunctive, Climate, Economy, Nuance' }[s.lvl];
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                ${PLACEMENT_QS.map((pq, idx) => {
+                  const chosen = state.placementAnswers[pq.id];
+                  const isAns = typeof chosen === 'number';
                   return `
-                    <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] flex flex-col justify-between gap-2.5">
-                      <div>
-                        <div class="flex items-center justify-between">
-                          <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(s.lvl)}">${s.lvl}</span>
-                          <span class="text-xs font-semibold text-[var(--muted-foreground)]">${pct}%</span>
-                        </div>
-                        <div class="text-xs font-medium text-[var(--foreground)] mt-2">${desc}</div>
-                        <div class="w-full h-1.5 rounded-full tint-muted mt-2 overflow-hidden">
-                          <div class="h-full bg-[var(--primary)] rounded-full" style="width:${pct}%"></div>
-                        </div>
-                      </div>
-                      <div class="flex flex-wrap items-center justify-between gap-1 text-xs pt-1.5 border-t border-[var(--border)]">
-                        <button type="button" data-go-gram-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.gDone}/${s.gTotal}</button>
-                        <button type="button" data-go-vsyl-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📚 ${s.vDone}/${s.vTotal}</button>
-                        <button type="button" data-go-ch="${s.firstCh}" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-semibold cursor-pointer">🎧 ${s.chDone}/${s.chTotal}</button>
+                    <div class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+                      <div class="text-xs font-semibold"><span class="text-[var(--primary)] font-bold">[${pq.lvl}] Q${idx + 1}.</span> ${esc(pq.q)}</div>
+                      <div class="grid grid-cols-2 gap-1.5">
+                        ${getShuffledOrder(pq.id, pq.opts.length).map((oi) => {
+                          let cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                          if (isAns) {
+                            if (oi === pq.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                            else if (oi === chosen) cls = 'tint-error border-error-soft text-[var(--error)]';
+                          }
+                          return `<button type="button" data-pl-id="${pq.id}" data-pl-opt="${oi}" class="text-left px-2.5 py-1.5 rounded-lg border text-xs cursor-pointer ${cls}">${esc(pq.opts[oi])}</button>`;
+                        }).join('')}
                       </div>
                     </div>
                   `;
                 }).join('')}
               </div>
-            </section>
-
-            <!-- TCF Canada CLB 7 Targets & ASAP Pace Calculator -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <!-- TCF Score Blueprint -->
-              <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5">
-                <h3 class="text-base font-bold text-[var(--foreground)]">🎯 TCF Canada CLB 7 (NCLC 7) Targets</h3>
-                <p class="text-xs text-[var(--muted-foreground)] mt-1">Minimum scores required for Express Entry French bonus points (all 4 skills at B2/CLB 7):</p>
-                <div class="mt-3 overflow-x-auto">
-                  <table class="w-full text-xs text-left border-collapse">
-                    <thead>
-                      <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
-                        <th class="py-2 pr-2">Section</th>
-                        <th class="py-2 pr-2">Format</th>
-                        <th class="py-2 pr-2">CLB 7 Min</th>
-                        <th class="py-2">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[var(--border)]">
-                      <tr>
-                        <td class="py-2.5 pr-2 font-semibold">Listening (CO)</td>
-                        <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">39 Q • 35m (1 play)</td>
-                        <td class="py-2.5 pr-2 font-bold text-[var(--primary)]">458 / 699</td>
-                        <td class="py-2.5"><button type="button" data-go-mock="co" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Practice →</button></td>
-                      </tr>
-                      <tr>
-                        <td class="py-2.5 pr-2 font-semibold">Reading (CE)</td>
-                        <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">39 Q • 60m</td>
-                        <td class="py-2.5 pr-2 font-bold text-[var(--primary)]">453 / 699</td>
-                        <td class="py-2.5"><button type="button" data-go-mock="ce" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Practice →</button></td>
-                      </tr>
-                      <tr>
-                        <td class="py-2.5 pr-2 font-semibold">Writing (EE)</td>
-                        <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">3 Tasks • 60m</td>
-                        <td class="py-2.5 pr-2 font-bold text-[var(--primary)]">10 / 20</td>
-                        <td class="py-2.5"><button type="button" data-go-output="ee" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Studio →</button></td>
-                      </tr>
-                      <tr>
-                        <td class="py-2.5 pr-2 font-semibold">Speaking (EO)</td>
-                        <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">3 Tasks • 12m</td>
-                        <td class="py-2.5 pr-2 font-bold text-[var(--primary)]">10 / 20</td>
-                        <td class="py-2.5"><button type="button" data-go-output="eo" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Studio →</button></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              <!-- ASAP Pace Calculator -->
-              <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5">
-                <div class="flex items-center justify-between gap-2">
-                  <h3 class="text-base font-bold text-[var(--foreground)]">⏱️ ASAP Study Pace Calculator</h3>
-                  <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-xs font-bold">${state.dailyHours} hrs / day</span>
-                </div>
-                <p class="text-xs text-[var(--muted-foreground)] mt-1">Adjusted for your C1 English cognate boost (~480 focused hours A1→CLB 7).</p>
-
-                <div class="mt-4">
-                  <input id="paceSlider" type="range" min="1" max="5" step="0.5" value="${state.dailyHours}" class="w-full accent-[var(--primary)] cursor-pointer" />
-                  <div class="flex justify-between text-xs text-[var(--muted-foreground)] mt-1">
-                    <span>1h/day (Steady)</span>
-                    <span>2.5h/day (Fast)</span>
-                    <span>5h/day (Intensive)</span>
+              ${allDone ? `
+                <div class="p-3 rounded-xl tint-primary border border-primary-soft flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span><strong>Recommended Track: ${recLvl}</strong> — Start at your exact growth edge (and review Sounds P.1–P.7 anytime).</span>
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button" data-go-gram-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-bold cursor-pointer">Open ${recLvl} Grammar →</button>
+                    <button type="button" data-go-vsyl-lvl="${recLvl}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] font-semibold cursor-pointer">Open ${recLvl} Vocab →</button>
                   </div>
                 </div>
+              ` : ''}
+            </div>
+          `;
+        })() : '';
 
-                <div class="mt-4 p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] grid grid-cols-2 gap-3">
-                  <div>
-                    <div class="text-xs text-[var(--muted-foreground)]">Estimated Timeline</div>
-                    <div class="text-xl font-bold text-[var(--primary)] mt-0.5">~${months} months</div>
-                    <div class="text-xs text-[var(--muted-foreground)]">(${weeks} weeks total)</div>
-                  </div>
-                  <div>
-                    <div class="text-xs text-[var(--muted-foreground)]">Recommended Daily Split</div>
-                    <ul class="text-xs mt-1 space-y-0.5 text-[var(--foreground)]">
-                      <li>• <strong>${Math.round(state.dailyHours * 20)}m</strong> Listening + Shadowing</li>
-                      <li>• <strong>${Math.round(state.dailyHours * 18)}m</strong> Reading + SRS Vocab</li>
-                      <li>• <strong>${Math.round(state.dailyHours * 12)}m</strong> Grammar &amp; Drills</li>
-                      <li>• <strong>${Math.round(state.dailyHours * 10)}m</strong> Writing / Speaking Output</li>
-                    </ul>
-                  </div>
-                </div>
-              </section>
+        const tab = state.roadmapTab || 'today';
+        const tabsMeta = [
+          { id: 'today', label: '✨ Today' },
+          { id: 'sprint', label: `📅 12-Week Sprint (${doneWeeks}/12)` },
+          { id: 'plan', label: '🎯 Targets & Pace' }
+        ];
+
+        const todayTabHTML = `
+          <!-- TODAY'S GUIDED 25-MIN SESSION -->
+          <section class="studio-card p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-base font-bold text-[var(--foreground)]">Today’s Guided Session (~25 min)</h3>
+                <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Follow these 4+1 steps in order — zero guesswork.</p>
+              </div>
+              <span class="text-xs font-medium text-[var(--muted-foreground)]">
+                ${streak > 0 ? `🔥 ${streak}-day streak` : 'Complete any step to start your streak'}
+              </span>
             </div>
 
-            <!-- 12-Week CLB 7 Sprint Tracker (Weekly Deliverables) -->
-            <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5">
-              ${(() => {
-                const doneWeeks = TWELVE_WEEK_PLAN.filter((wk) => {
-                  const p = state.weeklyPlan[wk.w] || {};
-                  return p.rec && p.text && p.err;
-                }).length;
-                return `
-                  <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <div>
-                      <h3 class="text-base font-bold text-[var(--foreground)]">📅 12-Week CLB 7 Sprint Tracker (Weekly Deliverables)</h3>
-                      <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Complete all 3 weekly outputs (1 voice recording + 1 short text + error review) to seal each week (+20 XP).</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              ${nextGram ? `
+                <button type="button" data-today-gram="${nextGram.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                  <div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-[var(--primary)]">1. Grammar · 5m</span>
+                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextGram.level)}">${nextGram.code}</span>
                     </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-bold ${doneWeeks === 12 ? 'tint-success text-[var(--success)]' : 'tint-primary text-[var(--primary)]'}">
-                      ${doneWeeks} / 12 Weeks Complete
+                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextGram.title)}</div>
+                  </div>
+                  <span class="text-xs font-bold text-[var(--link)]">Start Lesson →</span>
+                </button>
+              ` : ''}
+
+              ${nextVocab ? `
+                <button type="button" data-today-vsyl="${nextVocab.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                  <div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-[var(--success)]">2. Vocab · 5m</span>
+                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextVocab.level)}">${nextVocab.code}</span>
+                    </div>
+                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextVocab.title)}</div>
+                  </div>
+                  <span class="text-xs font-bold text-[var(--link)]">Learn Theme →</span>
+                </button>
+              ` : ''}
+
+              <button type="button" id="btnTodayReview" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                <div>
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-[var(--warning)]">3. Recall · 5m</span>
+                    <span class="px-1.5 py-0.5 rounded text-[11px] font-bold tabular-nums ${mistakeCount > 0 ? 'tint-error text-[var(--error)]' : 'tint-primary text-[var(--primary)]'}">
+                      ${mistakeCount > 0 ? `${mistakeCount} missed` : `${dueCount} due`}
                     </span>
                   </div>
-                  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2.5">
-                    ${TWELVE_WEEK_PLAN.map((wk) => {
-                      const p = state.weeklyPlan[wk.w] || {};
-                      const all3 = Boolean(p.rec && p.text && p.err);
-                      return `
-                        <div class="p-3.5 rounded-xl border space-y-2 ${all3 ? 'tint-success border-success-soft' : 'bg-[var(--content)] border-[var(--border)]'}">
-                          <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center gap-1.5">
-                              <span class="text-xs font-bold text-[var(--primary)]">W${wk.w}</span>
-                              <span class="px-1.5 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(wk.level)}">${wk.level}</span>
-                            </div>
-                            ${all3 ? '<span class="text-xs font-bold text-[var(--success)]">✓ Sealed</span>' : ''}
-                          </div>
-                          <div class="text-xs font-semibold text-[var(--foreground)] leading-snug">${esc(wk.focus)}</div>
-                          <div class="text-xs text-[var(--muted-foreground)]">Target: ${esc(wk.deliverable)}</div>
-                          <div class="flex flex-wrap gap-2 pt-1 text-xs">
-                            <label class="inline-flex items-center gap-1 cursor-pointer">
-                              <input type="checkbox" data-wk-num="${wk.w}" data-wk-key="rec" class="accent-[var(--primary)]" ${p.rec ? 'checked' : ''} />
-                              <span>🎙️ Rec</span>
-                            </label>
-                            <label class="inline-flex items-center gap-1 cursor-pointer">
-                              <input type="checkbox" data-wk-num="${wk.w}" data-wk-key="text" class="accent-[var(--primary)]" ${p.text ? 'checked' : ''} />
-                              <span>✍️ Text</span>
-                            </label>
-                            <label class="inline-flex items-center gap-1 cursor-pointer">
-                              <input type="checkbox" data-wk-num="${wk.w}" data-wk-key="err" class="accent-[var(--primary)]" ${p.err ? 'checked' : ''} />
-                              <span>🔁 Error Log</span>
-                            </label>
-                          </div>
-                        </div>
-                      `;
-                    }).join('')}
+                  <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">
+                    ${mistakeCount > 0 ? 'Fix your recent missed questions' : 'Review due SRS flashcards'}
+                  </div>
+                </div>
+                <span class="text-xs font-bold text-[var(--link)]">${mistakeCount > 0 ? 'Fix Mistakes →' : 'Open Due Deck →'}</span>
+              </button>
+
+              <button type="button" data-go-ch="${nextUnit.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                <div>
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-[var(--primary)]">4. Listen/Read · 10m</span>
+                    <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextUnit.level)}">${nextUnit.code}</span>
+                  </div>
+                  <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextUnit.shortTitle)}</div>
+                </div>
+                <span class="text-xs font-bold text-[var(--link)]">Open Unit →</span>
+              </button>
+            </div>
+
+            <!-- 5. Daily Active Output Micro-Task -->
+            <div class="p-3.5 rounded-xl border flex flex-wrap items-center justify-between gap-3 ${
+              outputDoneToday ? 'tint-success border-success-soft' : 'bg-[var(--content)] border-[var(--border)]'
+            }">
+              <div class="space-y-0.5 min-w-0 flex-1">
+                <div class="flex items-center gap-2 text-xs">
+                  <span class="font-bold ${outputDoneToday ? 'text-[var(--success)]' : 'text-[var(--primary)]'}">5. Active Output · 5m</span>
+                  ${outputDoneToday ? '<span class="px-2 py-0.5 rounded-full tint-success text-[var(--success)] font-bold">✓ Done Today</span>' : ''}
+                </div>
+                <div class="text-xs text-[var(--foreground)]">${esc(dailyOut.label)}</div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button type="button" id="btnDailyOutOpen" data-out-jump="${dailyOut.tab}" data-out-task="${dailyOut.taskId}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] cursor-pointer">
+                  Open ${dailyOut.tab.toUpperCase()} Studio →
+                </button>
+                <button type="button" id="btnDailyOutDone" class="px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
+                  outputDoneToday ? 'tint-success border border-success-soft text-[var(--success)]' : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
+                }">
+                  ${outputDoneToday ? '✓ Completed' : 'Mark Done (+15 XP)'}
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- CEFR SYLLABUS OVERVIEW (A1 -> B2) -->
+          <section class="studio-card p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-base font-bold text-[var(--foreground)]">Curriculum Progress (A1 → B2)</h3>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" data-go-ws="mock" class="px-3 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                  🎯 TCF Mock
+                </button>
+                <button type="button" data-go-ws="output" class="px-3 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                  ✍️ EE / EO Studio
+                </button>
+              </div>
+            </div>
+
+            <!-- Phonetics Starter Strip -->
+            <div class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] flex flex-wrap items-center justify-between gap-2.5">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="px-2 py-0.5 rounded border text-xs font-bold tint-primary text-[var(--primary)] border-primary-soft shrink-0">P.1–P.7</span>
+                <span class="text-xs font-medium text-[var(--foreground)]">Pronunciation &amp; Listening Foundation (Mandarin ü/u, Nasals, Liaisons, Québécois)</span>
+              </div>
+              <button type="button" data-go-gram="p_1" class="text-xs font-bold text-[var(--link)] hover:underline cursor-pointer shrink-0">
+                ${soundDone}/${soundLessons.length} done · Open →
+              </button>
+            </div>
+
+            <!-- 4 CEFR Band Progress Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              ${levelStats.map((s) => {
+                const total = s.chTotal + s.gTotal + s.vTotal;
+                const done = s.chDone + s.gDone + s.vDone;
+                const pct = total ? Math.round((done / total) * 100) : 0;
+                const desc = { A1: 'Gender, Present, Schedules, Errands', A2: 'Past, Futur, Housing, Canada Life', B1: 'Dont, Conditionnel, Work, Collocations', B2: 'Subjunctive, Climate, Economy, Nuance' }[s.lvl];
+                return `
+                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] flex flex-col justify-between gap-3">
+                    <div>
+                      <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(s.lvl)}">${s.lvl}</span>
+                        <span class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${pct}%</span>
+                      </div>
+                      <div class="text-xs font-medium text-[var(--foreground)] mt-2">${desc}</div>
+                      <div class="w-full h-1.5 rounded-full tint-muted mt-2.5 overflow-hidden">
+                        <div class="h-full bg-[var(--primary)] rounded-full" style="width:${pct}%"></div>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-1 text-xs pt-2 border-t border-[var(--border)] tabular-nums">
+                      <button type="button" data-go-gram-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.gDone}/${s.gTotal}</button>
+                      <button type="button" data-go-vsyl-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📚 ${s.vDone}/${s.vTotal}</button>
+                      <button type="button" data-go-ch="${s.firstCh}" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-semibold cursor-pointer">🎧 ${s.chDone}/${s.chTotal}</button>
+                    </div>
                   </div>
                 `;
-              })()}
+              }).join('')}
+            </div>
+          </section>
+        `;
+
+        const sprintTabHTML = `
+          <section class="studio-card p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="text-base font-bold text-[var(--foreground)]">📅 12-Week CLB 7 Sprint Tracker (Weekly Deliverables)</h3>
+                <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Complete all 3 weekly outputs (1 voice recording + 1 short text + error review) to seal each week (+20 XP).</p>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold tabular-nums ${doneWeeks === 12 ? 'tint-success text-[var(--success)]' : 'tint-primary text-[var(--primary)]'}">
+                ${doneWeeks} / 12 Weeks Complete
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              ${TWELVE_WEEK_PLAN.map((wk) => {
+                const p = state.weeklyPlan[wk.w] || {};
+                const all3 = Boolean(p.rec && p.text && p.err);
+                return `
+                  <div class="p-3.5 rounded-xl border space-y-2 ${all3 ? 'tint-success border-success-soft' : 'bg-[var(--content)] border-[var(--border)]'}">
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-bold text-[var(--primary)]">W${wk.w}</span>
+                        <span class="px-1.5 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(wk.level)}">${wk.level}</span>
+                      </div>
+                      ${all3 ? '<span class="text-xs font-bold text-[var(--success)]">✓ Sealed</span>' : ''}
+                    </div>
+                    <div class="text-xs font-semibold text-[var(--foreground)] leading-snug">${esc(wk.focus)}</div>
+                    <div class="text-xs text-[var(--muted-foreground)]">Target: ${esc(wk.deliverable)}</div>
+                    <div class="flex flex-wrap gap-2.5 pt-1 text-xs">
+                      <label class="inline-flex items-center gap-1 cursor-pointer">
+                        <input type="checkbox" data-wk-num="${wk.w}" data-wk-key="rec" class="accent-[var(--primary)]" ${p.rec ? 'checked' : ''} />
+                        <span>🎙️ Rec</span>
+                      </label>
+                      <label class="inline-flex items-center gap-1 cursor-pointer">
+                        <input type="checkbox" data-wk-num="${wk.w}" data-wk-key="text" class="accent-[var(--primary)]" ${p.text ? 'checked' : ''} />
+                        <span>✍️ Text</span>
+                      </label>
+                      <label class="inline-flex items-center gap-1 cursor-pointer">
+                        <input type="checkbox" data-wk-num="${wk.w}" data-wk-key="err" class="accent-[var(--primary)]" ${p.err ? 'checked' : ''} />
+                        <span>🔁 Error Log</span>
+                      </label>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        `;
+
+        const planTabHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- TCF Score Blueprint -->
+            <section class="studio-card p-5">
+              <h3 class="text-base font-bold text-[var(--foreground)]">🎯 TCF Canada CLB 7 (NCLC 7) Targets</h3>
+              <p class="text-xs text-[var(--muted-foreground)] mt-1">Minimum scores required for Express Entry French bonus points (all 4 skills at B2/CLB 7):</p>
+              <div class="mt-3 overflow-x-auto">
+                <table class="w-full text-xs text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-[var(--border)] text-[var(--muted-foreground)]">
+                      <th class="py-2 pr-2">Section</th>
+                      <th class="py-2 pr-2">Format</th>
+                      <th class="py-2 pr-2">CLB 7 Min</th>
+                      <th class="py-2">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-[var(--border)]">
+                    <tr>
+                      <td class="py-2.5 pr-2 font-semibold">Listening (CO)</td>
+                      <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">39 Q • 35m (1 play)</td>
+                      <td class="py-2.5 pr-2 font-bold text-[var(--primary)] tabular-nums">458 / 699</td>
+                      <td class="py-2.5"><button type="button" data-go-mock="co" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Practice →</button></td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 pr-2 font-semibold">Reading (CE)</td>
+                      <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">39 Q • 60m</td>
+                      <td class="py-2.5 pr-2 font-bold text-[var(--primary)] tabular-nums">453 / 699</td>
+                      <td class="py-2.5"><button type="button" data-go-mock="ce" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Practice →</button></td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 pr-2 font-semibold">Writing (EE)</td>
+                      <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">3 Tasks • 60m</td>
+                      <td class="py-2.5 pr-2 font-bold text-[var(--primary)] tabular-nums">10 / 20</td>
+                      <td class="py-2.5"><button type="button" data-go-output="ee" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Studio →</button></td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 pr-2 font-semibold">Speaking (EO)</td>
+                      <td class="py-2.5 pr-2 text-[var(--muted-foreground)]">3 Tasks • 12m</td>
+                      <td class="py-2.5 pr-2 font-bold text-[var(--primary)] tabular-nums">10 / 20</td>
+                      <td class="py-2.5"><button type="button" data-go-output="eo" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">Studio →</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </section>
 
-            <!-- C1 English + Mandarin Native Strategic Advantages -->
-            <section class="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-5">
-              <h3 class="text-base font-bold text-[var(--foreground)]">🧠 Your Bilingual Edge: C1 English + Mandarin Native</h3>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-3.5">
-                <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                  <div class="text-xs font-bold text-[var(--primary)] uppercase">1. Cognate Turbocharge (EN → FR)</div>
-                  <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-                    35%+ of B1/B2 French words mirror formal English: <em>-tion, -ment, -ible, -ique, -té</em> (e.g., <strong>évidemment, responsabilité, environnement, politique</strong>). Focus memory power on high-frequency verbs &amp; connectors instead!
-                  </p>
+            <!-- ASAP Pace Calculator -->
+            <section class="studio-card p-5">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-base font-bold text-[var(--foreground)]">⏱️ ASAP Study Pace Calculator</h3>
+                <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-xs font-bold tabular-nums">${state.dailyHours} hrs / day</span>
+              </div>
+              <p class="text-xs text-[var(--muted-foreground)] mt-1">Adjusted for your C1 English cognate boost (~480 focused hours A1→CLB 7).</p>
+
+              <div class="mt-4">
+                <input id="paceSlider" type="range" min="1" max="5" step="0.5" value="${state.dailyHours}" class="w-full accent-[var(--primary)] cursor-pointer" />
+                <div class="flex justify-between text-xs text-[var(--muted-foreground)] mt-1">
+                  <span>1h/day (Steady)</span>
+                  <span>2.5h/day (Fast)</span>
+                  <span>5h/day (Intensive)</span>
                 </div>
-                <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                  <div class="text-xs font-bold text-[var(--success)] uppercase">2. Mandarin Bridges (中文 → FR)</div>
-                  <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-                    • French <strong>u [y]</strong> = Mandarin <strong>ü (鱼)</strong>; <strong>ou</strong> = <strong>u (乌)</strong>.<br/>
-                    • <strong>Passé Composé</strong> ≈ 动词+「了」; <strong>Imparfait</strong> ≈ 「当时正在/背景」.<br/>
-                    • Spoken French dislocation (<em>Le bus, il arrive</em>) mirrors Chinese topic-comment!
-                  </p>
+              </div>
+
+              <div class="mt-4 p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] grid grid-cols-2 gap-3">
+                <div>
+                  <div class="text-xs text-[var(--muted-foreground)]">Estimated Timeline</div>
+                  <div class="text-xl font-bold text-[var(--primary)] mt-0.5 tabular-nums">~${months} months</div>
+                  <div class="text-xs text-[var(--muted-foreground)] tabular-nums">(${weeks} weeks total)</div>
                 </div>
-                <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                  <div class="text-xs font-bold text-[var(--warning)] uppercase">3. Watch Out for Top Traps</div>
-                  <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
-                    • <strong>Faux Amis</strong>: <em>actuellement</em> (currently), <em>assister à</em> (attend), <em>rester</em> (stay), <em>sensible</em> (sensitive).<br/>
-                    • <strong>Verb Endings &amp; Gender</strong>: Always learn nouns with <em>un/une</em> and drill conjugation audio!
-                  </p>
+                <div>
+                  <div class="text-xs text-[var(--muted-foreground)]">Recommended Daily Split</div>
+                  <ul class="text-xs mt-1 space-y-0.5 text-[var(--foreground)]">
+                    <li>• <strong>${Math.round(state.dailyHours * 20)}m</strong> Listening + Shadowing</li>
+                    <li>• <strong>${Math.round(state.dailyHours * 18)}m</strong> Reading + SRS Vocab</li>
+                    <li>• <strong>${Math.round(state.dailyHours * 12)}m</strong> Grammar &amp; Drills</li>
+                    <li>• <strong>${Math.round(state.dailyHours * 10)}m</strong> Writing / Speaking Output</li>
+                  </ul>
                 </div>
               </div>
             </section>
           </div>
+
+          <!-- C1 English + Mandarin Native Strategic Advantages -->
+          <section class="studio-card p-5">
+            <h3 class="text-base font-bold text-[var(--foreground)]">🧠 Your Bilingual Edge: C1 English + Mandarin Native</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-3.5">
+              <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                <div class="text-xs font-bold text-[var(--primary)] uppercase">1. Cognate Turbocharge (EN → FR)</div>
+                <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+                  35%+ of B1/B2 French words mirror formal English: <em>-tion, -ment, -ible, -ique, -té</em> (e.g., <strong>évidemment, responsabilité, environnement, politique</strong>). Focus memory power on high-frequency verbs &amp; connectors instead!
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                <div class="text-xs font-bold text-[var(--success)] uppercase">2. Mandarin Bridges (中文 → FR)</div>
+                <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+                  • French <strong>u [y]</strong> = Mandarin <strong>ü (鱼)</strong>; <strong>ou</strong> = <strong>u (乌)</strong>.<br/>
+                  • <strong>Passé Composé</strong> ≈ 动词+「了」; <strong>Imparfait</strong> ≈ 「当时正在/背景」.<br/>
+                  • Spoken French dislocation (<em>Le bus, il arrive</em>) mirrors Chinese topic-comment!
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                <div class="text-xs font-bold text-[var(--warning)] uppercase">3. Watch Out for Top Traps</div>
+                <p class="text-xs text-[var(--muted-foreground)] mt-1.5">
+                  • <strong>Faux Amis</strong>: <em>actuellement</em> (currently), <em>assister à</em> (attend), <em>rester</em> (stay), <em>sensible</em> (sensitive).<br/>
+                  • <strong>Verb Endings &amp; Gender</strong>: Always learn nouns with <em>un/une</em> and drill conjugation audio!
+                </p>
+              </div>
+            </div>
+          </section>
         `;
+
+        els.mainContent.innerHTML = `
+          <div class="space-y-5">
+            <!-- Calm Page Header -->
+            <div class="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 class="text-2xl font-bold text-[var(--foreground)]">Today’s Study Plan</h2>
+                <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">
+                  ${GRAMMAR_SYLLABUS.length || 38} Grammar · ${VOCAB_SYLLABUS.length || 16} Vocab · 12 Units · ${audioClipCount} FR/CA neural audio clips
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" id="btnTogglePlacement" class="px-3 py-1.5 rounded-xl tint-primary border border-primary-soft text-[var(--primary)] text-xs font-semibold cursor-pointer">
+                  🧭 ${state.placementOpen ? 'Hide Level Check' : '3-Min Level Check'}
+                </button>
+                <button type="button" data-go-ws="essentials" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold tint-muted-hover cursor-pointer">
+                  📌 Essentials
+                </button>
+              </div>
+            </div>
+
+            <!-- 3-Tab Segmented Switcher -->
+            <div class="inline-flex flex-wrap gap-1 p-1 rounded-2xl bg-[var(--content)] border border-[var(--border)]">
+              ${tabsMeta.map((t) => `
+                <button type="button" data-roadmap-tab="${t.id}" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  tab === t.id
+                    ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm border border-[var(--card-border)]'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-transparent'
+                }">${t.label}</button>
+              `).join('')}
+            </div>
+
+            ${placementPanelHTML}
+
+            ${tab === 'today' ? todayTabHTML : tab === 'sprint' ? sprintTabHTML : planTabHTML}
+          </div>
+        `;
+
+        els.mainContent.querySelectorAll('[data-roadmap-tab]').forEach((b) => {
+          b.onclick = () => {
+            state.roadmapTab = b.dataset.roadmapTab;
+            renderRoadmapView();
+          };
+        });
 
         els.mainContent.querySelectorAll('[data-wk-num][data-wk-key]').forEach((chk) => {
           chk.onchange = () => {
@@ -5069,11 +5194,14 @@
             renderRoadmapView();
           };
         });
-        document.getElementById('paceSlider').oninput = (e) => {
-          state.dailyHours = parseFloat(e.target.value);
-          saveState();
-          renderRoadmapView();
-        };
+        const paceSlider = document.getElementById('paceSlider');
+        if (paceSlider) {
+          paceSlider.oninput = (e) => {
+            state.dailyHours = parseFloat(e.target.value);
+            saveState();
+            renderRoadmapView();
+          };
+        }
         els.mainContent.querySelectorAll('[data-today-gram]').forEach((b) => (b.onclick = () => {
           state.grammarFilterLevel = 'all';
           navigate('gram', b.dataset.todayGram);
@@ -7678,6 +7806,29 @@
       els.mobileBackdrop.onclick = closeMobileSidebar;
       els.btnGlobalStop.onclick = stopAudio;
       els.btnDismissSpeechWarn.onclick = () => els.speechWarning.classList.add('hidden');
+
+      if (els.btnAudioPopover && els.audioPopoverPanel) {
+        els.btnAudioPopover.onclick = (e) => {
+          e.stopPropagation();
+          els.audioPopoverPanel.classList.toggle('hidden');
+        };
+      }
+      window.addEventListener('click', (e) => {
+        if (els.audioPopoverPanel && els.audioPopoverWrap && typeof els.audioPopoverWrap.contains === 'function' && !els.audioPopoverWrap.contains(e.target)) {
+          els.audioPopoverPanel.classList.add('hidden');
+        }
+        const dm = document.getElementById('sidebarDataMenu');
+        if (dm && dm.open && typeof dm.contains === 'function' && !dm.contains(e.target)) {
+          dm.open = false;
+        }
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
+          const dm = document.getElementById('sidebarDataMenu');
+          if (dm) dm.open = false;
+        }
+      });
 
       els.sidebarLevelFilter.onchange = (e) => {
         state.sidebarLevelFilter = e.target.value;
