@@ -306,6 +306,7 @@
   <script src="./data/grammar_quizzes.js"></script>
   <script src="./data/grammar_lessons.js"></script>
   <script src="./data/deep_chapters.js"></script>
+  <script src="./data/deep_ch2_determiners.js"></script>
   <script src="./data/audio_manifest.js?v=2"></script>
 
   <!-- ========================================================= -->
@@ -8011,7 +8012,7 @@
               <div class="p-3.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] flex flex-wrap items-center gap-2">
                 <span class="text-xs font-bold text-[var(--muted-foreground)]">🔗 Related Pages:</span>
                 ${page.related.map((r) => `
-                  <button type="button" data-deep-jump-page="${r.pageId}" class="px-3 py-1 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] tint-muted-hover cursor-pointer">
+                  <button type="button" data-deep-jump-ch="${r.chapterId || ch.id}" data-deep-jump-page="${r.pageId}" class="px-3 py-1 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] tint-muted-hover cursor-pointer">
                     ${esc(r.label)} →
                   </button>
                 `).join('')}
@@ -8051,7 +8052,7 @@
         }
 
         els.mainContent.querySelectorAll('[data-deep-jump-page]').forEach((b) => {
-          b.onclick = () => openDeepPage(ch.id, b.dataset.deepJumpPage, 'study');
+          b.onclick = () => openDeepPage(b.dataset.deepJumpCh || ch.id, b.dataset.deepJumpPage, 'study');
         });
 
         els.mainContent.querySelectorAll('[data-deep-tab]').forEach((b) => {
@@ -8332,12 +8333,13 @@
         `;
 
         if (browseMode === 'index') {
-          const ch1 = getDeepChapter('ch1_nouns');
-          const ch1Pages = ch1 ? (ch1.pages || []) : [];
-          const ch1Done = ch1 ? getDeepChapterDoneCount(ch1.id) : 0;
+          const readyCats = GRAMMAR_DIRECTORY.filter((c) => c.status === 'deep' && getDeepChapter(c.deepChapterId)).length;
 
           const dirHTML = GRAMMAR_DIRECTORY.map((cat) => {
-            const isDeepReady = cat.status === 'deep' && cat.deepChapterId === 'ch1_nouns' && ch1;
+            const deepCh = (cat.status === 'deep' && cat.deepChapterId) ? getDeepChapter(cat.deepChapterId) : null;
+            const isDeepReady = Boolean(deepCh);
+            const deepPages = deepCh ? (deepCh.pages || []) : [];
+            const deepDone = deepCh ? getDeepChapterDoneCount(deepCh.id) : 0;
             const linkedTopics = (cat.existingTopicIds || [])
               .map((tid) => GRAMMAR_QUIZZES.find((q) => q.id === tid))
               .filter(Boolean);
@@ -8351,7 +8353,7 @@
                       <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">${esc(cat.code)}</span>
                       <h3 class="text-base font-bold text-[var(--foreground)]">${esc(cat.title)}</h3>
                       ${isDeepReady
-                        ? `<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Deep Slow-Paced Ready (${ch1Done}/${ch1Pages.length} pages)</span>`
+                        ? `<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Deep Slow-Paced Ready (${deepDone}/${deepPages.length} pages)</span>`
                         : `<span class="px-2 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold">Linked Modules Ready (${linkedTopics.length})</span>`}
                     </div>
                     ${state.showZh && cat.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(cat.titleZh)}</div>` : ''}
@@ -8361,11 +8363,11 @@
 
                 ${isDeepReady ? `
                   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1">
-                    ${ch1Pages.map((p) => {
+                    ${deepPages.map((p) => {
                       const pProg = state.deepProgress[p.id] || {};
                       const done = Boolean(pProg.completed);
                       return `
-                        <button type="button" data-open-deep="${ch1.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${done ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover cursor-pointer flex items-center justify-between gap-2">
+                        <button type="button" data-open-deep="${deepCh.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${done ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover cursor-pointer flex items-center justify-between gap-2">
                           <div class="min-w-0">
                             <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
                             <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
@@ -8401,7 +8403,7 @@
                 <div>
                   <h2 class="text-2xl font-bold text-[var(--foreground)]">📚 Grammar Directory (11 Categories · Tex Structure)</h2>
                   <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                    Browse all 11 grammar categories systematically. Category 01 (Nouns) now runs on the new 11-page slow-paced pilot!
+                    Browse all 11 grammar categories systematically. ${readyCats} of ${GRAMMAR_DIRECTORY.length} categories now run on the slow-paced Tex-depth format!
                   </p>
                 </div>
                 <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
@@ -8621,56 +8623,67 @@
           </section>
         ` : '';
 
-        const ch1Pilot = getDeepChapter('ch1_nouns');
-        const ch1Pages = ch1Pilot ? (ch1Pilot.pages || []) : [];
-        const ch1Done = ch1Pilot ? getDeepChapterDoneCount(ch1Pilot.id) : 0;
-        const ch1Next = ch1Pilot ? getNextRecommendedDeepPage(ch1Pilot.id) : null;
-        const ch1Pct = ch1Pages.length ? Math.round((ch1Done / ch1Pages.length) * 100) : 0;
-        const deepPilotHTML = (curLvl === 'A1' && ch1Pilot) ? `
-          <section class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/20">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div class="space-y-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="text-lg">${ch1Pilot.icon}</span>
-                  <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle('A1')}">${esc(ch1Pilot.code)} · Deep Slow-Paced Pilot</span>
-                  <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">✨ Tex Depth · 11 Bite-Sized Pages</span>
-                </div>
-                <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(ch1Pilot.title)}</h3>
-                ${state.showZh && ch1Pilot.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(ch1Pilot.titleZh)}</div>` : ''}
-                <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && ch1Pilot.subtitleZh ? ch1Pilot.subtitleZh : ch1Pilot.subtitle)}</p>
-              </div>
-              <div class="flex flex-col items-end gap-2 shrink-0">
-                <span class="px-2.5 py-1 rounded-full text-xs font-bold tabular-nums ${ch1Done === ch1Pages.length ? 'tint-success text-[var(--success)]' : 'tint-muted text-[var(--foreground)]'}">${ch1Done} / ${ch1Pages.length} pages done</span>
-                ${ch1Next ? `
-                  <button type="button" data-open-deep="${ch1Pilot.id}::${ch1Next.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                    ${ch1Done > 0 && ch1Done < ch1Pages.length ? `Continue Page ${esc(ch1Next.code)} →` : `Start Page ${esc(ch1Next.code)} →`}
-                  </button>
-                ` : ''}
-              </div>
-            </div>
-            <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
-              <div class="h-full rounded-full ${ch1Done === ch1Pages.length ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${ch1Pct}%"></div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              ${ch1Pages.map((p) => {
-                const pProg = state.deepProgress[p.id] || {};
-                const pDone = Boolean(pProg.completed);
-                const pBest = pProg.drillBest || 0;
-                const pTotal = (p.drills || []).length;
-                return `
-                  <button type="button" data-open-deep="${ch1Pilot.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${pDone ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
-                    <div class="min-w-0">
-                      <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
-                      <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
+        const levelDeepChapters = DEEP_CHAPTERS.filter((c) => c.level === curLvl);
+        const deepPilotHTML = levelDeepChapters.length ? `
+          <div class="space-y-4">
+            ${levelDeepChapters.map((dCh) => {
+              const dPages = dCh.pages || [];
+              const dDone = getDeepChapterDoneCount(dCh.id);
+              const dNext = getNextRecommendedDeepPage(dCh.id);
+              const dPct = dPages.length ? Math.round((dDone / dPages.length) * 100) : 0;
+              return `
+                <section class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/15">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="space-y-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-lg">${dCh.icon}</span>
+                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(dCh.level)}">${esc(dCh.code)} · Deep Slow-Paced</span>
+                        <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">✨ Tex Depth · ${dPages.length} Bite-Sized Pages</span>
+                      </div>
+                      <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(dCh.title)}</h3>
+                      ${state.showZh && dCh.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(dCh.titleZh)}</div>` : ''}
+                      <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && dCh.subtitleZh ? dCh.subtitleZh : dCh.subtitle)}</p>
                     </div>
-                    <span class="text-[11px] font-bold shrink-0 tabular-nums ${pDone ? 'text-[var(--success)]' : pBest > 0 ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}">
-                      ${pDone ? `✓ ${pBest}/${pTotal}` : pBest > 0 ? `${pBest}/${pTotal}` : `${pTotal}Q →`}
-                    </span>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </section>
+                    <div class="flex flex-col items-end gap-2 shrink-0">
+                      <span class="px-2.5 py-1 rounded-full text-xs font-bold tabular-nums ${dDone === dPages.length ? 'tint-success text-[var(--success)]' : 'tint-muted text-[var(--foreground)]'}">${dDone} / ${dPages.length} pages done</span>
+                      ${dNext ? `
+                        <button type="button" data-open-deep="${dCh.id}::${dNext.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                          ${dDone > 0 && dDone < dPages.length ? `Continue Page ${esc(dNext.code)} →` : `Start Page ${esc(dNext.code)} →`}
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                  <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
+                    <div class="h-full rounded-full ${dDone === dPages.length ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${dPct}%"></div>
+                  </div>
+                  <details open class="group">
+                    <summary class="text-xs font-bold text-[var(--link)] cursor-pointer select-none mb-2.5">
+                      Show / Hide all ${dPages.length} sub-pages (${esc(dCh.code)})
+                    </summary>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                      ${dPages.map((p) => {
+                        const pProg = state.deepProgress[p.id] || {};
+                        const pDone = Boolean(pProg.completed);
+                        const pBest = pProg.drillBest || 0;
+                        const pTotal = (p.drills || []).length;
+                        return `
+                          <button type="button" data-open-deep="${dCh.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${pDone ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                              <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
+                              <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
+                            </div>
+                            <span class="text-[11px] font-bold shrink-0 tabular-nums ${pDone ? 'text-[var(--success)]' : pBest > 0 ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}">
+                              ${pDone ? `✓ ${pBest}/${pTotal}` : pBest > 0 ? `${pBest}/${pTotal}` : `${pTotal}Q →`}
+                            </span>
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </details>
+                </section>
+              `;
+            }).join('')}
+          </div>
         ` : '';
 
         els.mainContent.innerHTML = `

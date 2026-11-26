@@ -80,7 +80,12 @@ def extract_phrases_with_voices() -> list[dict]:
     syllabus_code = SYLLABUS_JS.read_text(encoding="utf-8") if SYLLABUS_JS.exists() else ""
     lessons_code = LESSONS_JS.read_text(encoding="utf-8") if LESSONS_JS.exists() else ""
     quizzes_code = QUIZZES_JS.read_text(encoding="utf-8") if QUIZZES_JS.exists() else ""
-    deep_chapters_code = DEEP_CHAPTERS_JS.read_text(encoding="utf-8") if DEEP_CHAPTERS_JS.exists() else ""
+    deep_files = [DEEP_CHAPTERS_JS] + [
+        p for p in sorted((ROOT / "data").glob("deep_ch*.js")) if p != DEEP_CHAPTERS_JS
+    ]
+    deep_chapters_code = "\n".join(
+        p.read_text(encoding="utf-8") for p in deep_files if p.exists()
+    )
     scripts = re.findall(r"<script(?![^>]*src)[^>]*>(.*?)</script>", html, re.S)
     if not scripts:
         raise RuntimeError("No inline <script> found in index.html")
@@ -220,24 +225,25 @@ if (typeof GRAMMAR_QUIZZES !== 'undefined') {
 if (typeof window !== 'undefined' && Array.isArray(window.__TCF_DEEP_CHAPTERS__)) {
   const vPool = ['denise', 'henri', 'sylvie', 'thierry'];
   window.__TCF_DEEP_CHAPTERS__.forEach((ch) => {
+    const chGroup = ch.id === 'ch1_nouns' ? 'deep_ch1' : ('deep_' + String(ch.id || 'extra').split('_')[0]);
     (ch.pages || []).forEach((p, pIdx) => {
       (p.sections || []).forEach((sec, sIdx) => {
         if (sec.examples) {
-          sec.examples.forEach((ex, i) => add(ex.fr, vPool[(pIdx + sIdx + i) % vPool.length], 'deep_ch1'));
+          sec.examples.forEach((ex, i) => add(ex.fr, vPool[(pIdx + sIdx + i) % vPool.length], chGroup));
         }
         if (sec.table && sec.table.rows) {
           sec.table.rows.forEach((r, i) => {
-            if (r.audio) add(r.audio, vPool[(pIdx + sIdx + i + 1) % vPool.length], 'deep_ch1');
+            if (r.audio) add(r.audio, vPool[(pIdx + sIdx + i + 1) % vPool.length], chGroup);
           });
         }
         if (sec.dialogue && sec.dialogue.lines) {
           sec.dialogue.lines.forEach((ln, i) => {
-            if (ln.fr) add(ln.fr, vPool[(pIdx + i) % vPool.length], 'deep_ch1');
+            if (ln.fr) add(ln.fr, vPool[(pIdx + i) % vPool.length], chGroup);
           });
         }
       });
       (p.drills || []).forEach((d, dIdx) => {
-        if (d.audio) add(d.audio, vPool[(pIdx + dIdx) % vPool.length], 'deep_ch1');
+        if (d.audio) add(d.audio, vPool[(pIdx + dIdx) % vPool.length], chGroup);
       });
     });
   });

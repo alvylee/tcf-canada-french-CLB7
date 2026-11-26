@@ -26,7 +26,8 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     titleZh: '限定词与冠词（定冠词、不定冠词、部分冠词、指示/主有）',
     desc: 'Definite (le/la/l’/les), indefinite (un/une/des), partitive (du/de la), possessive (mon/ma/mes), demonstrative (ce/cet/cette/ces) & tout.',
     descZh: '名词前面的“小标签”：定冠词、不定冠词、部分冠词、物主限定词、指示限定词与数量限定词。',
-    status: 'existing',
+    status: 'deep',
+    deepChapterId: 'ch2_determiners',
     plannedTopics: [
       'Intro to Determiners',
       'Definite Articles (le, la, l’, les)',
