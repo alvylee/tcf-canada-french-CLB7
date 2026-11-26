@@ -305,6 +305,7 @@
   <script src="./data/syllabus_data.js"></script>
   <script src="./data/grammar_quizzes.js"></script>
   <script src="./data/grammar_lessons.js"></script>
+  <script src="./data/deep_chapters.js"></script>
   <script src="./data/audio_manifest.js?v=2"></script>
 
   <!-- ========================================================= -->
@@ -2504,7 +2505,15 @@
         activeView: normalizedInitView, // 'roadmap' | 'course' | 'practice' | 'exam' | 'essentials' | 'grammar' | 'vocabsyl' | 'chapter'
         roadmapTab: 'today', // 'today' | 'sprint' | 'plan'
         courseLevel: persisted.courseLevel || 'A1', // 'A0' | 'A1' | 'A2' | 'B1' | 'B2'
+        courseBrowseMode: (persisted.courseBrowseMode === 'index') ? 'index' : 'path', // 'path' | 'index'
         courseTypeFilter: 'all', // 'all' | 'grammar' | 'vocab' | 'units' | 'notes'
+        activeDeepChapterId: null,
+        activeDeepPageId: null,
+        deepPageTab: 'study', // 'study' | 'drills'
+        deepPeekRulesOpen: false,
+        deepProgress: (persisted.deepProgress && typeof persisted.deepProgress === 'object') ? persisted.deepProgress : {},
+        deepQuickChecks: {},
+        deepDrillState: {},
         practiceTab: normalizedInitPracticeTab, // 'mistakes' | 'srs' | 'quizzes' | 'conjugation' | 'cloze' | 'gender' | 'dictation' | 'fauxamis'
         examTab: normalizedInitExamTab, // 'mock' | 'output' | 'coach'
         activeChapterId: persisted.activeChapterId || 'a1_1',
@@ -2668,6 +2677,8 @@
           audioEngineVersion: 2,
           activeView: state.activeView,
           courseLevel: state.courseLevel,
+          courseBrowseMode: state.courseBrowseMode,
+          deepProgress: state.deepProgress,
           practiceTab: state.practiceTab,
           examTab: state.examTab,
           activeChapterId: state.activeChapterId,
@@ -2865,6 +2876,50 @@
       const GRAMMAR_SYLLABUS = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_SYLLABUS__)) ? window.__TCF_GRAMMAR_SYLLABUS__ : [];
       const GRAMMAR_QUIZZES = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_QUIZZES__)) ? window.__TCF_GRAMMAR_QUIZZES__ : [];
       const GRAMMAR_LESSONS = (typeof window !== 'undefined' && window.__TCF_GRAMMAR_LESSONS__ && typeof window.__TCF_GRAMMAR_LESSONS__ === 'object') ? window.__TCF_GRAMMAR_LESSONS__ : {};
+      const DEEP_CHAPTERS = (typeof window !== 'undefined' && Array.isArray(window.__TCF_DEEP_CHAPTERS__)) ? window.__TCF_DEEP_CHAPTERS__ : [];
+      const GRAMMAR_DIRECTORY = (typeof window !== 'undefined' && Array.isArray(window.__TCF_GRAMMAR_DIRECTORY__)) ? window.__TCF_GRAMMAR_DIRECTORY__ : [];
+
+      function getDeepChapter(chapterId) {
+        return DEEP_CHAPTERS.find((c) => c.id === chapterId) || null;
+      }
+
+      function getDeepPage(chapterId, pageId) {
+        const ch = getDeepChapter(chapterId);
+        if (!ch) return null;
+        return (ch.pages || []).find((p) => p.id === pageId) || null;
+      }
+
+      function getDeepChapterDoneCount(chapterId) {
+        const ch = getDeepChapter(chapterId);
+        if (!ch) return 0;
+        return (ch.pages || []).filter((p) => state.deepProgress[p.id] && state.deepProgress[p.id].completed).length;
+      }
+
+      function getNextRecommendedDeepPage(chapterId) {
+        const ch = getDeepChapter(chapterId);
+        if (!ch || !(ch.pages || []).length) return null;
+        return ch.pages.find((p) => !(state.deepProgress[p.id] && state.deepProgress[p.id].completed)) || ch.pages[0];
+      }
+
+      function openDeepPage(chapterId, pageId, tab = 'study') {
+        const ch = getDeepChapter(chapterId);
+        if (!ch) return;
+        const page = getDeepPage(chapterId, pageId) || (ch.pages && ch.pages[0]);
+        if (!page) return;
+        stopAudio();
+        clearTimers();
+        if (typeof stopVoiceRecording === 'function') stopVoiceRecording();
+        state.activeView = 'course';
+        state.activeTopicQuizId = null;
+        state.activeDeepChapterId = ch.id;
+        state.activeDeepPageId = page.id;
+        state.deepPageTab = tab === 'drills' ? 'drills' : 'study';
+        state.deepPeekRulesOpen = false;
+        saveState();
+        renderSidebar();
+        renderMain();
+        if (typeof window.scrollTo === 'function') window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
 
       function getRecommendedNextCourseTopic() {
         return GRAMMAR_QUIZZES.find((t) => {
@@ -3750,6 +3805,10 @@
             els.topbarViewTitle.textContent = 'Course · Vocab Themes';
           } else if (state.activeView === 'essentials') {
             els.topbarViewTitle.textContent = 'Quick Ref · Pronouns & Tables';
+          } else if (state.activeView === 'course' && state.activeDeepChapterId) {
+            const dCh = getDeepChapter(state.activeDeepChapterId);
+            const dPg = getDeepPage(state.activeDeepChapterId, state.activeDeepPageId);
+            els.topbarViewTitle.textContent = dCh && dPg ? `${dCh.code} · ${dPg.code} ${dPg.shortTitle}` : 'Course · Deep Chapter';
           } else {
             const curWs = WORKSPACES.find((w) => w.id === state.activeView);
             els.topbarViewTitle.textContent = curWs ? curWs.label : 'TCF Canada Studio';
@@ -3818,7 +3877,11 @@
               state.essentialsSearch = '';
               navigate('ws', 'essentials');
             } else {
-              if (target === 'course') state.activeTopicQuizId = null;
+              if (target === 'course') {
+                state.activeTopicQuizId = null;
+                state.activeDeepChapterId = null;
+                state.activeDeepPageId = null;
+              }
               navigate('ws', target);
             }
             closeMobileSidebar();
@@ -3837,6 +3900,15 @@
         stopAudio();
         clearTimers();
         if (typeof stopVoiceRecording === 'function') stopVoiceRecording();
+        if (id !== 'course') {
+          state.activeDeepChapterId = null;
+          state.activeDeepPageId = null;
+          state.activeTopicQuizId = null;
+        } else if (kind === 'ws') {
+          state.activeDeepChapterId = null;
+          state.activeDeepPageId = null;
+          state.activeTopicQuizId = null;
+        }
         if (kind === 'ch') {
           state.activeView = 'chapter';
           if (state.activeChapterId !== id) state.chapterStep = 1;
@@ -7414,7 +7486,809 @@
         }
       }
 
+      let lastFocusedDeepBlank = { drillId: null, bidx: 0 };
+
+      function getDeepDrillEntry(drill) {
+        if (!state.deepDrillState[drill.id]) {
+          state.deepDrillState[drill.id] = {
+            answered: false,
+            ok: false,
+            closeAccent: false,
+            chosenOpt: null,
+            blankVals: [],
+            perBlankOk: [],
+            showHint: false,
+            revealed: false
+          };
+        }
+        return state.deepDrillState[drill.id];
+      }
+
+      function syncDeepPageProgress(page) {
+        if (!page) return;
+        const drills = page.drills || [];
+        const total = drills.length;
+        const correct = drills.filter((d) => {
+          const st = state.deepDrillState[d.id];
+          return st && st.answered && st.ok;
+        }).length;
+        const prev = state.deepProgress[page.id] || { studied: false, drillBest: 0, drillTotal: total, completed: false };
+        const best = Math.max(prev.drillBest || 0, correct);
+        const passThreshold = Math.ceil(total * 0.8);
+        const wasCompleted = Boolean(prev.completed);
+        const nowCompleted = wasCompleted || (total > 0 && correct >= passThreshold);
+        state.deepProgress[page.id] = {
+          studied: prev.studied || state.deepPageTab === 'drills',
+          drillBest: best,
+          drillTotal: total,
+          completed: nowCompleted
+        };
+        if (nowCompleted && !wasCompleted) {
+          addXP(15);
+          renderSidebar();
+        } else {
+          saveState();
+        }
+      }
+
+      function gradeDeepFibDrill(page, d, itemEl) {
+        const spec = parseBlankSpec(d.prompt, d.answers);
+        const st = getDeepDrillEntry(d);
+        let vals = [];
+        if (itemEl) {
+          const inputs = [...itemEl.querySelectorAll('[data-deep-bidx]')];
+          vals = inputs.map((inp) => inp.value);
+        } else {
+          vals = Array.isArray(st.blankVals) ? st.blankVals.slice() : [];
+        }
+        while (vals.length < spec.blankCount) vals.push('');
+        st.blankVals = vals;
+        const res = evaluateBlankValues(vals, spec);
+        const wasAnsweredOk = st.answered && st.ok;
+        st.answered = true;
+        st.ok = res.allOk;
+        st.closeAccent = res.anyCloseAccent;
+        st.perBlankOk = res.perBlankOk;
+        st.revealed = false;
+        if (res.allOk && !wasAnsweredOk) addXP(4);
+        syncDeepPageProgress(page);
+        return res;
+      }
+
+      function renderDeepChapterPageView() {
+        const ch = getDeepChapter(state.activeDeepChapterId) || DEEP_CHAPTERS[0];
+        if (!ch) {
+          state.activeDeepChapterId = null;
+          state.activeDeepPageId = null;
+          renderCourseView();
+          return;
+        }
+        const pages = ch.pages || [];
+        const pageIdx = Math.max(0, pages.findIndex((p) => p.id === state.activeDeepPageId));
+        const page = pages[pageIdx] || pages[0];
+        state.activeDeepChapterId = ch.id;
+        state.activeDeepPageId = page.id;
+
+        const tab = state.deepPageTab === 'drills' ? 'drills' : 'study';
+        const doneCount = getDeepChapterDoneCount(ch.id);
+        const pageProg = state.deepProgress[page.id] || {};
+        const drills = page.drills || [];
+        const drillAnsweredCount = drills.filter((d) => state.deepDrillState[d.id] && state.deepDrillState[d.id].answered).length;
+        const drillCorrectCount = drills.filter((d) => state.deepDrillState[d.id] && state.deepDrillState[d.id].answered && state.deepDrillState[d.id].ok).length;
+        const drillWrongCount = drills.filter((d) => state.deepDrillState[d.id] && state.deepDrillState[d.id].answered && !state.deepDrillState[d.id].ok).length;
+
+        const prevPage = pageIdx > 0 ? pages[pageIdx - 1] : null;
+        const nextPage = pageIdx + 1 < pages.length ? pages[pageIdx + 1] : null;
+        const backLabel = state.courseBrowseMode === 'index' ? '← Back to Grammar Index' : '← Back to Course';
+
+        const subPageStripHTML = `
+          <div class="flex flex-wrap gap-1.5">
+            ${pages.map((p) => {
+              const pDone = Boolean(state.deepProgress[p.id] && state.deepProgress[p.id].completed);
+              const isCur = p.id === page.id;
+              return `
+                <button type="button" data-deep-jump-page="${p.id}" title="${escAttr(p.title)}" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer flex items-center gap-1 ${
+                  isCur
+                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent shadow-sm'
+                    : pDone
+                      ? 'tint-success border-success-soft text-[var(--success)]'
+                      : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                }">
+                  <span>${esc(p.code)}</span>
+                  <span class="hidden sm:inline max-w-[115px] truncate">${esc(p.shortTitle)}</span>
+                  ${pDone ? '<span>✓</span>' : ''}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        let bodyHTML = '';
+        if (tab === 'study') {
+          const sections = page.sections || [];
+          const jumpPillsHTML = sections.length > 1 ? `
+            <div class="flex flex-wrap items-center gap-1.5 p-2.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)]">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] px-1.5">Sections:</span>
+              ${sections.map((s) => `
+                <button type="button" data-deep-sec-jump="deep-sec-${s.id}" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                  ${esc(s.heading.split(':')[0])}
+                </button>
+              `).join('')}
+            </div>
+          ` : '';
+
+          const sectionsHTML = sections.map((sec) => {
+            const tableHTML = sec.table ? `
+              <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                  <thead>
+                    <tr class="bg-[var(--content)] border-b border-[var(--border)] text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+                      ${(sec.table.headers || []).map((h) => `<th class="px-3 py-2">${esc(h)}</th>`).join('')}
+                      <th class="px-2 py-2 text-right">🔊</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-[var(--border)]">
+                    ${(sec.table.rows || []).map((r) => `
+                      <tr class="bg-[var(--card)]">
+                        ${(r.cols || []).map((c, ci) => `<td class="px-3 py-2.5 ${ci === 0 ? 'font-bold text-[var(--primary)] whitespace-nowrap' : 'text-[var(--foreground)]'}">${esc(c)}</td>`).join('')}
+                        <td class="px-2 py-2.5 text-right">
+                          ${r.audio ? `<button type="button" data-speak="${escAttr(r.audio)}" class="speak-btn px-2 py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs cursor-pointer">🔊</button>` : ''}
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            ` : '';
+
+            const examplesHTML = (sec.examples && sec.examples.length) ? `
+              <div class="space-y-2">
+                ${sec.examples.map((ex) => `
+                  <div class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] flex items-start justify-between gap-3">
+                    <div class="space-y-0.5 min-w-0">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-sm sm:text-base font-bold text-[var(--foreground)]">${esc(ex.fr)}</span>
+                        ${ex.tag ? `<span class="px-2 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[10px] font-bold">${esc(ex.tag)}</span>` : ''}
+                      </div>
+                      <div class="text-xs text-[var(--muted-foreground)]">${esc(ex.en)}</div>
+                      ${state.showZh && ex.zh ? `<div class="text-xs text-[var(--primary)]">${esc(ex.zh)}</div>` : ''}
+                    </div>
+                    <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn shrink-0 px-2.5 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer tint-muted-hover">🔊</button>
+                  </div>
+                `).join('')}
+              </div>
+            ` : '';
+
+            const dialogueHTML = sec.dialogue ? `
+              <div class="p-4 rounded-2xl bg-[var(--content)] border border-[var(--border)] space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div class="text-sm font-bold text-[var(--foreground)]">💬 ${esc(sec.dialogue.title)}</div>
+                    ${state.showZh && sec.dialogue.titleZh ? `<div class="text-xs text-[var(--primary)]">${esc(sec.dialogue.titleZh)}</div>` : ''}
+                    ${sec.dialogue.legend ? `<div class="text-[11px] font-semibold text-[var(--muted-foreground)] mt-0.5">${esc(sec.dialogue.legend)}</div>` : ''}
+                  </div>
+                  <button type="button" data-deep-play-dlg="${sec.id}" class="px-3 py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                    ▶ Play Dialogue
+                  </button>
+                </div>
+                <div class="space-y-2">
+                  ${(sec.dialogue.lines || []).map((ln) => {
+                    const frHTML = Array.isArray(ln.tokens)
+                      ? ln.tokens.map((tk) => {
+                          if (tk.gender === 'm') return `<span class="font-extrabold text-sky-600 dark:text-sky-400 underline decoration-sky-400/50">${esc(tk.text)}</span>`;
+                          if (tk.gender === 'f') return `<span class="font-extrabold text-rose-600 dark:text-rose-400 underline decoration-rose-400/50">${esc(tk.text)}</span>`;
+                          return esc(tk.text);
+                        }).join('')
+                      : esc(ln.fr);
+                    return `
+                      <div class="p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-start justify-between gap-3">
+                        <div class="space-y-1 min-w-0">
+                          <div class="text-sm text-[var(--foreground)]">
+                            <span class="font-bold text-[var(--primary)] mr-1">${esc(ln.speaker)}:</span>
+                            <span>${frHTML}</span>
+                          </div>
+                          <div class="text-xs text-[var(--muted-foreground)]">${esc(ln.en)}</div>
+                          ${state.showZh && ln.zh ? `<div class="text-xs text-[var(--primary)]">${esc(ln.zh)}</div>` : ''}
+                        </div>
+                        <button type="button" data-speak="${escAttr(ln.fr)}" class="speak-btn shrink-0 px-2.5 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊</button>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            ` : '';
+
+            const qcKey = `${page.id}_${sec.id}`;
+            const qcChosen = state.deepQuickChecks[qcKey];
+            const qcAnswered = qcChosen !== undefined && qcChosen !== null;
+            const qcHTML = sec.quickCheck ? `
+              <div class="p-3.5 rounded-xl tint-primary border border-primary-soft space-y-2.5">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">✓ Quick Check (Tap to Verify)</div>
+                <div class="text-xs sm:text-sm font-bold text-[var(--foreground)]">${esc(sec.quickCheck.prompt)}</div>
+                ${state.showZh && sec.quickCheck.promptZh ? `<div class="text-xs text-[var(--primary)]">${esc(sec.quickCheck.promptZh)}</div>` : ''}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  ${sec.quickCheck.options.map((opt, oi) => {
+                    let cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                    if (qcAnswered) {
+                      if (oi === sec.quickCheck.answerIdx) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                      else if (oi === qcChosen) cls = 'tint-error border-error-soft text-[var(--error)]';
+                      else cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
+                    }
+                    return `<button type="button" data-deep-qc="${qcKey}" data-qc-opt="${oi}" class="text-left px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition ${cls}">${esc(opt)}</button>`;
+                  }).join('')}
+                </div>
+                ${qcAnswered ? `
+                  <div class="text-xs pt-1 space-y-0.5">
+                    <div class="font-bold ${qcChosen === sec.quickCheck.answerIdx ? 'text-[var(--success)]' : 'text-[var(--warning)]'}">
+                      ${qcChosen === sec.quickCheck.answerIdx ? '✓ Correct!' : 'Not quite —'} ${esc(sec.quickCheck.explain)}
+                    </div>
+                    ${state.showZh && sec.quickCheck.explainZh ? `<div class="text-[var(--primary)]">${esc(sec.quickCheck.explainZh)}</div>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            ` : '';
+
+            return `
+              <section id="deep-sec-${sec.id}" class="studio-card p-5 sm:p-6 space-y-4">
+                <div class="space-y-1">
+                  <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(sec.heading)}</h3>
+                  ${state.showZh && sec.headingZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(sec.headingZh)}</div>` : ''}
+                </div>
+                <div class="space-y-1">
+                  <p class="text-sm text-[var(--foreground)] leading-relaxed">${esc(sec.lead)}</p>
+                  ${state.showZh && sec.leadZh ? `<p class="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">${esc(sec.leadZh)}</p>` : ''}
+                </div>
+                ${sec.tip ? `
+                  <div class="p-3 rounded-xl tint-warning border border-warning-soft text-xs space-y-0.5">
+                    <div class="font-bold text-[var(--foreground)]">💡 Tip: ${esc(sec.tip)}</div>
+                    ${state.showZh && sec.tipZh ? `<div class="text-[var(--muted-foreground)]">${esc(sec.tipZh)}</div>` : ''}
+                  </div>
+                ` : ''}
+                ${tableHTML}
+                ${examplesHTML}
+                ${dialogueHTML}
+                ${qcHTML}
+              </section>
+            `;
+          }).join('');
+
+          bodyHTML = `
+            <div class="space-y-5">
+              ${jumpPillsHTML}
+              ${sectionsHTML}
+              <div class="studio-card p-5 flex flex-wrap items-center justify-between gap-3 border-primary-soft">
+                <div class="space-y-0.5">
+                  <div class="text-sm font-bold text-[var(--foreground)]">Finished reading ${esc(page.code)}?</div>
+                  <div class="text-xs text-[var(--muted-foreground)]">Now cement this single concept with ${drills.length} focused drills (with quick rule-peeks anytime).</div>
+                </div>
+                <button type="button" id="btnStartPageDrills" class="px-5 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs sm:text-sm font-bold cursor-pointer">
+                  ✍️ Start ${drills.length} Drills →
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          // PRACTICE DRILLS TAB
+          const peekHTML = state.deepPeekRulesOpen ? `
+            <div class="studio-card p-4 border-primary-soft tint-primary space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">📖 Quick Rules Summary — ${esc(page.code)} ${esc(page.shortTitle)}</div>
+                <button type="button" id="btnClosePeekRules" class="text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">Hide</button>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                ${(page.cheatSummary || []).map((cs) => `
+                  <div class="p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] space-y-1">
+                    <div class="text-xs font-bold text-[var(--foreground)]">${esc(cs.label)}</div>
+                    <div class="text-xs text-[var(--muted-foreground)]">${esc(cs.rule)}</div>
+                    ${state.showZh && cs.ruleZh ? `<div class="text-xs text-[var(--primary)]">${esc(cs.ruleZh)}</div>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : '';
+
+          const drillsListHTML = drills.map((d, idx) => {
+            const st = getDeepDrillEntry(d);
+            if (d.kind === 'choice') {
+              return `
+                <div class="studio-card p-4 sm:p-5 space-y-3">
+                  <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div class="space-y-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded-lg tint-muted text-[11px] font-bold text-[var(--muted-foreground)] tabular-nums">${idx + 1} / ${drills.length}</span>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">Quick Choice</span>
+                      </div>
+                      <div class="text-sm sm:text-base font-bold text-[var(--foreground)]">${esc(d.prompt)}</div>
+                      ${state.showZh && d.promptZh ? `<div class="text-xs text-[var(--primary)]">${esc(d.promptZh)}</div>` : ''}
+                    </div>
+                    ${st.answered ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold ${st.ok ? 'tint-success text-[var(--success)]' : 'tint-error text-[var(--error)]'}">${st.ok ? '✓ Correct' : '✗ Review'}</span>` : ''}
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    ${(d.options || []).map((opt, oi) => {
+                      let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                      if (st.answered) {
+                        if (oi === d.answerIdx) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                        else if (oi === st.chosenOpt) cls = 'tint-error border-error-soft text-[var(--error)]';
+                        else cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
+                      }
+                      return `<button type="button" data-deep-choice="${d.id}" data-choice-idx="${oi}" class="text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-medium cursor-pointer transition ${cls}">${esc(opt)}</button>`;
+                    }).join('')}
+                  </div>
+                  ${st.answered ? `
+                    <div class="p-3 rounded-xl border space-y-1 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold">${esc(d.explain)}</span>
+                        <button type="button" data-speak="${escAttr(d.audio)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(d.audio)}</button>
+                      </div>
+                      ${state.showZh && d.explainZh ? `<div class="text-xs text-[var(--primary)]">${esc(d.explainZh)}</div>` : ''}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }
+
+            // FIB item
+            const spec = parseBlankSpec(d.prompt, d.answers);
+            const expectedText = (d.answers && d.answers[0]) ? d.answers[0] : '';
+            const inlineHTML = renderInlineBlankPromptHTML(d.prompt, spec, st.blankVals, st.answered, st.perBlankOk, 'data-deep-bidx');
+            return `
+              <div class="studio-card p-4 sm:p-5 space-y-3" data-deep-fib-item="${d.id}">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-lg tint-muted text-[11px] font-bold text-[var(--muted-foreground)] tabular-nums">${idx + 1} / ${drills.length}</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">Fill in Blank</span>
+                  </div>
+                  ${st.answered ? `
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold ${st.ok ? 'tint-success text-[var(--success)]' : 'tint-error text-[var(--error)]'}">
+                      ${st.ok ? (st.closeAccent ? '✓ Accent Note' : '✓ Exact') : '✗ Check Answer'}
+                    </span>
+                  ` : ''}
+                </div>
+                ${state.showZh && d.promptZh ? `<div class="text-xs font-medium text-[var(--primary)]">${esc(d.promptZh)}</div>` : ''}
+                <div class="text-sm sm:text-base font-bold text-[var(--foreground)] leading-loose">
+                  ${inlineHTML}
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="button" data-deep-check="${d.id}" ${st.answered && st.ok ? 'disabled' : ''} class="px-3.5 py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer">
+                    ${st.answered && !st.ok ? 'Re-check' : 'Check'}
+                  </button>
+                  ${!st.answered ? `
+                    <button type="button" data-deep-reveal="${d.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">Reveal</button>
+                  ` : `
+                    <button type="button" data-deep-clear="${d.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] tint-muted-hover cursor-pointer">Try Again</button>
+                  `}
+                  ${d.hint ? `
+                    <button type="button" data-deep-hint="${d.id}" class="px-2.5 py-1 text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">
+                      ${st.showHint ? 'Hide Hint' : '💡 Hint'}
+                    </button>
+                  ` : ''}
+                </div>
+                ${d.hint && st.showHint ? `<div class="text-xs text-[var(--muted-foreground)]">${esc(d.hint)}</div>` : ''}
+                ${st.answered ? `
+                  <div class="p-3 rounded-xl border space-y-1 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="text-xs font-bold">${st.ok ? (st.closeAccent ? `Correct — watch accents: ${esc(expectedText)}` : 'Exact ! ✓') : `Answer: ${esc(expectedText)}`}</span>
+                      <button type="button" data-speak="${escAttr(d.audio)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(d.audio)}</button>
+                    </div>
+                    <div class="text-xs text-[var(--foreground)]">${esc(d.explain)}</div>
+                    ${state.showZh && d.explainZh ? `<div class="text-xs text-[var(--primary)]">${esc(d.explainZh)}</div>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+
+          bodyHTML = `
+            <div class="space-y-4">
+              <!-- Drills Control Bar -->
+              <div class="studio-card p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-2.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-3 py-1 rounded-xl tint-primary text-[var(--primary)] text-xs font-bold tabular-nums">
+                    Score: ${drillCorrectCount} / ${drills.length}
+                  </span>
+                  <span class="text-xs text-[var(--muted-foreground)]">
+                    ${drillAnsweredCount}/${drills.length} answered · Best: ${pageProg.drillBest || 0}/${drills.length}
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="button" id="btnTogglePeekRules" class="px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer ${state.deepPeekRulesOpen ? 'tint-primary border-primary-soft text-[var(--primary)]' : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
+                    📖 ${state.deepPeekRulesOpen ? 'Hide Rules' : 'Peek Lesson Rules'}
+                  </button>
+                  <button type="button" id="btnDeepCheckAll" class="px-3 py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                    ✓ Check All Blanks
+                  </button>
+                  ${drillWrongCount > 0 ? `
+                    <button type="button" id="btnDeepRetryMissed" class="px-3 py-1.5 rounded-xl tint-warning border border-warning-soft text-xs font-bold text-[var(--foreground)] cursor-pointer">
+                      🔁 Retry Missed (${drillWrongCount})
+                    </button>
+                  ` : ''}
+                  <button type="button" id="btnDeepResetAll" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] tint-muted-hover cursor-pointer">
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              ${peekHTML}
+
+              <!-- Sticky Accent Keypad -->
+              <div class="p-2.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] flex flex-wrap items-center gap-1.5">
+                <span class="text-xs font-semibold text-[var(--muted-foreground)] mr-1">Accents (inserts into active blank):</span>
+                ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', 'œ', '’'].map((ac) => `<button type="button" data-deep-accent="${escAttr(ac)}" class="px-2.5 py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-bold tint-muted-hover cursor-pointer">${ac}</button>`).join('')}
+              </div>
+
+              <!-- Drills List -->
+              <div class="space-y-3">
+                ${drillsListHTML}
+              </div>
+
+              <!-- Completion Summary Footer -->
+              <div class="studio-card p-5 flex flex-wrap items-center justify-between gap-3 ${pageProg.completed ? 'border-success-soft tint-success' : 'border-[var(--border)]'}">
+                <div class="space-y-0.5">
+                  <div class="text-sm font-bold text-[var(--foreground)]">
+                    ${pageProg.completed ? `✓ Page ${esc(page.code)} Mastered!` : `Complete at least ${Math.ceil(drills.length * 0.8)}/${drills.length} drills (80%) to mark ${esc(page.code)} done`}
+                  </div>
+                  <div class="text-xs text-[var(--muted-foreground)]">Current: ${drillCorrectCount}/${drills.length} · Tip: press Enter inside any blank to check &amp; jump to the next blank.</div>
+                </div>
+                ${nextPage ? `
+                  <button type="button" data-deep-jump-page="${nextPage.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                    Next Page: ${esc(nextPage.code)} ${esc(nextPage.shortTitle)} →
+                  </button>
+                ` : `
+                  <button type="button" id="btnDeepBackEnd" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                    ✓ Finish Chapter 1 →
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        }
+
+        els.mainContent.innerHTML = `
+          <div class="space-y-5">
+            <!-- Breadcrumb & Back -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2 text-xs">
+                <button type="button" id="btnBackFromDeep" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                  ${backLabel}
+                </button>
+                <span class="text-[var(--muted-foreground)]">${esc(ch.code)} · ${esc(ch.title)} › <strong class="text-[var(--foreground)]">${esc(page.code)}</strong></span>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold tabular-nums ${doneCount === pages.length ? 'tint-success text-[var(--success)]' : 'tint-primary text-[var(--primary)]'}">
+                ${doneCount} / ${pages.length} pages done
+              </span>
+            </div>
+
+            <!-- Sub-page Strip (1.1 ... 1.11) -->
+            ${subPageStripHTML}
+
+            <!-- Page Header Card + Study/Drills Switch -->
+            <div class="studio-card p-5 space-y-4">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="space-y-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(ch.level)}">${esc(ch.code)} · Page ${esc(page.code)}</span>
+                    <span class="px-2 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold">${esc(page.group)}</span>
+                    <span class="text-[11px] text-[var(--muted-foreground)]">⏱ ~${page.estMin || 4} min</span>
+                  </div>
+                  <h2 class="text-xl sm:text-2xl font-bold text-[var(--foreground)] pt-0.5">${esc(page.title)}</h2>
+                  ${state.showZh && page.titleZh ? `<div class="text-xs sm:text-sm font-semibold text-[var(--primary)]">${esc(page.titleZh)}</div>` : ''}
+                  <p class="text-xs sm:text-sm text-[var(--muted-foreground)] pt-0.5">${esc(page.summary)}</p>
+                  ${state.showZh && page.summaryZh ? `<p class="text-xs text-[var(--muted-foreground)]">${esc(page.summaryZh)}</p>` : ''}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[var(--border)]">
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" data-deep-tab="study" class="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer border ${tab === 'study' ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent' : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
+                    📖 Study (Read &amp; Listen)
+                  </button>
+                  <button type="button" data-deep-tab="drills" class="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer border ${tab === 'drills' ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent' : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
+                    ✍️ Practice Drills (${drillAnsweredCount > 0 ? `${drillCorrectCount}/${drills.length}` : `${drills.length} Q`})
+                  </button>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${prevPage ? `<button type="button" data-deep-jump-page="${prevPage.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">← ${esc(prevPage.code)}</button>` : ''}
+                  ${nextPage ? `<button type="button" data-deep-jump-page="${nextPage.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">${esc(nextPage.code)} →</button>` : ''}
+                </div>
+              </div>
+            </div>
+
+            ${bodyHTML}
+
+            ${(page.related && page.related.length) ? `
+              <div class="p-3.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] flex flex-wrap items-center gap-2">
+                <span class="text-xs font-bold text-[var(--muted-foreground)]">🔗 Related Pages:</span>
+                ${page.related.map((r) => `
+                  <button type="button" data-deep-jump-page="${r.pageId}" class="px-3 py-1 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] tint-muted-hover cursor-pointer">
+                    ${esc(r.label)} →
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
+        bindDeepChapterEvents(ch, page);
+      }
+
+      function bindDeepChapterEvents(ch, page) {
+        const backBtn = document.getElementById('btnBackFromDeep');
+        if (backBtn) {
+          backBtn.onclick = () => {
+            stopAudio();
+            state.activeDeepChapterId = null;
+            state.activeDeepPageId = null;
+            renderSidebar();
+            renderCourseView();
+          };
+        }
+        const backEndBtn = document.getElementById('btnDeepBackEnd');
+        if (backEndBtn && backBtn.onclick === null) {
+          backEndBtn.onclick = () => {
+            stopAudio();
+            state.activeDeepChapterId = null;
+            state.activeDeepPageId = null;
+            renderSidebar();
+            renderCourseView();
+          };
+        }
+
+        els.mainContent.querySelectorAll('[data-deep-jump-page]').forEach((b) => {
+          b.onclick = () => openDeepPage(ch.id, b.dataset.deepJumpPage, 'study');
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-tab]').forEach((b) => {
+          b.onclick = () => {
+            stopAudio();
+            const nextTab = b.dataset.deepTab === 'drills' ? 'drills' : 'study';
+            state.deepPageTab = nextTab;
+            if (nextTab === 'drills') {
+              const prev = state.deepProgress[page.id] || { studied: true, drillBest: 0, drillTotal: (page.drills || []).length, completed: false };
+              state.deepProgress[page.id] = Object.assign({}, prev, { studied: true });
+              saveState();
+            }
+            renderDeepChapterPageView();
+          };
+        });
+
+        const startDrillsBtn = document.getElementById('btnStartPageDrills');
+        if (startDrillsBtn) {
+          startDrillsBtn.onclick = () => {
+            stopAudio();
+            const prev = state.deepProgress[page.id] || { studied: true, drillBest: 0, drillTotal: (page.drills || []).length, completed: false };
+            state.deepProgress[page.id] = Object.assign({}, prev, { studied: true });
+            state.deepPageTab = 'drills';
+            saveState();
+            renderDeepChapterPageView();
+            if (typeof window.scrollTo === 'function') window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+        }
+
+        els.mainContent.querySelectorAll('[data-deep-sec-jump]').forEach((b) => {
+          b.onclick = () => {
+            const targetEl = document.getElementById(b.dataset.deepSecJump);
+            if (targetEl && typeof targetEl.scrollIntoView === 'function') {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-play-dlg]').forEach((b) => {
+          b.onclick = () => {
+            const sec = (page.sections || []).find((s) => s.id === b.dataset.deepPlayDlg);
+            if (sec && sec.dialogue && Array.isArray(sec.dialogue.lines)) {
+              const sents = sec.dialogue.lines.map((l) => l.fr).filter(Boolean);
+              if (sents.length) playSequence(`deep_dlg_${page.id}_${sec.id}`, sents);
+            }
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-qc]').forEach((b) => {
+          b.onclick = () => {
+            const key = b.dataset.deepQc;
+            const optIdx = parseInt(b.dataset.qcOpt, 10);
+            state.deepQuickChecks[key] = optIdx;
+            renderDeepChapterPageView();
+          };
+        });
+
+        // Drills tab controls
+        const peekBtn = document.getElementById('btnTogglePeekRules');
+        if (peekBtn) {
+          peekBtn.onclick = () => {
+            state.deepPeekRulesOpen = !state.deepPeekRulesOpen;
+            renderDeepChapterPageView();
+          };
+        }
+        const closePeek = document.getElementById('btnClosePeekRules');
+        if (closePeek) {
+          closePeek.onclick = () => {
+            state.deepPeekRulesOpen = false;
+            renderDeepChapterPageView();
+          };
+        }
+
+        const drills = page.drills || [];
+        const drillById = {};
+        drills.forEach((d) => { drillById[d.id] = d; });
+
+        els.mainContent.querySelectorAll('[data-deep-choice]').forEach((b) => {
+          b.onclick = () => {
+            const d = drillById[b.dataset.deepChoice];
+            if (!d) return;
+            const st = getDeepDrillEntry(d);
+            const oi = parseInt(b.dataset.choiceIdx, 10);
+            const wasOk = st.answered && st.ok;
+            st.chosenOpt = oi;
+            st.answered = true;
+            st.ok = oi === d.answerIdx;
+            if (st.ok && !wasOk) addXP(3);
+            syncDeepPageProgress(page);
+            renderDeepChapterPageView();
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-fib-item]').forEach((itemEl) => {
+          const did = itemEl.dataset.deepFibItem;
+          const d = drillById[did];
+          if (!d) return;
+          const inputs = [...itemEl.querySelectorAll('[data-deep-bidx]')];
+          inputs.forEach((inp) => {
+            const bi = parseInt(inp.dataset.deepBidx, 10) || 0;
+            inp.onfocus = () => { lastFocusedDeepBlank = { drillId: did, bidx: bi }; };
+            inp.oninput = () => {
+              const st = getDeepDrillEntry(d);
+              if (!Array.isArray(st.blankVals)) st.blankVals = [];
+              st.blankVals[bi] = inp.value;
+            };
+            inp.onkeydown = (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (bi + 1 < inputs.length) {
+                  inputs[bi + 1].focus();
+                } else {
+                  gradeDeepFibDrill(page, d, itemEl);
+                  const dIdx = drills.findIndex((x) => x.id === did);
+                  const nextFib = drills.slice(dIdx + 1).find((x) => x.kind === 'fib' && !(state.deepDrillState[x.id] && state.deepDrillState[x.id].answered));
+                  renderDeepChapterPageView();
+                  if (nextFib) {
+                    const nxtEl = els.mainContent.querySelector(`[data-deep-fib-item="${nextFib.id}"] [data-deep-bidx="0"]`);
+                    if (nxtEl && typeof nxtEl.focus === 'function') nxtEl.focus();
+                  }
+                }
+              }
+            };
+          });
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-accent]').forEach((b) => {
+          b.onclick = () => {
+            const ac = b.dataset.deepAccent;
+            let targetInp = null;
+            if (lastFocusedDeepBlank.drillId) {
+              targetInp = els.mainContent.querySelector(`[data-deep-fib-item="${lastFocusedDeepBlank.drillId}"] [data-deep-bidx="${lastFocusedDeepBlank.bidx}"]`);
+            }
+            if (!targetInp || targetInp.disabled) {
+              targetInp = els.mainContent.querySelector('[data-deep-bidx]:not([disabled])');
+            }
+            if (!targetInp || targetInp.disabled) return;
+            const start = typeof targetInp.selectionStart === 'number' ? targetInp.selectionStart : targetInp.value.length;
+            const end = typeof targetInp.selectionEnd === 'number' ? targetInp.selectionEnd : start;
+            const val = targetInp.value || '';
+            targetInp.value = val.slice(0, start) + ac + val.slice(end);
+            const itemWrap = targetInp.closest ? targetInp.closest('[data-deep-fib-item]') : null;
+            const did = itemWrap ? itemWrap.dataset.deepFibItem : lastFocusedDeepBlank.drillId;
+            const bi = parseInt(targetInp.dataset.deepBidx, 10) || 0;
+            if (did && drillById[did]) {
+              const st = getDeepDrillEntry(drillById[did]);
+              if (!Array.isArray(st.blankVals)) st.blankVals = [];
+              st.blankVals[bi] = targetInp.value;
+            }
+            if (typeof targetInp.focus === 'function') targetInp.focus();
+            if (typeof targetInp.setSelectionRange === 'function') {
+              targetInp.setSelectionRange(start + ac.length, start + ac.length);
+            }
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-check]').forEach((b) => {
+          b.onclick = () => {
+            const did = b.dataset.deepCheck;
+            const d = drillById[did];
+            if (!d) return;
+            const itemEl = els.mainContent.querySelector(`[data-deep-fib-item="${did}"]`);
+            gradeDeepFibDrill(page, d, itemEl);
+            renderDeepChapterPageView();
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-reveal]').forEach((b) => {
+          b.onclick = () => {
+            const d = drillById[b.dataset.deepReveal];
+            if (!d) return;
+            const st = getDeepDrillEntry(d);
+            const spec = parseBlankSpec(d.prompt, d.answers);
+            st.blankVals = spec.primaryParts.slice();
+            st.perBlankOk = spec.primaryParts.map(() => false);
+            st.answered = true;
+            st.ok = false;
+            st.closeAccent = false;
+            st.revealed = true;
+            syncDeepPageProgress(page);
+            renderDeepChapterPageView();
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-clear]').forEach((b) => {
+          b.onclick = () => {
+            const d = drillById[b.dataset.deepClear];
+            if (!d) return;
+            state.deepDrillState[d.id] = { answered: false, ok: false, closeAccent: false, chosenOpt: null, blankVals: [], perBlankOk: [], showHint: false, revealed: false };
+            syncDeepPageProgress(page);
+            renderDeepChapterPageView();
+          };
+        });
+
+        els.mainContent.querySelectorAll('[data-deep-hint]').forEach((b) => {
+          b.onclick = () => {
+            const d = drillById[b.dataset.deepHint];
+            if (!d) return;
+            const st = getDeepDrillEntry(d);
+            st.showHint = !st.showHint;
+            renderDeepChapterPageView();
+          };
+        });
+
+        const checkAllBtn = document.getElementById('btnDeepCheckAll');
+        if (checkAllBtn) {
+          checkAllBtn.onclick = () => {
+            drills.forEach((d) => {
+              if (d.kind === 'fib') {
+                const st = getDeepDrillEntry(d);
+                if (st.answered && st.ok) return;
+                const itemEl = els.mainContent.querySelector(`[data-deep-fib-item="${d.id}"]`);
+                const hasText = itemEl
+                  ? [...itemEl.querySelectorAll('[data-deep-bidx]')].some((inp) => inp.value.trim().length > 0)
+                  : (st.blankVals || []).some((v) => String(v || '').trim().length > 0);
+                if (hasText) gradeDeepFibDrill(page, d, itemEl);
+              }
+            });
+            renderDeepChapterPageView();
+          };
+        }
+
+        const retryMissedBtn = document.getElementById('btnDeepRetryMissed');
+        if (retryMissedBtn) {
+          retryMissedBtn.onclick = () => {
+            drills.forEach((d) => {
+              const st = state.deepDrillState[d.id];
+              if (st && st.answered && !st.ok) {
+                state.deepDrillState[d.id] = { answered: false, ok: false, closeAccent: false, chosenOpt: null, blankVals: [], perBlankOk: [], showHint: false, revealed: false };
+              }
+            });
+            syncDeepPageProgress(page);
+            renderDeepChapterPageView();
+          };
+        }
+
+        const resetAllBtn = document.getElementById('btnDeepResetAll');
+        if (resetAllBtn) {
+          resetAllBtn.onclick = () => {
+            drills.forEach((d) => { delete state.deepDrillState[d.id]; });
+            state.deepProgress[page.id] = { studied: true, drillBest: 0, drillTotal: drills.length, completed: false };
+            saveState();
+            renderSidebar();
+            renderDeepChapterPageView();
+          };
+        }
+      }
+
       function renderCourseView() {
+        if (state.activeDeepChapterId) {
+          renderDeepChapterPageView();
+          return;
+        }
         if (state.activeTopicQuizId) {
           els.mainContent.innerHTML = renderTopicQuizzesHTML({ context: 'course' });
           els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
@@ -7422,10 +8296,127 @@
           return;
         }
 
+        const browseMode = state.courseBrowseMode === 'index' ? 'index' : 'path';
+        state.courseBrowseMode = browseMode;
+
         const curLvl = ['A0', 'A1', 'A2', 'B1', 'B2'].includes(state.courseLevel) ? state.courseLevel : 'A1';
         state.courseLevel = curLvl;
         const rec = getRecommendedNextCourseTopic();
         const masteredCourses = GRAMMAR_QUIZZES.filter((t) => state.topicQuizBest[t.id] && state.topicQuizBest[t.id].best >= 7).length;
+
+        const modeSwitchHTML = `
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" data-course-browse="path" class="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer border ${browseMode === 'path' ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent' : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
+              🗺️ Learning Path (A0 → B2)
+            </button>
+            <button type="button" data-course-browse="index" class="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer border ${browseMode === 'index' ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent' : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
+              📚 Grammar Index (11 Topics · Tex Style)
+            </button>
+          </div>
+        `;
+
+        if (browseMode === 'index') {
+          const ch1 = getDeepChapter('ch1_nouns');
+          const ch1Pages = ch1 ? (ch1.pages || []) : [];
+          const ch1Done = ch1 ? getDeepChapterDoneCount(ch1.id) : 0;
+
+          const dirHTML = GRAMMAR_DIRECTORY.map((cat) => {
+            const isDeepReady = cat.status === 'deep' && cat.deepChapterId === 'ch1_nouns' && ch1;
+            const linkedTopics = (cat.existingTopicIds || [])
+              .map((tid) => GRAMMAR_QUIZZES.find((q) => q.id === tid))
+              .filter(Boolean);
+
+            return `
+              <div class="studio-card p-5 space-y-3 ${isDeepReady ? 'border-primary-soft ring-1 ring-[var(--primary)]/15' : ''}">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                  <div class="space-y-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="text-lg">${cat.icon}</span>
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">${esc(cat.code)}</span>
+                      <h3 class="text-base font-bold text-[var(--foreground)]">${esc(cat.title)}</h3>
+                      ${isDeepReady
+                        ? `<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Deep Slow-Paced Ready (${ch1Done}/${ch1Pages.length} pages)</span>`
+                        : `<span class="px-2 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold">Linked Modules Ready (${linkedTopics.length})</span>`}
+                    </div>
+                    ${state.showZh && cat.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(cat.titleZh)}</div>` : ''}
+                    <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && cat.descZh ? cat.descZh : cat.desc)}</p>
+                  </div>
+                </div>
+
+                ${isDeepReady ? `
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1">
+                    ${ch1Pages.map((p) => {
+                      const pProg = state.deepProgress[p.id] || {};
+                      const done = Boolean(pProg.completed);
+                      return `
+                        <button type="button" data-open-deep="${ch1.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${done ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover cursor-pointer flex items-center justify-between gap-2">
+                          <div class="min-w-0">
+                            <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
+                            <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
+                          </div>
+                          <span class="text-xs font-bold shrink-0 ${done ? 'text-[var(--success)]' : 'text-[var(--link)]'}">${done ? '✓' : '→'}</span>
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                ` : `
+                  <div class="space-y-2 pt-1">
+                    <div class="flex flex-wrap gap-1.5">
+                      ${(cat.plannedTopics || []).map((pt) => `<span class="px-2 py-0.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">${esc(pt)}</span>`).join('')}
+                    </div>
+                    ${linkedTopics.length ? `
+                      <div class="flex flex-wrap gap-2 pt-1">
+                        ${linkedTopics.map((lt) => `
+                          <button type="button" data-course-start="${lt.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                            ${lt.icon} [${esc(lt.badge)}] ${esc(lt.title)} →
+                          </button>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                  </div>
+                `}
+              </div>
+            `;
+          }).join('');
+
+          els.mainContent.innerHTML = `
+            <div class="space-y-5">
+              <div class="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h2 class="text-2xl font-bold text-[var(--foreground)]">📚 Grammar Directory (11 Categories · Tex Structure)</h2>
+                  <p class="text-sm text-[var(--muted-foreground)] mt-1">
+                    Browse all 11 grammar categories systematically. Category 01 (Nouns) now runs on the new 11-page slow-paced pilot!
+                  </p>
+                </div>
+                <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
+                  Courses Mastered: <span class="text-[var(--success)]">${masteredCourses} / ${GRAMMAR_QUIZZES.length}</span>
+                </div>
+              </div>
+              ${modeSwitchHTML}
+              <div class="space-y-4">
+                ${dirHTML}
+              </div>
+            </div>
+          `;
+
+          els.mainContent.querySelectorAll('[data-course-browse]').forEach((b) => {
+            b.onclick = () => {
+              state.courseBrowseMode = b.dataset.courseBrowse;
+              saveState();
+              renderCourseView();
+            };
+          });
+          els.mainContent.querySelectorAll('[data-open-deep]').forEach((b) => {
+            b.onclick = () => {
+              const [cid, pid] = String(b.dataset.openDeep || '').split('::');
+              openDeepPage(cid, pid, 'study');
+            };
+          });
+          els.mainContent.querySelectorAll('[data-course-start]').forEach((b) => {
+            b.onclick = () => openTopicQuiz(b.dataset.courseStart, 'learn', 'course');
+          });
+          return;
+        }
 
         const soundsList = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
         const levelCourses = GRAMMAR_QUIZZES.filter((t) => t.level === curLvl);
@@ -7614,6 +8605,58 @@
           </section>
         ` : '';
 
+        const ch1Pilot = getDeepChapter('ch1_nouns');
+        const ch1Pages = ch1Pilot ? (ch1Pilot.pages || []) : [];
+        const ch1Done = ch1Pilot ? getDeepChapterDoneCount(ch1Pilot.id) : 0;
+        const ch1Next = ch1Pilot ? getNextRecommendedDeepPage(ch1Pilot.id) : null;
+        const ch1Pct = ch1Pages.length ? Math.round((ch1Done / ch1Pages.length) * 100) : 0;
+        const deepPilotHTML = (curLvl === 'A1' && ch1Pilot) ? `
+          <section class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/20">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="space-y-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-lg">${ch1Pilot.icon}</span>
+                  <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle('A1')}">${esc(ch1Pilot.code)} · Deep Slow-Paced Pilot</span>
+                  <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">✨ Tex Depth · 11 Bite-Sized Pages</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(ch1Pilot.title)}</h3>
+                ${state.showZh && ch1Pilot.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(ch1Pilot.titleZh)}</div>` : ''}
+                <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && ch1Pilot.subtitleZh ? ch1Pilot.subtitleZh : ch1Pilot.subtitle)}</p>
+              </div>
+              <div class="flex flex-col items-end gap-2 shrink-0">
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold tabular-nums ${ch1Done === ch1Pages.length ? 'tint-success text-[var(--success)]' : 'tint-muted text-[var(--foreground)]'}">${ch1Done} / ${ch1Pages.length} pages done</span>
+                ${ch1Next ? `
+                  <button type="button" data-open-deep="${ch1Pilot.id}::${ch1Next.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                    ${ch1Done > 0 && ch1Done < ch1Pages.length ? `Continue Page ${esc(ch1Next.code)} →` : `Start Page ${esc(ch1Next.code)} →`}
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+            <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
+              <div class="h-full rounded-full ${ch1Done === ch1Pages.length ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${ch1Pct}%"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              ${ch1Pages.map((p) => {
+                const pProg = state.deepProgress[p.id] || {};
+                const pDone = Boolean(pProg.completed);
+                const pBest = pProg.drillBest || 0;
+                const pTotal = (p.drills || []).length;
+                return `
+                  <button type="button" data-open-deep="${ch1Pilot.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${pDone ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                      <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
+                      <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
+                    </div>
+                    <span class="text-[11px] font-bold shrink-0 tabular-nums ${pDone ? 'text-[var(--success)]' : pBest > 0 ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}">
+                      ${pDone ? `✓ ${pBest}/${pTotal}` : pBest > 0 ? `${pBest}/${pTotal}` : `${pTotal}Q →`}
+                    </span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </section>
+        ` : '';
+
         els.mainContent.innerHTML = `
           <div class="space-y-5">
             <!-- Header -->
@@ -7628,6 +8671,8 @@
                 Courses Mastered: <span class="text-[var(--success)]">${masteredCourses} / ${GRAMMAR_QUIZZES.length}</span>
               </div>
             </div>
+
+            ${modeSwitchHTML}
 
             ${rec ? `
               <div class="studio-card p-4 border-primary-soft flex flex-wrap items-center justify-between gap-3">
@@ -7668,6 +8713,7 @@
                 `).join('')}
               </div>
               <div class="space-y-6">
+                ${(tf === 'all' || tf === 'grammar') ? deepPilotHTML : ''}
                 ${tf === 'all' || tf === 'grammar' ? guidedCoursesHTML : ''}
                 ${tf === 'all' || tf === 'units' ? unitsHTML : ''}
                 ${tf === 'all' || tf === 'vocab' ? vocabHTML : ''}
@@ -7679,6 +8725,20 @@
 
         const bRec = document.getElementById('btnResumeRecommended');
         if (bRec && rec) bRec.onclick = () => openTopicQuiz(rec.id, 'learn', 'course');
+
+        els.mainContent.querySelectorAll('[data-course-browse]').forEach((b) => {
+          b.onclick = () => {
+            state.courseBrowseMode = b.dataset.courseBrowse;
+            saveState();
+            renderCourseView();
+          };
+        });
+        els.mainContent.querySelectorAll('[data-open-deep]').forEach((b) => {
+          b.onclick = () => {
+            const [cid, pid] = String(b.dataset.openDeep || '').split('::');
+            openDeepPage(cid, pid, 'study');
+          };
+        });
 
         els.mainContent.querySelectorAll('[data-course-lvl]').forEach((b) => {
           b.onclick = () => {
@@ -9954,6 +11014,8 @@
               if (data.vocabSRS && typeof data.vocabSRS === 'object') state.vocabSRS = data.vocabSRS;
               if (data.quizAnswers && typeof data.quizAnswers === 'object') state.quizAnswers = data.quizAnswers;
               if (data.topicQuizBest && typeof data.topicQuizBest === 'object') state.topicQuizBest = data.topicQuizBest;
+              if (data.deepProgress && typeof data.deepProgress === 'object') state.deepProgress = data.deepProgress;
+              if (data.courseBrowseMode === 'path' || data.courseBrowseMode === 'index') state.courseBrowseMode = data.courseBrowseMode;
               if (data.grammarQuizAnswers && typeof data.grammarQuizAnswers === 'object') state.grammarQuizAnswers = data.grammarQuizAnswers;
               if (data.vocabLessonQuizAnswers && typeof data.vocabLessonQuizAnswers === 'object') state.vocabLessonQuizAnswers = data.vocabLessonQuizAnswers;
               if (data.eeDrafts && typeof data.eeDrafts === 'object') state.eeDrafts = data.eeDrafts;
@@ -9992,6 +11054,13 @@
         state.topicQuizPhase = 'learn';
         state.topicLessonStep = 0;
         state.topicLessonState = {};
+        state.deepProgress = {};
+        state.activeDeepChapterId = null;
+        state.activeDeepPageId = null;
+        state.deepPageTab = 'study';
+        state.deepPeekRulesOpen = false;
+        state.deepQuickChecks = {};
+        state.deepDrillState = {};
         state.topicQuizAnswers = {};
         state.topicQuizFinished = false;
         state.topicQuizRetrySubset = null;

@@ -26,6 +26,7 @@ INDEX_HTML = ROOT / "index.html"
 SYLLABUS_JS = ROOT / "data" / "syllabus_data.js"
 LESSONS_JS = ROOT / "data" / "grammar_lessons.js"
 QUIZZES_JS = ROOT / "data" / "grammar_quizzes.js"
+DEEP_CHAPTERS_JS = ROOT / "data" / "deep_chapters.js"
 PACKS_DIR = ROOT / "data" / "audio_packs"
 MANIFEST_JS = ROOT / "data" / "audio_manifest.js"
 LEGACY_AUDIO_DIR = ROOT / "data" / "audio"
@@ -79,6 +80,7 @@ def extract_phrases_with_voices() -> list[dict]:
     syllabus_code = SYLLABUS_JS.read_text(encoding="utf-8") if SYLLABUS_JS.exists() else ""
     lessons_code = LESSONS_JS.read_text(encoding="utf-8") if LESSONS_JS.exists() else ""
     quizzes_code = QUIZZES_JS.read_text(encoding="utf-8") if QUIZZES_JS.exists() else ""
+    deep_chapters_code = DEEP_CHAPTERS_JS.read_text(encoding="utf-8") if DEEP_CHAPTERS_JS.exists() else ""
     scripts = re.findall(r"<script(?![^>]*src)[^>]*>(.*?)</script>", html, re.S)
     if not scripts:
         raise RuntimeError("No inline <script> found in index.html")
@@ -215,6 +217,32 @@ if (typeof GRAMMAR_QUIZZES !== 'undefined') {
   });
 }
 
+if (typeof window !== 'undefined' && Array.isArray(window.__TCF_DEEP_CHAPTERS__)) {
+  const vPool = ['denise', 'henri', 'sylvie', 'thierry'];
+  window.__TCF_DEEP_CHAPTERS__.forEach((ch) => {
+    (ch.pages || []).forEach((p, pIdx) => {
+      (p.sections || []).forEach((sec, sIdx) => {
+        if (sec.examples) {
+          sec.examples.forEach((ex, i) => add(ex.fr, vPool[(pIdx + sIdx + i) % vPool.length], 'deep_ch1'));
+        }
+        if (sec.table && sec.table.rows) {
+          sec.table.rows.forEach((r, i) => {
+            if (r.audio) add(r.audio, vPool[(pIdx + sIdx + i + 1) % vPool.length], 'deep_ch1');
+          });
+        }
+        if (sec.dialogue && sec.dialogue.lines) {
+          sec.dialogue.lines.forEach((ln, i) => {
+            if (ln.fr) add(ln.fr, vPool[(pIdx + i) % vPool.length], 'deep_ch1');
+          });
+        }
+      });
+      (p.drills || []).forEach((d, dIdx) => {
+        if (d.audio) add(d.audio, vPool[(pIdx + dIdx) % vPool.length], 'deep_ch1');
+      });
+    });
+  });
+}
+
 const out = [...entries.entries()].map(([text, meta]) => ({ text, voice: meta.voice, group: meta.group }));
 const emit = (typeof console !== 'undefined' && console.log) ? console.log.bind(console) : print;
 emit(JSON.stringify(out));
@@ -266,6 +294,8 @@ var fetch = function() { return { then: function(){ return { catch: function(){}
         + lessons_code
         + "\n"
         + quizzes_code
+        + "\n"
+        + deep_chapters_code
         + "\n"
         + extract_js
     )
