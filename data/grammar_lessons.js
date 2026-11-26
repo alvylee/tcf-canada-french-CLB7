@@ -141,7 +141,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 2 · Fill in Être",
       "title": "Type the Correct Present Form of « être »",
       "prompt": "Bonjour madame, vous ___ prête ? Oui, je ___ prête et mes amis ___ déjà ici.",
-      "hint": "Conjugate « être » for vous / je / ils — separate the three words with « / ».",
+      "hint": "Conjugate « être » for vous, je, and mes amis (ils).",
       "answers": [
         "êtes / suis / sont",
         "êtes/suis/sont",
@@ -247,34 +247,32 @@ window.__TCF_GRAMMAR_LESSONS__ = {
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « There is a clinic near here and we are lucky. »",
+      "title": "Tap the Tiles in Order: « There is a café here and we are hungry. »",
       "prompt": "Build the French sentence using « il y a » and « on a »:",
-      "promptZh": "用 il y a 和 on a 组句：「这附近有一家诊所，我们很幸运。」",
+      "promptZh": "用 il y a 和 on a 组句：「这里有一家咖啡馆，而且我们饿了。」",
       "tiles": [
         "Il",
         "y",
         "a",
-        "une",
-        "clinique",
-        "ici,",
+        "un",
+        "café",
+        "ici",
         "et",
         "on",
         "a",
-        "de",
-        "la",
-        "chance."
+        "faim."
       ],
-      "answer": "Il y a une clinique ici, et on a de la chance.",
-      "frFull": "Il y a une clinique ici, et on a de la chance.",
-      "exp": "« Il y a » means « there is »; « avoir de la chance » means « to be lucky » (using « on a »).",
-      "expZh": "il y a = 有；avoir de la chance = 运气好/幸运。"
+      "answer": "Il y a un café ici et on a faim.",
+      "frFull": "Il y a un café ici et on a faim.",
+      "exp": "« Il y a » means « there is »; « avoir faim » uses « avoir » (« on a faim » = we are hungry).",
+      "expZh": "il y a = 有；「饿了」在法语里固定用 avoir（on a faim），两个要点全是本课刚学的！"
     },
     {
       "type": "fib",
       "stepTag": "Practice 6 · Synthesis Challenge",
       "title": "Être vs. Avoir in One Mini-Bio",
       "prompt": "Je ___ (être) informaticien, j’___ (avoir) trente-deux ans, et mes voisins ___ (avoir) un chien.",
-      "hint": "Conjugate je + être, j’ + avoir, ils + avoir (separate with « / »).",
+      "hint": "Conjugate « je + être », « j’ + avoir », and « mes voisins (ils) + avoir ».",
       "answers": [
         "suis / ai / ont",
         "suis/ai/ont"
@@ -397,7 +395,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 2 · Definite & Elision Check",
       "title": "Fill in the Right Articles",
       "prompt": "J’aime ___ (the) français, et ___ (the) hôtel où j’habite a ___ (a) bonne connexion.",
-      "hint": "français (m.), hôtel (starts with mute h!), connexion (-tion = f.). Format: « X / Y / Z ».",
+      "hint": "français (m.), hôtel (starts with mute h!), connexion (-tion = f.).",
       "answers": [
         "le / l’ / une",
         "le / l' / une",
@@ -479,41 +477,39 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "type": "dict",
       "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
       "title": "Listen and Type the Exact French Sentence",
-      "audio": "J’achète du pain frais et de l’eau.",
+      "audio": "J’ai du pain frais et de l’eau.",
       "hint": "8 words · Watch the partitive articles « du » and « de l’ ».",
       "answers": [
-        "J’achète du pain frais et de l’eau.",
-        "J'achète du pain frais et de l'eau.",
-        "J’achète du pain frais et de l’eau",
-        "J'achète du pain frais et de l'eau"
+        "J’ai du pain frais et de l’eau.",
+        "J'ai du pain frais et de l'eau.",
+        "J’ai du pain frais et de l’eau",
+        "J'ai du pain frais et de l'eau"
       ],
-      "frFull": "J’achète du pain frais et de l’eau.",
-      "en": "I’m buying some fresh bread and water.",
-      "zh": "我买点新鲜面包和水。",
+      "frFull": "J’ai du pain frais et de l’eau.",
+      "en": "I have some fresh bread and water.",
+      "zh": "我有一些新鲜面包和水。",
       "exp": "« Pain » is masculine (du pain frais); « eau » starts with a vowel (de l’eau).",
       "expZh": "pain 阳性用 du；eau 元音开头用 de l’。"
     },
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « She loves nature and often takes photos. »",
-      "prompt": "Build the sentence choosing definite vs. indefinite plural:",
-      "promptZh": "组句：「她喜欢大自然，并且经常拍照片。」",
+      "title": "Tap the Tiles in Order: « I like coffee and I have some water. »",
+      "prompt": "Build the sentence choosing definite (« le ») vs. partitive (« de l’ »):",
+      "promptZh": "组句（区分定冠词与部分冠词）：「我喜欢咖啡，我有一些水。」",
       "tiles": [
-        "Elle",
-        "aime",
-        "la",
-        "nature",
+        "J’aime",
+        "le",
+        "café",
         "et",
-        "prend",
-        "souvent",
-        "des",
-        "photos."
+        "j’ai",
+        "de",
+        "l’eau."
       ],
-      "answer": "Elle aime la nature et prend souvent des photos.",
-      "frFull": "Elle aime la nature et prend souvent des photos.",
-      "exp": "« Aimer » takes definite « la nature »; taking plural photos uses « des photos ».",
-      "expZh": "aimer 后接定冠词 la nature，拍照片用不定复数 des photos。"
+      "answer": "J’aime le café et j’ai de l’eau.",
+      "frFull": "J’aime le café et j’ai de l’eau.",
+      "exp": "« Aimer » takes definite « le café »; having some water uses partitive « de l’eau ».",
+      "expZh": "aimer 后接定冠词 le café，具体有“一些水”用部分冠词 de l’eau。"
     }
   ],
   "a1_cest_adjectives": [
@@ -643,7 +639,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 2 · Adjective Agreement",
       "title": "Match Both Feminine Adjectives",
       "prompt": "Cette entreprise est très ___ (créatif) et propose une formation ___ (complet).",
-      "hint": "-f → -ve; complet → complète (watch the accent grave è!). Format: « X / Y ».",
+      "hint": "-f → -ve; complet → complète (watch the accent grave è!).",
       "answers": [
         "créative / complète",
         "créative/complète",
@@ -702,16 +698,16 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "type": "spot",
       "stepTag": "Practice 3 · Spot the Beginner Errors",
       "title": "Fix Both Errors in This Description",
-      "wrongSentence": "Il est un bon étudiant et il habite dans une verte maison.",
+      "wrongSentence": "Il est un bon étudiant et il a une verte maison.",
       "prompt": "Pick the fully natural French sentence:",
       "opts": [
-        "C’est un bon étudiant et il habite dans une maison verte.",
-        "Il est un bon étudiant et il habite dans une maison verte.",
-        "C’est un bon étudiant et il habite dans une verte maison.",
-        "C’est un étudiant bon et il habite dans une maison vert."
+        "C’est un bon étudiant et il a une maison verte.",
+        "Il est un bon étudiant et il a une maison verte.",
+        "C’est un bon étudiant et il a une verte maison.",
+        "C’est un étudiant bon et il a une maison vert."
       ],
       "ans": 0,
-      "frFull": "C’est un bon étudiant et il habite dans une maison verte.",
+      "frFull": "C’est un bon étudiant et il a une maison verte.",
       "exp": "« Un bon étudiant » has an article → « C’est »; color « verte » must go AFTER « maison ».",
       "expZh": "带有冠词 un 必须用 C’est；颜色形容词 verte 必须放在名词 maison 后面。"
     },
@@ -816,7 +812,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Regular -ER & Spelling Check",
       "title": "Type Both Present Forms",
       "prompt": "Nous ___ (voyager) souvent et mes collègues ___ (chercher) un hôtel.",
-      "hint": "Remember -ger before -ons + silent plural -ent! Format: « X / Y ».",
+      "hint": "Remember -ger before -ons + silent plural -ent!",
       "answers": [
         "voyageons / cherchent",
         "voyageons/cherchent"
@@ -1072,7 +1068,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Aller & Faire",
       "title": "Complete Aller and Faire",
       "prompt": "Vous ___ (faire) du yoga ce soir ? Non, nous ___ (aller) chez des amis.",
-      "hint": "Irregular « vous faites » + « nous allons » (format: « X / Y »).",
+      "hint": "Irregular « vous faites » + « nous allons ».",
       "answers": [
         "faites / allons",
         "faites/allons"
@@ -1313,8 +1309,8 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "type": "fib",
       "stepTag": "Practice 1 · Negation & « de » Shift",
       "title": "Apply Negation With vs. Without « être »",
-      "prompt": "Il n’a ___ ___ temps aujourd’hui, mais ce n’est ___ ___ urgence.",
-      "hint": "pas de / pas une (remember: être keeps une!). Format: « X Y / X Y ».",
+      "prompt": "Il n’a ___ temps aujourd’hui, mais ce n’est ___ urgence.",
+      "hint": "With « avoir », « pas + du » collapses to « pas de »; with « être », keep « pas une ».",
       "answers": [
         "pas de / pas une",
         "pas de/pas une"
@@ -1475,22 +1471,22 @@ window.__TCF_GRAMMAR_LESSONS__ = {
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « Does the course include a textbook? » (Formal)",
-      "prompt": "Build a formal noun-subject inversion question:",
-      "promptZh": "组一个礼貌倒装句：「这门课包含教材吗？」",
+      "title": "Tap the Tiles in Order: « Does the course start at nine o’clock? » (Formal)",
+      "prompt": "Build a formal noun-subject inversion question using -t-:",
+      "promptZh": "组一个礼貌倒装句：「这门课九点开始吗？」",
       "tiles": [
         "Le",
         "cours",
-        "inclut-il",
-        "un",
-        "manuel",
-        "scolaire",
+        "commence-t-il",
+        "à",
+        "neuf",
+        "heures",
         "?"
       ],
-      "answer": "Le cours inclut-il un manuel scolaire ?",
-      "frFull": "Le cours inclut-il un manuel scolaire ?",
-      "exp": "Keep the noun (« Le cours ») first, conjugate the verb, then echo the pronoun (« inclut-il »).",
-      "expZh": "名词作主语倒装：Le cours（放句首）+ inclut-il（动词+连字符+代词）。"
+      "answer": "Le cours commence-t-il à neuf heures ?",
+      "frFull": "Le cours commence-t-il à neuf heures ?",
+      "exp": "Keep the noun (« Le cours ») first, conjugate the verb, then echo the pronoun with -t- (« commence-t-il »).",
+      "expZh": "名词作主语倒装：Le cours（放句首）+ commence-t-il（加连音字母 -t-）。"
     }
   ],
   "a1_possessives_places": [
@@ -1554,7 +1550,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Possessive Determiners",
       "title": "Watch Gender + the Vowel Trap",
       "prompt": "Sophie cherche ___ (her) clés (pl.), ___ (her) adresse (f., vowel!) et ___ (her) sac (m.).",
-      "hint": "ses / son (vowel trap!) / son (format: « X / Y / Z »).",
+      "hint": "ses (plural « clés »), son (vowel trap on « adresse »!), and son (« sac » m.).",
       "answers": [
         "ses / son / son",
         "ses/son/son"
@@ -1796,7 +1792,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Tonic Pronouns",
       "title": "Pick the Right Tonic Forms After Prepositions",
       "prompt": "Paul va au cinéma avec ___ (us), mais sans ___ (them, masculine) ; ___, je reste chez ___ (me).",
-      "hint": "nous / eux / Moi / moi (format: « A / B / C / D »).",
+      "hint": "Tonic forms after « avec », « sans », comma emphasis, and « chez ».",
       "answers": [
         "nous / eux / Moi / moi",
         "nous / eux / moi / moi",
@@ -1911,7 +1907,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
           [
             "Modal + Reflexive Inf.",
             "S + modal + refl.(matches S!) + Inf.",
-            "Tu dois te préparer. / Nous allons nous reposer."
+            "Tu dois te préparer. / Nous devons nous reposer."
           ],
           [
             "Body parts",
@@ -1972,23 +1968,23 @@ window.__TCF_GRAMMAR_LESSONS__ = {
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « We are not going to get up early with them. »",
-      "prompt": "Build using negative near future + reflexive + Tonic « eux »:",
-      "promptZh": "组句：「我们不打算和他们一起早起。」",
+      "title": "Tap the Tiles in Order: « We do not get up early with them. »",
+      "prompt": "Build the negative present reflexive + Tonic « eux » sentence:",
+      "promptZh": "组句：「我们不和他们一起早起。」",
       "tiles": [
         "Nous",
-        "n’allons",
-        "pas",
+        "ne",
         "nous",
-        "lever",
+        "levons",
+        "pas",
         "tôt",
         "avec",
         "eux."
       ],
-      "answer": "Nous n’allons pas nous lever tôt avec eux.",
-      "frFull": "Nous n’allons pas nous lever tôt avec eux.",
-      "exp": "« N’allons pas » wraps the conjugated verb; « nous lever » matches « Nous »; « avec eux » uses Tonic « eux ».",
-      "expZh": "n’allons pas 否定变位动词，nous lever 与主语一致，avec 后用 eux。"
+      "answer": "Nous ne nous levons pas tôt avec eux.",
+      "frFull": "Nous ne nous levons pas tôt avec eux.",
+      "exp": "« Ne... pas » wraps reflexive « nous levons »; after preposition « avec » use Tonic « eux ».",
+      "expZh": "ne...pas 夹住自反代词和动词（nous nous levons），avec 后用重读代词 eux。"
     }
   ],
   "a1_near_future_recent_past": [
@@ -2042,7 +2038,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Near Future",
       "title": "Build Affirmative & Negative Futur Proche",
       "prompt": "Demain, elle ___ (commencer) son stage, mais nous ___ (ne pas partir) en vacances.",
-      "hint": "va commencer / n’allons pas partir (format: « X / Y »).",
+      "hint": "Conjugate present « aller » for elle and negative « nous n’allons pas » + infinitive.",
       "answers": [
         "va commencer / n’allons pas partir",
         "va commencer / n'allons pas partir",
@@ -2180,19 +2176,19 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "type": "dict",
       "stepTag": "Practice 4 · Mini Audio Dictation (听写)",
       "title": "Listen and Type the Exact Sentence",
-      "audio": "Je viens d’arriver et je vais vous appeler.",
-      "hint": "8 words · Contrasts « venir d’ » (just arrived) and « aller + inf. » (going to call).",
+      "audio": "Je viens d’arriver et je vais me reposer.",
+      "hint": "8 words · Contrasts « venir d’ » (just arrived) and « aller + reflexive inf. ».",
       "answers": [
-        "Je viens d’arriver et je vais vous appeler.",
-        "Je viens d'arriver et je vais vous appeler.",
-        "Je viens d’arriver et je vais vous appeler",
-        "Je viens d'arriver et je vais vous appeler"
+        "Je viens d’arriver et je vais me reposer.",
+        "Je viens d'arriver et je vais me reposer.",
+        "Je viens d’arriver et je vais me reposer",
+        "Je viens d'arriver et je vais me reposer"
       ],
-      "frFull": "Je viens d’arriver et je vais vous appeler.",
-      "en": "I just arrived and I am going to call you.",
-      "zh": "我刚到，正准备给您打电话。",
-      "exp": "Notice « viens d’arriver » (recent past) paired with « je vais vous appeler » (near future).",
-      "expZh": "前半句用最近过去时 viens d’arriver，后半句用近期将来时 vais appeler。"
+      "frFull": "Je viens d’arriver et je vais me reposer.",
+      "en": "I just arrived and I am going to rest.",
+      "zh": "我刚到，正打算休息一下。",
+      "exp": "Notice « viens d’arriver » (recent past) paired with « je vais me reposer » (near future + reflexive).",
+      "expZh": "前半句用最近过去时 viens d’arriver，后半句用近期将来时 vais me reposer。"
     },
     {
       "type": "build",
@@ -2314,9 +2310,9 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "tipZh": "注意 avoir 的过去分词 eu 发音就像普通话的 ü（鱼）：J’ai eu = 我拿到/经历了……。",
       "examples": [
         {
-          "fr": "J’ai pris une décision après avoir lu l’article.",
-          "en": "I made a decision after reading the article.",
-          "zh": "读完文章后我做了一个决定。（pris / lu）"
+          "fr": "J’ai lu l’article et j’ai pris une décision.",
+          "en": "I read the article and made a decision.",
+          "zh": "我读了那篇文章，并做出了决定。（lu / pris）"
         },
         {
           "fr": "Est-ce que vous avez bien reçu mon courriel ?",
@@ -2498,7 +2494,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Être + Agreement",
       "title": "Complete With « être » and Match Gender / Number",
       "prompt": "Hier, Julie ___ (venir) chez moi, puis elles ___ (rester) jusqu’à 20 h.",
-      "hint": "Julie (fem. sg.) + elles (fem. pl.). Format: « X / Y ».",
+      "hint": "Use « être » in Passé Composé — match feminine singular Julie and feminine plural elles.",
       "answers": [
         "est venue / sont restées",
         "est venue/sont restées"
@@ -2729,7 +2725,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Imparfait Stems",
       "title": "Derive Imparfait From « Nous » + « Être »",
       "prompt": "En 2019, il ___ (faire) très froid et nous ___ (être) souvent à la maison.",
-      "hint": "nous faisons → stem fais-; être → stem ét-. Format: « X / Y ».",
+      "hint": "Take stem « fais- » from « nous faisons » and irregular « être » stem « ét- ».",
       "answers": [
         "faisait / étions",
         "faisait/étions"
@@ -3012,7 +3008,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 2 · Dual-Blank Story Fill",
       "title": "Balance Scene + Bounded Event",
       "prompt": "Comme la salle ___ (être) bruyante, nous ___ (travailler) à la bibliothèque pendant trois heures.",
-      "hint": "Reason/state = IMP; bounded 3-hour session = PC. Format: « X / Y ».",
+      "hint": "Ongoing noise reason = Imparfait; bounded 3-hour work block = Passé Composé.",
       "answers": [
         "était / avons travaillé",
         "était/avons travaillé"
@@ -3104,22 +3100,22 @@ window.__TCF_GRAMMAR_LESSONS__ = {
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « While I was reading, he called me. »",
-      "prompt": "Build an interrupted past action using Imparfait + PC:",
-      "promptZh": "组句：「我正看书时，他给我打来了电话。」",
+      "title": "Tap the Tiles in Order: « While I was reading, Paul arrived. »",
+      "prompt": "Build an interrupted past action using Imparfait + Passé Composé:",
+      "promptZh": "组句：「我正看书时，Paul 到了。」",
       "tiles": [
         "Pendant",
         "que",
         "je",
         "lisais,",
-        "il",
-        "m’a",
-        "téléphoné."
+        "Paul",
+        "est",
+        "arrivé."
       ],
-      "answer": "Pendant que je lisais, il m’a téléphoné.",
-      "frFull": "Pendant que je lisais, il m’a téléphoné.",
-      "exp": "« Pendant que + Imparfait » (« je lisais ») + interrupting event (« il m’a téléphoné »).",
-      "expZh": "pendant que 引导正在进行的背景（lisais），后面发生的动作（a téléphoné）用 PC。"
+      "answer": "Pendant que je lisais, Paul est arrivé.",
+      "frFull": "Pendant que je lisais, Paul est arrivé.",
+      "exp": "« Pendant que + Imparfait » (« je lisais ») + interrupting completed arrival (« Paul est arrivé »).",
+      "expZh": "pendant que 引导正在进行的背景（lisais），随后发生的到达（est arrivé）用 PC。"
     }
   ],
   "a2_futur_simple": [
@@ -3177,8 +3173,8 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "type": "fib",
       "stepTag": "Practice 1 · Regular Future",
       "title": "Drop -e on -RE Verbs & Attach Future Endings",
-      "prompt": "La semaine prochaine, j’___ (envoyer… non: choisir) un cours et nous ___ (attendre) la confirmation.",
-      "hint": "Je choisir-ai / nous attendr-ons. Type: « choisirai / attendrons ».",
+      "prompt": "La semaine prochaine, je ___ (choisir) un cours et nous ___ (attendre) la confirmation.",
+      "hint": "Attach future endings -ai (je) and -ons (nous) — drop final -e on « attendre »!",
       "answers": [
         "choisirai / attendrons",
         "choisirai/attendrons"
@@ -3336,24 +3332,23 @@ window.__TCF_GRAMMAR_LESSONS__ = {
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « As soon as he is ready, I will send him the link. »",
+      "title": "Tap the Tiles in Order: « As soon as he is ready, we will go to the cinema. »",
       "prompt": "Build the « dès que + Futur » sentence:",
-      "promptZh": "组句：「他一准备好，我就把链接发给她/他。」",
+      "promptZh": "组句：「他一准备好，我们就去电影院。」",
       "tiles": [
         "Dès",
         "qu’il",
         "sera",
         "prêt,",
-        "je",
-        "lui",
-        "enverrai",
-        "le",
-        "lien."
+        "nous",
+        "irons",
+        "au",
+        "cinéma."
       ],
-      "answer": "Dès qu’il sera prêt, je lui enverrai le lien.",
-      "frFull": "Dès qu’il sera prêt, je lui enverrai le lien.",
-      "exp": "« Dès qu’il sera » (être future) + « j’enverrai » (envoyer future stem enverr-).",
-      "expZh": "dès qu’il sera（将来时）+ enverrai（envoyer 将来词干 enverr-）。"
+      "answer": "Dès qu’il sera prêt, nous irons au cinéma.",
+      "frFull": "Dès qu’il sera prêt, nous irons au cinéma.",
+      "exp": "« Dès qu’il sera » (être future) + « nous irons » (irregular aller future stem ir-).",
+      "expZh": "dès qu’il sera（将来时）+ nous irons（aller 将来词干 ir-）。"
     }
   ],
   "a2_cod_pronouns": [
@@ -3484,7 +3479,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 2 · Present COD Placement",
       "title": "Replace Both Direct Objects",
       "prompt": "Tu prends la voiture (f.) ? — Oui, je ___ prends. Et tu invites Sophie et Marc ? — Oui, je ___ invite.",
-      "hint": "car = la (before consonant), Sophie et Marc = les. Format: « X / Y ».",
+      "hint": "« la voiture » (f.sg. before consonant) and « Sophie et Marc » (plural).",
       "answers": [
         "la / les",
         "la/les"
@@ -3599,7 +3594,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 6 · COD Synthesis",
       "title": "Negation + Passé Composé COD Agreement",
       "prompt": "Tu as reçu mes lettres (f.pl.) ? — Oui, je ___ ai déjà ___ (lire).",
-      "hint": "Plural « les » + agree « lu » with feminine plural « les lettres »! Format: « X / Y ».",
+      "hint": "Plural « les » + agree « lu » with feminine plural « les lettres »!",
       "answers": [
         "les / lues",
         "les/lues"
@@ -3731,7 +3726,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 2 · COD vs. COI Replacement",
       "title": "Contrast « aider / appeler » vs. « répondre / parler »",
       "prompt": "Mon amie Sophie est occupée : je ___ appelle demain et je ___ réponds par mail.",
-      "hint": "appeler (COD + vowel!) vs répondre à (COI). Format: « X / Y ».",
+      "hint": "appeler (COD + vowel!) vs répondre à (COI).",
       "answers": [
         "l’ / lui",
         "l' / lui",
@@ -3846,7 +3841,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 6 · COD vs. COI Synthesis",
       "title": "Combine Direct « aider » + Indirect « parler à » in Passé Composé",
       "prompt": "Ta sœur ? Oui, je ___ (l’/lui) ai aidée hier et je ___ (l’/lui) ai parlé ce matin.",
-      "hint": "aider = COD (+ vowel!) → aidée; parler à = COI → parlé. Format: « X / Y ».",
+      "hint": "aider = COD (+ vowel!) → aidée; parler à = COI → parlé.",
       "answers": [
         "l’ / lui",
         "l' / lui",
@@ -3914,7 +3909,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Pronoun Y",
       "title": "Replace Places & « à + Thing » With « Y »",
       "prompt": "Vous allez au Québec cet été ? — Oui, nous ___ allons en juillet et je ___ pense déjà !",
-      "hint": "Both « au Québec » (place) and « à l’été / au voyage » (à + thing) become « y »! Format: « X / Y ».",
+      "hint": "Use « y » for places (« au Québec ») and for « à + non-human thing » (« penser à »).",
       "answers": [
         "y / y",
         "y/y"
@@ -4042,18 +4037,18 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "type": "spot",
       "stepTag": "Practice 3 · Spot Both « Y/EN » & Comparative Traps",
       "title": "Fix Both Common A2 Errors",
-      "wrongSentence": "J’y ai besoin de deux billets pour avoir une plus bonne place.",
+      "wrongSentence": "Ce guide ? J’y ai besoin pour avoir une plus bonne note.",
       "prompt": "Pick the 100% grammatical correction:",
       "opts": [
-        "J’en ai besoin de deux pour avoir une meilleure place.",
-        "J’en ai besoin de deux billets pour avoir une plus bonne place.",
-        "J’y ai besoin de deux pour avoir une meilleure place.",
-        "J’en ai besoin deux pour avoir une mieux place."
+        "Ce guide ? J’en ai besoin pour avoir une meilleure note.",
+        "Ce guide ? J’en ai besoin pour avoir une plus bonne note.",
+        "Ce guide ? J’y ai besoin pour avoir une meilleure note.",
+        "Ce guide ? J’en ai besoin pour avoir une mieux note."
       ],
       "ans": 0,
-      "frFull": "J’ai besoin de deux billets pour avoir une meilleure place — oui, j’en ai besoin !",
-      "exp": "« Avoir besoin de » uses « en » (or « J’en ai besoin »); feminine noun « place » uses « meilleure » (never « plus bon » or « mieux »).",
-      "expZh": "avoir besoin de 搭配 en；阴性名词 place 用 meilleure（不说 plus bonne 或 mieux）。"
+      "frFull": "Ce guide ? J’en ai besoin pour avoir une meilleure note.",
+      "exp": "« Avoir besoin de » uses « en »; feminine noun « note » uses « meilleure » (never « plus bonne » or « mieux »).",
+      "expZh": "avoir besoin de 搭配 en；阴性名词 note 用 meilleure（不说 plus bonne 或 mieux）。"
     },
     {
       "type": "dict",
@@ -4076,24 +4071,21 @@ window.__TCF_GRAMMAR_LESSONS__ = {
     {
       "type": "build",
       "stepTag": "Practice 5 · Sentence Builder",
-      "title": "Tap the Tiles in Order: « Thanks to this course, I speak better and I’m going there tomorrow. »",
+      "title": "Tap the Tiles in Order: « I speak French better and I’m going there tomorrow. »",
       "prompt": "Combine « mieux » (verb) and « y » (place):",
-      "promptZh": "组句：「多亏这门课，我说得更好了，明天我还要去那儿。」",
+      "promptZh": "组句：「我法语说得更好了，明天我还要去那儿。」",
       "tiles": [
-        "Grâce",
-        "à",
-        "ce",
-        "cours,",
-        "je",
+        "Je",
         "parle",
         "mieux",
+        "français",
         "et",
         "j’y",
         "vais",
         "demain."
       ],
-      "answer": "Grâce à ce cours, je parle mieux et j’y vais demain.",
-      "frFull": "Grâce à ce cours, je parle mieux et j’y vais demain.",
+      "answer": "Je parle mieux français et j’y vais demain.",
+      "frFull": "Je parle mieux français et j’y vais demain.",
       "exp": "« Parle » (verb) → adverb « mieux »; going to a previously mentioned place → « j’y vais ».",
       "expZh": "parle 动词配副词 mieux；去那儿用 j’y vais。"
     }
@@ -4341,7 +4333,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Fill in the Blank (Conditionnel Présent)",
       "title": "Give Polite Advice Using « devoir » & « falloir »",
       "prompt": "À mon avis, tu ___ (devoir) partir tôt et il ___ (falloir) prendre un manteau.",
-      "hint": "Future stems devr- / faudr- + Imparfait ending (-ais / -ait). Separate with « / ».",
+      "hint": "Future stems devr- / faudr- + Imparfait ending (-ais / -ait).",
       "answers": [
         "devrais / faudrait",
         "devrais/faudrait"
@@ -4481,7 +4473,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 4 · Synthesis Challenge",
       "title": "Express a Past Regret in Type 3",
       "prompt": "Si nous ___ (partir) plus tôt, nous ___ (ne pas rater) le train.",
-      "hint": "Type « Plus-que-parfait / Cond. Passé » (note: partir uses être!).",
+      "hint": "Type Plus-que-parfait in blank 1 and Cond. Passé in blank 2 (note: partir uses être!).",
       "answers": [
         "étions partis / n’aurions pas raté",
         "étions partis / n'aurions pas raté",
@@ -4688,7 +4680,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 4 · Synthesis Challenge",
       "title": "Compound Relative + Double Pronoun",
       "prompt": "Ce projet ___ (auquel/dont) je participe ? Je ___ (it to them = le + leur) expliquerai demain.",
-      "hint": "Participer À + ce projet (m.sg.) / Direct + Indirect (« X / Y »).",
+      "hint": "Participer À + ce projet (m.sg.) / Direct + Indirect.",
       "answers": [
         "auquel / le leur",
         "auquel/le leur"
@@ -4911,7 +4903,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 4 · Synthesis Challenge",
       "title": "Passive Agreement + Gérondif",
       "prompt": "Ces lois ___ (adopter, passive PC) ___ (respecter, gérondif) l’environnement.",
-      "hint": "« Ces lois » is f.pl. passive + « en + -ant » → type « X / Y ».",
+      "hint": "« Ces lois » is f.pl. passive + « en + -ant » →.",
       "answers": [
         "ont été adoptées / en respectant",
         "ont été adoptées/en respectant"
@@ -4977,7 +4969,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 1 · Fill in the Blank (Irregular Subjunctive)",
       "title": "Use Irregular Subjunctive Stems",
       "prompt": "Il faut que nous ___ (faire) des efforts et que vous ___ (être) patients.",
-      "hint": "faire → fass-, être (vous) → soyez. Separate with « / ».",
+      "hint": "faire → fass-, être (vous) → soyez.",
       "answers": [
         "fassions / soyez",
         "fassions/soyez"
@@ -5124,7 +5116,7 @@ window.__TCF_GRAMMAR_LESSONS__ = {
       "stepTag": "Practice 4 · Synthesis Challenge",
       "title": "Subjunctive (« avant que ») vs. Indicative Trap (« espérer que »)",
       "prompt": "J’espère qu’il ___ (venir) demain avant qu’il ___ (pleuvoir).",
-      "hint": "espérer → Futur Simple; avant que → Subjunctive (« X / Y »).",
+      "hint": "espérer → Futur Simple; avant que → Subjunctive.",
       "answers": [
         "viendra / pleuve",
         "viendra/pleuve"

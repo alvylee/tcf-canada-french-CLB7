@@ -2575,6 +2575,7 @@
         topicQuizFinished: false,
         topicQuizInputMode: 'mcq', // 'mcq' | 'fib'
         topicQuizTypedVal: '',
+        topicQuizBlankVals: [],
         topicQuizRetrySubset: null,
         grammarLessonPage: 1,
         // Vocab Bank state
@@ -6107,9 +6108,89 @@
 
       function getLessonSlideState(key) {
         if (!state.topicLessonState[key]) {
-          state.topicLessonState[key] = { answered: false, ok: false, closeAccent: false, userVal: '', chosenOpt: null, builtIndices: [], showHint: false, visited: false };
+          state.topicLessonState[key] = { answered: false, ok: false, closeAccent: false, userVal: '', blankVals: [], perBlankOk: [], chosenOpt: null, builtIndices: [], showHint: false, visited: false };
         }
         return state.topicLessonState[key];
+      }
+
+      function parseBlankSpec(promptText, rawAnswers) {
+        const blankCount = (String(promptText || '').match(/___/g) || []).length;
+        const rawList = (Array.isArray(rawAnswers) ? rawAnswers : []).filter((a) => typeof a === 'string' && a.trim());
+        const variants = [];
+        if (blankCount > 1) {
+          rawList.forEach((a) => {
+            const parts = a.split('/').map((s) => s.trim());
+            if (parts.length === blankCount) variants.push(parts);
+          });
+        } else if (blankCount === 1) {
+          rawList.forEach((a) => variants.push([a.trim()]));
+        }
+        return {
+          blankCount,
+          inlineEnabled: blankCount >= 1 && variants.length > 0,
+          variants,
+          primaryParts: variants[0] || []
+        };
+      }
+
+      function evaluateBlankValues(userVals, spec) {
+        const clean = userVals.map((v) => String(v || '').trim());
+        let allOk = false;
+        let anyCloseAccent = false;
+        let bestPerBlank = spec.primaryParts.map((exp, i) => {
+          const nv = normalizeFr(clean[i] || '');
+          const ne = normalizeFr(exp);
+          return Boolean(nv && (nv === ne || stripAccents(nv) === stripAccents(ne)));
+        });
+        let bestScore = bestPerBlank.filter(Boolean).length;
+
+        spec.variants.forEach((variant) => {
+          let exactAll = true;
+          let accentAll = true;
+          const flags = variant.map((exp, i) => {
+            const nv = normalizeFr(clean[i] || '');
+            const ne = normalizeFr(exp);
+            const exact = nv === ne;
+            const acc = exact || stripAccents(nv) === stripAccents(ne);
+            if (!exact) exactAll = false;
+            if (!acc) accentAll = false;
+            return acc;
+          });
+          const sc = flags.filter(Boolean).length;
+          if (sc > bestScore || accentAll) {
+            bestScore = sc;
+            bestPerBlank = flags;
+          }
+          if (accentAll) {
+            allOk = true;
+            if (!exactAll) anyCloseAccent = true;
+          }
+        });
+        return { allOk, anyCloseAccent, perBlankOk: bestPerBlank };
+      }
+
+      function renderInlineBlankPromptHTML(promptText, spec, vals, isAnswered, perBlankOk, dataAttr) {
+        const segments = String(promptText || '').split('___');
+        let out = esc(segments[0]);
+        for (let i = 0; i < segments.length - 1; i++) {
+          const val = (Array.isArray(vals) && vals[i] != null) ? vals[i] : '';
+          const exp = spec.primaryParts[i] || '';
+          const okBlank = isAnswered && Array.isArray(perBlankOk) && perBlankOk[i];
+          const wCh = Math.max(7, Math.min(22, Math.max(exp.length, val.length) + 3));
+          let cls = 'bg-[var(--card)] border-[var(--primary)]/50 text-[var(--foreground)] focus:ring-2 focus:ring-[var(--primary)]';
+          if (isAnswered) {
+            cls = okBlank
+              ? 'tint-success border-success-soft text-[var(--success)] font-bold'
+              : 'tint-error border-error-soft text-[var(--error)] font-semibold';
+          }
+          const ph = spec.blankCount > 1 ? String(i + 1) : '...';
+          out += `<input type="text" ${dataAttr}="${i}" autocomplete="off" value="${escAttr(val)}" placeholder="${ph}" ${isAnswered ? 'disabled' : ''} style="width:${wCh}ch" class="inline-block align-baseline mx-1 my-0.5 px-2.5 py-1 rounded-lg border text-sm sm:text-base font-semibold focus:outline-none transition ${cls}" />`;
+          if (isAnswered && !okBlank && exp) {
+            out += `<span class="inline-block align-baseline mr-1 px-1.5 py-0.5 rounded tint-success border border-success-soft text-[var(--success)] text-xs font-bold">✓ ${esc(exp)}</span>`;
+          }
+          out += esc(segments[i + 1]);
+        }
+        return out;
       }
 
       function renderTopicQuizzesHTML(opts = {}) {
@@ -6233,11 +6314,19 @@
                 </div>
               `;
             } else if (slide.type === 'fib') {
-              const promptHtml = esc(slide.prompt).replace(/___/g, '<span class="px-2 py-0.5 mx-0.5 rounded bg-[var(--card)] border border-primary-soft text-[var(--primary)] font-bold">___</span>');
+              const fSpec = parseBlankSpec(slide.prompt, slide.answers);
+              const fVals = Array.isArray(st.blankVals) && st.blankVals.length === fSpec.blankCount
+                ? st.blankVals
+                : (st.userVal ? String(st.userVal).split('/').map((s) => s.trim()) : Array(fSpec.blankCount).fill(''));
+              const promptHtml = fSpec.inlineEnabled
+                ? renderInlineBlankPromptHTML(slide.prompt, fSpec, fVals, st.answered, st.perBlankOk, 'data-slide-blank')
+                : esc(slide.prompt).replace(/___/g, '<span class="px-2 py-0.5 mx-0.5 rounded bg-[var(--card)] border border-primary-soft text-[var(--primary)] font-bold">___</span>');
+              const expectedSummary = fSpec.blankCount > 1 ? fSpec.primaryParts.join(' · ') : (slide.answers && slide.answers[0] ? slide.answers[0] : '');
+
               slideBodyHTML = `
-                <div class="space-y-4">
-                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
-                    <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-snug">${promptHtml}</div>
+                <form id="slideFibForm" class="space-y-4">
+                  <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2.5">
+                    <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-relaxed">${promptHtml}</div>
                     ${slide.hint ? `
                       <div>
                         <button type="button" id="btnSlideHint" class="text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">
@@ -6248,38 +6337,50 @@
                     ` : ''}
                   </div>
 
-                  <form id="slideFibForm" class="space-y-2.5">
-                    <div class="flex flex-wrap items-center gap-1">
-                      <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
-                      ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-slide-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
-                    </div>
-                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
-                      <input
-                        id="slideFibInput"
-                        type="text"
-                        autocomplete="off"
-                        value="${escAttr(st.userVal || '')}"
-                        placeholder="Type the missing French word(s)..."
-                        ${st.answered ? 'disabled' : ''}
-                        class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                      />
-                      <button type="submit" ${st.answered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                  ${fSpec.inlineEnabled ? `
+                    <div class="flex flex-wrap items-center justify-between gap-2.5">
+                      <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                        ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-slide-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                      </div>
+                      <button type="submit" ${st.answered ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
                         Check Answer
                       </button>
                     </div>
-                  </form>
+                  ` : `
+                    <div class="space-y-2.5">
+                      <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                        ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-slide-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                      </div>
+                      <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                        <input
+                          id="slideFibInput"
+                          type="text"
+                          autocomplete="off"
+                          value="${escAttr(st.userVal || '')}"
+                          placeholder="Type the missing French word(s)..."
+                          ${st.answered ? 'disabled' : ''}
+                          class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                        />
+                        <button type="submit" ${st.answered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                          Check Answer
+                        </button>
+                      </div>
+                    </div>
+                  `}
 
                   ${st.answered ? `
                     <div class="p-4 rounded-xl border space-y-2 ${st.ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
                       <div class="flex flex-wrap items-center justify-between gap-2">
-                        <span class="text-xs font-bold">${st.ok ? (st.closeAccent ? 'Correct — watch accents! ✓ (+5 XP)' : 'Exact ! ✓ (+5 XP)') : `Expected: ${esc(slide.answers[0])}`}</span>
+                        <span class="text-xs font-bold">${st.ok ? (st.closeAccent ? 'Correct — watch accents! ✓ (+5 XP)' : 'Exact ! ✓ (+5 XP)') : `Expected: ${esc(expectedSummary)}`}</span>
                         <button type="button" data-speak="${escAttr(slide.frFull)}" class="speak-btn px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊 ${esc(slide.frFull)}</button>
                       </div>
                       <div class="text-xs text-[var(--foreground)]">${esc(slide.exp)}</div>
                       ${state.showZh && slide.expZh ? `<div class="text-xs text-[var(--primary)]">${esc(slide.expZh)}</div>` : ''}
                     </div>
                   ` : ''}
-                </div>
+                </form>
               `;
             } else if (slide.type === 'dict') {
               slideBodyHTML = `
@@ -6608,45 +6709,76 @@
                   </div>
                 </div>
 
-                <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
-                  <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-snug">${esc(q.q)}</div>
-                </div>
+                ${(() => {
+                  const qSpec = parseBlankSpec(q.q, [q.opts[q.ans]]);
+                  const qVals = isAnswered
+                    ? (Array.isArray(ansObj.blankVals) ? ansObj.blankVals : String(ansObj.userText || '').split('/').map((s) => s.trim()))
+                    : (Array.isArray(state.topicQuizBlankVals) ? state.topicQuizBlankVals : []);
 
-                ${isFib ? `
-                  <form id="tqFibForm" class="space-y-2.5">
-                    <div class="flex flex-wrap items-center gap-1">
-                      <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
-                      ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-tq-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                  if (isFib && qSpec.inlineEnabled) {
+                    const inlineQHtml = renderInlineBlankPromptHTML(q.q, qSpec, qVals, isAnswered, ansObj && ansObj.perBlankOk, 'data-tq-blank');
+                    return `
+                      <form id="tqFibForm" class="space-y-3">
+                        <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                          <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-relaxed">${inlineQHtml}</div>
+                        </div>
+                        <div class="flex flex-wrap items-center justify-between gap-2.5">
+                          <div class="flex flex-wrap items-center gap-1">
+                            <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                            ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-tq-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                          </div>
+                          <button type="submit" ${isAnswered ? 'disabled' : ''} class="px-5 py-2.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                            Check Answer
+                          </button>
+                        </div>
+                      </form>
+                    `;
+                  }
+                  if (isFib) {
+                    return `
+                      <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                        <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-snug">${esc(q.q)}</div>
+                      </div>
+                      <form id="tqFibForm" class="space-y-2.5">
+                        <div class="flex flex-wrap items-center gap-1">
+                          <span class="text-xs text-[var(--muted-foreground)] mr-1">Accents:</span>
+                          ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', '’'].map((ch) => `<button type="button" data-tq-accent="${escAttr(ch)}" class="px-2 py-1 rounded-md bg-[var(--content)] border border-[var(--border)] text-xs font-semibold tint-muted-hover cursor-pointer">${ch}</button>`).join('')}
+                        </div>
+                        <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                          <input
+                            id="tqFibInput"
+                            type="text"
+                            autocomplete="off"
+                            value="${escAttr(isAnswered ? (ansObj.userText || '') : (state.topicQuizTypedVal || ''))}"
+                            placeholder="Type the missing French answer..."
+                            ${isAnswered ? 'disabled' : ''}
+                            class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                          />
+                          <button type="submit" ${isAnswered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
+                            Check Answer
+                          </button>
+                        </div>
+                      </form>
+                    `;
+                  }
+                  return `
+                    <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)]">
+                      <div class="text-base sm:text-lg font-bold text-[var(--foreground)] leading-snug">${esc(q.q)}</div>
                     </div>
-                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
-                      <input
-                        id="tqFibInput"
-                        type="text"
-                        autocomplete="off"
-                        value="${escAttr(isAnswered ? (ansObj.userText || '') : (state.topicQuizTypedVal || ''))}"
-                        placeholder="Type the missing French answer..."
-                        ${isAnswered ? 'disabled' : ''}
-                        class="flex-1 px-4 py-3 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                      />
-                      <button type="submit" ${isAnswered ? 'disabled' : ''} class="px-5 py-3 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer shrink-0">
-                        Check Answer
-                      </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      ${getShuffledOrder(`tq_${activeTopic.id}_${realIdx}`, q.opts.length).map((oi) => {
+                        const opt = q.opts[oi];
+                        let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
+                        if (isAnswered) {
+                          if (oi === q.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
+                          else if (oi === ansObj.chosenOpt) cls = 'tint-error border-error-soft text-[var(--error)]';
+                          else cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
+                        }
+                        return `<button type="button" data-tq-opt="${oi}" class="text-left px-4 py-3 rounded-xl border text-sm transition cursor-pointer ${cls}">${esc(opt)}</button>`;
+                      }).join('')}
                     </div>
-                  </form>
-                ` : `
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    ${getShuffledOrder(`tq_${activeTopic.id}_${realIdx}`, q.opts.length).map((oi) => {
-                      const opt = q.opts[oi];
-                      let cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
-                      if (isAnswered) {
-                        if (oi === q.ans) cls = 'tint-success border-success-soft text-[var(--success)] font-bold';
-                        else if (oi === ansObj.chosenOpt) cls = 'tint-error border-error-soft text-[var(--error)]';
-                        else cls = 'bg-[var(--content)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
-                      }
-                      return `<button type="button" data-tq-opt="${oi}" class="text-left px-4 py-3 rounded-xl border text-sm transition cursor-pointer ${cls}">${esc(opt)}</button>`;
-                    }).join('')}
-                  </div>
-                `}
+                  `;
+                })()}
 
                 ${isAnswered ? `
                   <div class="p-4 rounded-xl border space-y-2 ${ok ? 'tint-success border-success-soft' : 'tint-warning border-warning-soft'}">
@@ -6781,6 +6913,7 @@
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
+            state.topicQuizBlankVals = [];
             rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
@@ -6795,6 +6928,7 @@
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
+            state.topicQuizBlankVals = [];
             rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
@@ -6889,6 +7023,7 @@
             state.topicQuizAnswers = {};
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
+            state.topicQuizBlankVals = [];
             rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
@@ -6903,8 +7038,65 @@
             };
           }
           const fibForm = document.getElementById('slideFibForm');
+          const fibBlanks = [...els.mainContent.querySelectorAll('[data-slide-blank]')];
           const fibInp = document.getElementById('slideFibInput');
-          if (fibForm && fibInp) {
+          if (fibForm && fibBlanks.length > 0) {
+            const fSpec = parseBlankSpec(slide.prompt, slide.answers);
+            if (!Array.isArray(st.blankVals) || st.blankVals.length !== fibBlanks.length) {
+              st.blankVals = fibBlanks.map((el) => el.value || '');
+            }
+            let activeBlank = fibBlanks[0];
+            if (!st.answered) activeBlank.focus();
+            fibBlanks.forEach((inp, idx) => {
+              inp.onfocus = () => { activeBlank = inp; };
+              inp.oninput = () => {
+                st.blankVals[idx] = inp.value;
+                st.userVal = st.blankVals.join(' / ');
+              };
+              inp.onkeydown = (e) => {
+                if (e.key === 'Enter' && idx < fibBlanks.length - 1) {
+                  e.preventDefault();
+                  fibBlanks[idx + 1].focus();
+                }
+              };
+            });
+            els.mainContent.querySelectorAll('[data-slide-accent]').forEach((b) => {
+              b.onclick = () => {
+                const target = activeBlank || fibBlanks[0];
+                if (!target || target.disabled) return;
+                const ins = b.dataset.slideAccent;
+                const posStart = target.selectionStart != null ? target.selectionStart : target.value.length;
+                const posEnd = target.selectionEnd != null ? target.selectionEnd : target.value.length;
+                target.value = target.value.slice(0, posStart) + ins + target.value.slice(posEnd);
+                target.focus();
+                target.selectionStart = target.selectionEnd = posStart + ins.length;
+                const bIdx = parseInt(target.dataset.slideBlank, 10);
+                if (!Number.isNaN(bIdx)) st.blankVals[bIdx] = target.value;
+                st.userVal = st.blankVals.join(' / ');
+              };
+            });
+            fibForm.onsubmit = (e) => {
+              e.preventDefault();
+              if (st.answered) return;
+              const vals = fibBlanks.map((el) => el.value.trim());
+              const firstEmptyIdx = vals.findIndex((v) => !v);
+              if (firstEmptyIdx !== -1) {
+                fibBlanks[firstEmptyIdx].focus();
+                return;
+              }
+              const ev = evaluateBlankValues(vals, fSpec);
+              st.blankVals = vals;
+              st.perBlankOk = ev.perBlankOk;
+              st.userVal = vals.join(' / ');
+              st.answered = true;
+              st.ok = ev.allOk;
+              st.closeAccent = ev.anyCloseAccent;
+              if (ev.allOk) addXP(5);
+              else saveState();
+              if (slide.frFull) speakPhrase(slide.frFull);
+              rerenderActiveTopicView();
+            };
+          } else if (fibForm && fibInp) {
             if (!st.answered) fibInp.focus();
             fibInp.oninput = () => { st.userVal = fibInp.value; };
             els.mainContent.querySelectorAll('[data-slide-accent]').forEach((b) => {
@@ -7040,6 +7232,8 @@
         els.mainContent.querySelectorAll('[data-tq-input-mode]').forEach((b) => {
           b.onclick = () => {
             state.topicQuizInputMode = b.dataset.tqInputMode === 'fib' ? 'fib' : 'mcq';
+            state.topicQuizBlankVals = [];
+            state.topicQuizTypedVal = '';
             rerenderActiveTopicView();
           };
         });
@@ -7054,6 +7248,7 @@
             state.topicQuizFinished = false;
             state.topicQuizRetrySubset = null;
             state.topicQuizTypedVal = '';
+            state.topicQuizBlankVals = [];
             rerenderActiveTopicView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           };
@@ -7078,8 +7273,15 @@
         const realIdx = activeIndices[pos];
         const curQ = qs[realIdx];
 
-        const recordQuizResult = (ok, chosenOpt, userText, closeAccent) => {
-          state.topicQuizAnswers[realIdx] = { ok, chosenOpt, userText, closeAccent: Boolean(closeAccent) };
+        const recordQuizResult = (ok, chosenOpt, userText, closeAccent, perBlankOk, blankVals) => {
+          state.topicQuizAnswers[realIdx] = {
+            ok,
+            chosenOpt,
+            userText,
+            closeAccent: Boolean(closeAccent),
+            perBlankOk: Array.isArray(perBlankOk) ? perBlankOk : undefined,
+            blankVals: Array.isArray(blankVals) ? blankVals : undefined
+          };
           if (ok) {
             addXP(5);
           } else if (curQ) {
@@ -7107,8 +7309,57 @@
         });
 
         const tqFibForm = document.getElementById('tqFibForm');
+        const tqBlanks = [...els.mainContent.querySelectorAll('[data-tq-blank]')];
         const tqFibInp = document.getElementById('tqFibInput');
-        if (tqFibForm && tqFibInp && curQ) {
+        if (tqFibForm && tqBlanks.length > 0 && curQ) {
+          const qSpec = parseBlankSpec(curQ.q, [curQ.opts[curQ.ans]]);
+          if (!Array.isArray(state.topicQuizBlankVals) || state.topicQuizBlankVals.length !== tqBlanks.length) {
+            state.topicQuizBlankVals = tqBlanks.map((el) => el.value || '');
+          }
+          let activeQBlank = tqBlanks[0];
+          if (!state.topicQuizAnswers[realIdx]) activeQBlank.focus();
+          tqBlanks.forEach((inp, idx) => {
+            inp.onfocus = () => { activeQBlank = inp; };
+            inp.oninput = () => {
+              state.topicQuizBlankVals[idx] = inp.value;
+              state.topicQuizTypedVal = state.topicQuizBlankVals.join(' / ');
+            };
+            inp.onkeydown = (e) => {
+              if (e.key === 'Enter' && idx < tqBlanks.length - 1) {
+                e.preventDefault();
+                tqBlanks[idx + 1].focus();
+              }
+            };
+          });
+          els.mainContent.querySelectorAll('[data-tq-accent]').forEach((b) => {
+            b.onclick = () => {
+              const target = activeQBlank || tqBlanks[0];
+              if (!target || target.disabled) return;
+              const ins = b.dataset.tqAccent;
+              const s = target.selectionStart != null ? target.selectionStart : target.value.length;
+              const ePos = target.selectionEnd != null ? target.selectionEnd : target.value.length;
+              target.value = target.value.slice(0, s) + ins + target.value.slice(ePos);
+              target.focus();
+              target.selectionStart = target.selectionEnd = s + ins.length;
+              const bIdx = parseInt(target.dataset.tqBlank, 10);
+              if (!Number.isNaN(bIdx)) state.topicQuizBlankVals[bIdx] = target.value;
+              state.topicQuizTypedVal = state.topicQuizBlankVals.join(' / ');
+            };
+          });
+          tqFibForm.onsubmit = (e) => {
+            e.preventDefault();
+            if (state.topicQuizAnswers[realIdx]) return;
+            const vals = tqBlanks.map((el) => el.value.trim());
+            const firstEmptyIdx = vals.findIndex((v) => !v);
+            if (firstEmptyIdx !== -1) {
+              tqBlanks[firstEmptyIdx].focus();
+              return;
+            }
+            const ev = evaluateBlankValues(vals, qSpec);
+            state.topicQuizBlankVals = vals;
+            recordQuizResult(ev.allOk, null, vals.join(' / '), ev.anyCloseAccent, ev.perBlankOk, vals);
+          };
+        } else if (tqFibForm && tqFibInp && curQ) {
           if (!state.topicQuizAnswers[realIdx]) tqFibInp.focus();
           tqFibInp.oninput = () => { state.topicQuizTypedVal = tqFibInp.value; };
           els.mainContent.querySelectorAll('[data-tq-accent]').forEach((b) => {
@@ -7141,6 +7392,7 @@
           btnNextQ.onclick = () => {
             stopAudio();
             state.topicQuizTypedVal = '';
+            state.topicQuizBlankVals = [];
             if (pos + 1 < activeIndices.length) {
               state.topicQuizIdx = pos + 1;
             } else {

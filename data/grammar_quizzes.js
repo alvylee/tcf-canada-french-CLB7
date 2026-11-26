@@ -51,7 +51,7 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "法语规则：哪怕群里只有一名男性（Lucas），复数代词就必须用 ils；只有全员女性才用 elles。"
       },
       {
-        "q": "Natural spoken « we »: « Ce soir, ___ va au cinéma ensemble ? »",
+        "q": "Natural spoken « we »: « Ce soir, ___ est prêt pour le film ! »",
         "opts": [
           "nous",
           "tu",
@@ -59,9 +59,9 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
           "on"
         ],
         "ans": 3,
-        "frFull": "Ce soir, on va au cinéma ensemble ?",
-        "exp": "Everyday French uses « on » (+ 3rd-person singular verb « va ») far more than « nous » in spoken conversation.",
-        "expZh": "日常口语中，人们最常用 on 来表达“我们”，注意它后面的动词必须按 il/elle（第三人称单数）变位：on va。"
+        "frFull": "Ce soir, on est prêt pour le film !",
+        "exp": "Everyday French uses « on » (+ 3rd-person singular verb « est ») far more than « nous » in spoken conversation.",
+        "expZh": "日常口语中，人们最常用 on 来表达“我们”，注意它后面的动词必须按 il/elle（第三人称单数）变位：on est prêt。"
       },
       {
         "q": "Age takes AVOIR (not ÊTRE!): « J’___ vingt-huit ans et ma sœur ___ vingt-deux ans. »",
@@ -208,17 +208,17 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "-age 结尾大多阳性（un voyage），但记住三个高频例外阴性：la plage（海滩）、la page（页）、l’image（图像）。"
       },
       {
-        "q": "Plural indefinite « des » becomes « de » before a plural adjective: « Elle porte ___ jolies chaussures. »",
+        "q": "Partitive with masculine vs. feminine food: « Le matin, j’ai ___ beurre (m.) et ___ confiture (f.). »",
         "opts": [
-          "des",
-          "du",
-          "de",
-          "les"
+          "du / de la",
+          "de la / du",
+          "un / une",
+          "le / la"
         ],
-        "ans": 2,
-        "frFull": "Elle porte de jolies chaussures.",
-        "exp": "When a plural adjective sits right before the noun (« jolies chaussures »), « des » formally contracts to « de ».",
-        "expZh": "复数形容词放在名词前时，不定冠词 des 常简化为 de（de jolies chaussures）。"
+        "ans": 0,
+        "frFull": "Le matin, j’ai du beurre et de la confiture.",
+        "exp": "Unspecified quantities of uncountable food use partitives: masculine « du beurre » and feminine « de la confiture ».",
+        "expZh": "不可数食物表示“一点儿”时用部分冠词：阳性 du beurre，阴性 de la confiture。"
       },
       {
         "q": "Gender shortcut (-ment & -té): « ___ gouvernement défend ___ liberté d’expression. »",
@@ -313,7 +313,7 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "以 -if 结尾的形容词变阴性时改为 -ive（active, sportive）。"
       },
       {
-        "q": "Adjective placement: « J’ai acheté une voiture ___ et une ___ valise. »",
+        "q": "Adjective placement: « J’ai une voiture ___ et une ___ valise. »",
         "opts": [
           "rouge / grande",
           "grande / rouge",
@@ -321,7 +321,7 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
           "grand / rouge"
         ],
         "ans": 0,
-        "frFull": "J’ai acheté une voiture rouge et une grande valise.",
+        "frFull": "J’ai une voiture rouge et une grande valise.",
         "exp": "Colors/nationalities go AFTER the noun (« voiture rouge »); short BANGS adjectives (grand, petit, bon, beau, jeune, vieux, nouveau) go BEFORE (« grande valise »).",
         "expZh": "大多数形容词（颜色、国籍）放名词后；少数高频短词 BANGS（beau, bon, grand, petit, nouveau, vieux）放名词前。"
       },
@@ -562,17 +562,17 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "pouvoir 第三人称复数是 ils peuvent。"
       },
       {
-        "q": "Polite desire (« Je voudrais » vs « Je veux »): Ordering at a Montreal café, which is polite?",
+        "q": "Modals in plural: « Mes amis ___ (vouloir) visiter Montréal et nous ___ (pouvoir) partir samedi. »",
         "opts": [
-          "Je veux un café tout de suite.",
-          "Tu peux donner un café.",
-          "Je voudrais un café allongé, s’il vous plaît.",
-          "Je dois un café allongé."
+          "veulent / pouvons",
+          "voulent / pouvons",
+          "veut / peut",
+          "veulent / pouvent"
         ],
-        "ans": 2,
-        "frFull": "Je voudrais un café allongé, s’il vous plaît.",
-        "exp": "Saying bare « Je veux » to a clerk sounds blunt! Use « Je voudrais » (« I would like ») for polite service requests.",
-        "expZh": "对店员点单或提要求避免生硬说 Je veux，一定要用礼貌的 Je voudrais（我想要……）。"
+        "ans": 0,
+        "frFull": "Mes amis veulent visiter Montréal et nous pouvons partir samedi.",
+        "exp": "« Vouloir » in 3rd-person plural is « veulent »; « pouvoir » with « nous » keeps « ou » (« pouvons ») — both followed by infinitives.",
+        "expZh": "vouloir 第三人称复数是 veulent，pouvoir 在 nous 时用 pouvons，后面直接接动词原形。"
       },
       {
         "q": "Faire weather & activities: « Aujourd’hui il ___ beau, donc nous ___ une promenade. »",
@@ -668,17 +668,17 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "疑问词 quel 必须与它修饰的名词性数一致：disponibilités(阴复)→quelles，heure(阴单)→quelle。"
       },
       {
-        "q": "TCF EO Tâche 2 (formal inversion question): Which version scores highest?",
+        "q": "TCF EO Tâche 2 (formal inversion question): Which version is grammatically accurate?",
         "opts": [
-          "Le tarif inclut l’assurance ?",
-          "Est-ce que le tarif inclut-il l’assurance ?",
-          "Le tarif inclut-il l’assurance ?",
-          "Est-ce que inclut le tarif l’assurance ?"
+          "Le cours commence à neuf heures ?",
+          "Est-ce que le cours commence-t-il à neuf heures ?",
+          "Le cours commence-t-il à neuf heures ?",
+          "Est-ce que commence le cours à neuf heures ?"
         ],
         "ans": 2,
-        "frFull": "Le tarif inclut-il l’assurance ?",
-        "exp": "With a noun subject (« le tarif »), formal inversion repeats the pronoun after the verb: « Le tarif inclut-il... ? » Never mix « Est-ce que » + inversion!",
-        "expZh": "礼貌倒装加分句型（名词主语）：先把名词放句首，再在动词后加代词倒装（Le tarif inclut-il... ?），绝不可与 Est-ce que 混用。"
+        "frFull": "Le cours commence-t-il à neuf heures ?",
+        "exp": "With a noun subject (« le cours »), formal inversion repeats the pronoun after the verb with -t-: « Le cours commence-t-il... ? » Never mix « Est-ce que » + inversion!",
+        "expZh": "礼貌倒装加分句型（名词主语）：先把名词放句首，再在动词后加 -t-il 倒装（Le cours commence-t-il... ?），绝不可与 Est-ce que 混用。"
       },
       {
         "q": "Vowel buffer in inversion: « À quelle heure ___ (arriver) le prochain train ? »",
@@ -694,12 +694,12 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "倒装时动词以元音（-e / -a）结尾且后面是 il/elle/on 时，中间必须加连音字母 -t-：arrive-t-il / a-t-elle。"
       },
       {
-        "q": "Negation with modal + infinitive: « Il ne ___ pas ___ aujourd’hui. » (can come)",
+        "q": "Negation with modal + infinitive: « Il ne ___ aujourd’hui. » (cannot come)",
         "opts": [
           "peut venir pas",
-          "ne peut venir",
+          "peut pas vient",
           "peut pas venir",
-          "peut vient"
+          "pas peut venir"
         ],
         "ans": 2,
         "frFull": "Il ne peut pas venir aujourd’hui.",
@@ -1717,14 +1717,14 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "动词前的“我/你”直接宾语是 me / te，遇元音省音成 m’ / t’（不用 moi / toi）。"
       },
       {
-        "q": "COD with « aller + infinitive » or modal: « Ce film est super ! Tu vas ___ regarder ce soir ? »",
+        "q": "COD with « aller + infinitive » or modal: « Ce film est super ! Tu vas ___ ce soir ? (watch it) »",
         "opts": [
-          "le vas regarder",
-          "vas regarder le",
+          "le regarder",
+          "regarder le",
           "lui regarder",
-          "le regarder"
+          "le vas regarder"
         ],
-        "ans": 3,
+        "ans": 0,
         "frFull": "Tu vas le regarder ce soir ?",
         "exp": "When there is a modal or « aller + infinitive », the COD pronoun attaches directly BEFORE the INFINITIVE that owns it (« Tu vas le regarder »)!",
         "expZh": "出现双动词（如 aller + 原形 / pouvoir + 原形）时，代词放在真正动作的“原形动词”前面：Tu vas le regarder。"
@@ -1809,14 +1809,14 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "répondre à + 复数人用 leur；放在动词前的代词 leur 永远不加 -s（与物主形容词 leurs livres 区分）！"
       },
       {
-        "q": "High-trap COD vs COI contrast: « J’appelle ___ (Paul) et j’écris ___ (à Julie). »",
+        "q": "High-trap COD vs COI contrast: « Paul et Julie ? Je ___ appelle et je ___ écris. »",
         "opts": [
-          "lui / la",
+          "l’ / lui",
+          "lui / l’",
           "le / la",
-          "le / lui",
           "lui / lui"
         ],
-        "ans": 2,
+        "ans": 0,
         "frFull": "Je l’appelle et je lui écris.",
         "exp": "« Appeler quelqu’un » is DIRECT (no à → le/l’); « écrire À quelqu’un » is INDIRECT (à + person → lui)!",
         "expZh": "高频死穴对比：appeler qqn 不加 à（直宾 le/l’）；écrire à qqn 加 à（间宾 lui）。"
@@ -1835,7 +1835,7 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "重要规则：间接宾语（lui/leur）放在 avoir 前时，过去分词绝不配合（保持 parlé，不加 -es）！"
       },
       {
-        "q": "Exception « penser à + person »! CarefuI: Can you say « Je lui pense »?",
+        "q": "Exception « penser à + person »! Careful: Can you say « Je lui pense »?",
         "opts": [
           "No! Say « Je pense à lui / à elle » (Tonic after à)",
           "Yes, « Je lui pense » is normal",
@@ -1979,14 +1979,14 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "修饰动词的“说得更好/做得更好”绝不能说 plus bien，必须用副词 mieux（无阴阳性变化）。"
       },
       {
-        "q": "Saying « I am NOT going there » in Futur Proche: « Ce restaurant ? Nous n’___ aller ce soir. »",
+        "q": "Saying « I am NOT going there » in Futur Proche: « Ce restaurant ? Nous n’___ ce soir. »",
         "opts": [
-          "y allons pas",
-          "allons pas y",
           "allons pas y aller",
-          "allons y pas"
+          "y allons pas aller",
+          "allons y pas aller",
+          "allons pas aller y"
         ],
-        "ans": 2,
+        "ans": 0,
         "frFull": "Nous n’allons pas y aller ce soir.",
         "exp": "In Futur Proche, « y » and « en » attach right before the infinitive (« y aller »), while « n’... pas » wraps « allons ».",
         "expZh": "近将来时中，y/en 放在原形动词前面（y aller），否定仍夹住变位动词（n’allons pas y aller）。"
@@ -2287,7 +2287,7 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "avoir besoin de / parler de + 事物 用 en 替代：J’en ai besoin。"
       },
       {
-        "q": "Double object pronoun order (3rd + 3rd): « Ce formulaire ? Je ___ (it → le) ___ (to him → lui) donne demain. »",
+        "q": "Double object pronoun order (3rd + 3rd): « Ce formulaire ? Je ___ (it + to him) donne demain. »",
         "opts": [
           "lui le",
           "le leur",
@@ -2300,7 +2300,7 @@ window.__TCF_GRAMMAR_QUIZZES__ = [
         "expZh": "都是第三人称代词时，顺序为“先直宾后间宾”：le/la/les + lui/leur（Je le lui donne）。"
       },
       {
-        "q": "Double pronoun order (me/te/nous/vous + le/en/y): « Cette nouvelle ? Elle ___ (me → m’) ___ (about it → en) a déjà parlé. »",
+        "q": "Double pronoun order (me/te/nous/vous + le/en/y): « Cette nouvelle ? Elle ___ (me + about it) a déjà parlé. »",
         "opts": [
           "en m’",
           "me l’",
