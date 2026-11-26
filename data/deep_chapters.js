@@ -65,7 +65,8 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     titleZh: '形容词（性数配合、词序与比较级/最高级）',
     desc: 'Gender & plural agreement, irregular stems (beau/nouveau/vieux), BAGS placement before nouns, and comparatives/superlatives.',
     descZh: '形容词的阴阳性与复数变化、特殊双形词、置于名词前的 BAGS 规则，以及比较级与最高级。',
-    status: 'existing',
+    status: 'deep',
+    deepChapterId: 'ch3_adjectives',
     plannedTopics: [
       'Intro & Regular Agreement',
       'Irregular Adjectives & BAGS Placement',
@@ -82,7 +83,8 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     titleZh: '副词（-ment 构成、位置、程度与频率、bon vs bien）',
     desc: 'Formation in -ment, placement with simple & compound tenses, irregular adverbs (bien/mal/mieux), and frequency expressions.',
     descZh: '副词构成规则、在现在时与复合过去时中的语序位置，以及 mieux / meilleur 等高频易混词。',
-    status: 'existing',
+    status: 'deep',
+    deepChapterId: 'ch4_adverbs',
     plannedTopics: [
       'Intro to Adverbs & -ment Formation',
       'Placement in Simple & Compound Tenses',
