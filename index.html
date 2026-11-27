@@ -140,56 +140,42 @@
       background-color: color-mix(in srgb, var(--primary) 12%, transparent) !important;
     }
 
-    /* Collapsible desktop sidebar */
+    /* Collapsible desktop sidebar with smooth slide animation */
     @media (min-width: 1024px) {
-      html.sidebar-collapsed #sidebar {
-        display: none;
+      body #sidebar {
+        overflow: hidden;
+        transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                    opacity 200ms ease,
+                    border-color 200ms ease;
+        will-change: width, transform, opacity;
+      }
+      body #sidebar > * {
+        min-width: 16rem;
+      }
+      html.sidebar-collapsed body #sidebar {
+        width: 0 !important;
+        min-width: 0 !important;
+        transform: translateX(-100%);
+        opacity: 0;
+        border-right-color: transparent;
+        pointer-events: none;
       }
     }
 
-    /* Lesson typography scaling (default: large / comfortable reading) */
+    /* Lesson typography scaling via --font-mult (95% to 190%, default 115%) */
     :root {
-      --lesson-h3: 1.25rem;
-      --lesson-h3-zh: 0.94rem;
-      --lesson-lead: 1.05rem;
-      --lesson-lead-zh: 0.98rem;
-      --lesson-fr: 1.22rem;
-      --lesson-sub: 0.92rem;
-      --lesson-table: 0.95rem;
-      --lesson-dlg-fr: 1.08rem;
-      --lesson-qc: 0.96rem;
+      --font-mult: 1.15;
     }
-    html.font-scale-normal {
-      --lesson-h3: 1.1rem;
-      --lesson-h3-zh: 0.82rem;
-      --lesson-lead: 0.9375rem;
-      --lesson-lead-zh: 0.875rem;
-      --lesson-fr: 1.05rem;
-      --lesson-sub: 0.8125rem;
-      --lesson-table: 0.85rem;
-      --lesson-dlg-fr: 0.95rem;
-      --lesson-qc: 0.85rem;
-    }
-    html.font-scale-xlarge {
-      --lesson-h3: 1.4rem;
-      --lesson-h3-zh: 1.04rem;
-      --lesson-lead: 1.18rem;
-      --lesson-lead-zh: 1.1rem;
-      --lesson-fr: 1.4rem;
-      --lesson-sub: 1.04rem;
-      --lesson-table: 1.06rem;
-      --lesson-dlg-fr: 1.22rem;
-      --lesson-qc: 1.08rem;
-    }
-    .deep-h3 { font-size: var(--lesson-h3); line-height: 1.35; }
-    .deep-h3-zh { font-size: var(--lesson-h3-zh); line-height: 1.45; }
-    .deep-lead { font-size: var(--lesson-lead); line-height: 1.72; }
-    .deep-lead-zh { font-size: var(--lesson-lead-zh); line-height: 1.72; }
-    .deep-fr { font-size: var(--lesson-fr); line-height: 1.35; }
-    .deep-sub { font-size: var(--lesson-sub); line-height: 1.55; }
-    .deep-table { font-size: var(--lesson-table); line-height: 1.5; }
-    .deep-dlg-fr { font-size: var(--lesson-dlg-fr); line-height: 1.5; }
-    .deep-qc { font-size: var(--lesson-qc); line-height: 1.5; }
+    .deep-h3 { font-size: calc(1.08rem * var(--font-mult)); line-height: 1.32; }
+    .deep-h3-zh { font-size: calc(0.82rem * var(--font-mult)); line-height: 1.45; }
+    .deep-lead { font-size: calc(0.92rem * var(--font-mult)); line-height: 1.68; }
+    .deep-lead-zh { font-size: calc(0.86rem * var(--font-mult)); line-height: 1.68; }
+    .deep-fr { font-size: calc(1.06rem * var(--font-mult)); line-height: 1.32; }
+    .deep-sub { font-size: calc(0.80rem * var(--font-mult)); line-height: 1.52; }
+    .deep-table { font-size: calc(0.83rem * var(--font-mult)); line-height: 1.48; }
+    .deep-dlg-fr { font-size: calc(0.94rem * var(--font-mult)); line-height: 1.48; }
+    .deep-qc { font-size: calc(0.84rem * var(--font-mult)); line-height: 1.48; }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -302,9 +288,9 @@
             </button>
 
             <div class="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden" role="group" aria-label="Reading text size">
-              <button id="btnFontDec" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="Smaller reading text">A-</button>
-              <span id="fontScaleLabel" class="px-1.5 text-[11px] font-bold text-[var(--primary)] border-x border-[var(--border)] select-none">大</span>
-              <button id="btnFontInc" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="Larger reading text">A+</button>
+              <button id="btnFontDec" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="缩小字号 (Smaller)">A-</button>
+              <button id="fontScaleLabel" type="button" class="px-2 py-1.5 text-[11px] font-bold text-[var(--primary)] border-x border-[var(--border)] tint-muted-hover cursor-pointer tabular-nums select-none" title="点击重置为默认字号 (115%)">115%</button>
+              <button id="btnFontInc" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="放大字号 (Larger, max 190%)">A+</button>
             </div>
 
             <div id="audioPopoverWrap" class="relative">
@@ -2599,7 +2585,11 @@
         activeChapterId: persisted.activeChapterId || 'a1_1',
         sidebarLevelFilter: 'all',
         sidebarCollapsed: Boolean(persisted.sidebarCollapsed),
-        fontScale: ['normal', 'large', 'xlarge'].includes(persisted.fontScale) ? persisted.fontScale : 'large',
+        fontScale: (() => {
+          const legacy = { normal: 95, large: 115, xlarge: 130 };
+          const v = typeof persisted.fontScale === 'string' && legacy[persisted.fontScale] ? legacy[persisted.fontScale] : Number(persisted.fontScale);
+          return [95, 115, 130, 145, 160, 175, 190].includes(v) ? v : 115;
+        })(),
         showZh: persisted.showZh !== undefined ? persisted.showZh : true,
         speed: persisted.speed || 0.88,
         xp: persisted.xp || 0,
@@ -3901,17 +3891,15 @@
         }
       }
 
+      const FONT_SCALE_STEPS = [95, 115, 130, 145, 160, 175, 190];
+
       function applyFontScale() {
-        const sc = ['normal', 'large', 'xlarge'].includes(state.fontScale) ? state.fontScale : 'large';
+        const sc = FONT_SCALE_STEPS.includes(Number(state.fontScale)) ? Number(state.fontScale) : 115;
         state.fontScale = sc;
-        document.documentElement.classList.remove('font-scale-normal', 'font-scale-large', 'font-scale-xlarge');
-        document.documentElement.classList.add(`font-scale-${sc}`);
-        const labels = state.showZh
-          ? { normal: '标', large: '大', xlarge: '特' }
-          : { normal: 'S', large: 'M', xlarge: 'L' };
-        if (els.fontScaleLabel) els.fontScaleLabel.textContent = labels[sc];
-        if (els.btnFontDec) els.btnFontDec.disabled = (sc === 'normal');
-        if (els.btnFontInc) els.btnFontInc.disabled = (sc === 'xlarge');
+        document.documentElement.style.setProperty('--font-mult', String(sc / 100));
+        if (els.fontScaleLabel) els.fontScaleLabel.textContent = `${sc}%`;
+        if (els.btnFontDec) els.btnFontDec.disabled = (sc <= FONT_SCALE_STEPS[0]);
+        if (els.btnFontInc) els.btnFontInc.disabled = (sc >= FONT_SCALE_STEPS[FONT_SCALE_STEPS.length - 1]);
       }
 
       const WORKSPACES = [
@@ -11007,21 +10995,26 @@
       els.mobileBackdrop.onclick = closeMobileSidebar;
       if (els.btnFontDec) {
         els.btnFontDec.onclick = () => {
-          const order = ['normal', 'large', 'xlarge'];
-          const idx = order.indexOf(state.fontScale);
+          const idx = FONT_SCALE_STEPS.indexOf(Number(state.fontScale));
           if (idx > 0) {
-            state.fontScale = order[idx - 1];
+            state.fontScale = FONT_SCALE_STEPS[idx - 1];
             applyFontScale();
             saveState();
           }
         };
       }
+      if (els.fontScaleLabel) {
+        els.fontScaleLabel.onclick = () => {
+          state.fontScale = 115;
+          applyFontScale();
+          saveState();
+        };
+      }
       if (els.btnFontInc) {
         els.btnFontInc.onclick = () => {
-          const order = ['normal', 'large', 'xlarge'];
-          const idx = order.indexOf(state.fontScale);
-          if (idx < order.length - 1) {
-            state.fontScale = order[idx + 1];
+          const idx = FONT_SCALE_STEPS.indexOf(Number(state.fontScale));
+          if (idx >= 0 && idx < FONT_SCALE_STEPS.length - 1) {
+            state.fontScale = FONT_SCALE_STEPS[idx + 1];
             applyFontScale();
             saveState();
           }
