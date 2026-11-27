@@ -128,14 +128,15 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     icon: '🧩',
     title: 'Verbs III: Pronominals, Modals & Constructions',
     titleZh: '第五章 C · 专项动词结构（代动词、情态、无人称、不定式、使役 faire 与现在分词）',
-    desc: 'Tex’s 8 specialized verb topics: pronominal verbs, modals (vouloir/pouvoir/devoir), impersonal verbs (il faut), quitter/partir/sortir/laisser, infinitive constructions, causative faire, transitivity & present participle.',
-    descZh: 'Tex 原版 8 篇进阶专项结构：代动词（se lever/se disputer）、情态动词、无人称 il faut、四种“离开”辨析、不定式结构、使役 faire、及物性及现在分词。',
-    status: 'existing',
+    desc: 'Tex’s 8 specialized verb topics (11 bite-sized pages): pronominal verbs, modals (vouloir/pouvoir/devoir), impersonal il faut, quitter/partir/sortir/laisser, infinitive & past-infinitive constructions, causative faire, transitivity (REDCAP & à verbs) & present participle.',
+    descZh: 'Tex 原版 8 篇进阶专项结构（拆成 11 小页）：代动词全体系、三大情态动词、无人称 il faut、四种“离开”辨析、不定式与否定/过去不定式、使役 faire、及物性（REDCAP 与 à 动词）及现在分词。',
+    status: 'deep',
+    deepChapterId: 'ch5c_verbs_constructions',
     plannedTopics: [
-      'Pronominal Verbs (Reflexive, Reciprocal & Idiomatic)',
-      'Modal Verbs (vouloir, pouvoir, devoir) & Impersonal il faut',
-      'quitter / partir / sortir / laisser & Infinitive Constructions',
-      'Causative faire, Transitivity & Present Participle'
+      '5C.1–5C.2 Pronominal Verbs (Reflexive, Idiomatic, Reciprocal & Imperatives)',
+      '5C.3–5C.5 Modal Verbs, Impersonal il faut & quitter / partir / sortir / laisser',
+      '5C.6–5C.8 Infinitive Constructions, Past Infinitive & Causative faire',
+      '5C.9–5C.11 Transitivity (REDCAP & Dual Auxiliaries) & Present Participle'
     ],
     existingTopicIds: ['a1_irregular_modals', 'a1_imperative', 'a2_savoir_connaitre_leave']
   },

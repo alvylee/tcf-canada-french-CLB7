@@ -2411,7 +2411,8 @@
         ],
         related: [
           { chapterId: 'ch5b_verbs_irregular', pageId: 'v5b_1', label: 'Back to 5B.1 être' },
-          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Continue to Ch 6 Negation' }
+          { chapterId: 'ch5c_verbs_constructions', pageId: 'v5c_1', label: 'Continue to Ch 5C (5C.1 Pronominal Verbs)' },
+          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Jump to Ch 6 Negation' }
         ]
       }
     ]
