@@ -208,15 +208,16 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     texPageCount: 6,
     icon: '🎯',
     title: 'Pronouns II: Relative, Demonstrative, Possessive & Indefinite',
-    titleZh: '第八章 B · 进阶代词（关系代词 qui/que/dont/où/lequel、指示、物主与不定代词）',
-    desc: 'Tex pro10–pro12 & pror1–pror3: indefinite (quelqu’un, chacun), demonstrative (celui-ci/celui de), possessive (le mien/la tienne), and relative clauses (qui, que, ce qui/ce que, dont, où, lequel).',
-    descZh: '对标 Tex 原版 pro10–pro12 与 pror1–pror3：不定代词、指示代词（celui 系列）、物主代词（le mien 系列），以及 TCF B2 核心长难句关系代词（qui/que/ce qui/ce que/dont/où/lequel）。',
-    status: 'existing',
+    titleZh: '第八章 B · 进阶代词（不定代词、指示 celui、物主 le mien 与关系代词 qui/que/dont/où/lequel）',
+    desc: 'Tex pro10–pro12 & pror1–pror3 (8 bite-sized pages): indefinite pronouns (quelqu’un + de, chacun/aucun, tous/tout, n’importe qui), demonstrative (celui/celle/ceux/celles, cela/ça), possessive (le mien..le leur + idioms), and B1–B2 relatives (qui/que + PC agreement, ce qui/ce que, dont/où & prep + lequel / ce dont / ce à quoi).',
+    descZh: '对标 Tex 原版 pro10–pro12 与 pror1–pror3（8 小页）：不定代词家族、指示代词 celui 系列与 cela/ça、物主代词 le mien 系列与习语，以及 TCF B2 阅读写作必备关系代词全系（qui/que 配合、ce qui/ce que、dont/où、介词 + lequel 与 ce dont / ce à quoi）。',
+    status: 'deep',
+    deepChapterId: 'ch8b_pronouns_relative',
     plannedTopics: [
-      'Indefinite Pronouns (pro10)',
-      'Demonstrative Pronouns celui / celle / ceux (pro11)',
-      'Possessive Pronouns le mien / le vôtre (pro12)',
-      'Relative Pronouns: qui/que, ce qui/ce que, dont/où/lequel (pror1–pror3)'
+      '8B.1–8B.2 Indefinite Pronouns (quelqu’un, chacun/aucun, tous/tout, n’importe qui)',
+      '8B.3–8B.4 Demonstrative (celui/cela) & Possessive Pronouns (le mien..le leur)',
+      '8B.5–8B.6 Relative Clauses: qui / que (+ PC Agreement) & ce qui / ce que',
+      '8B.7–8B.8 Advanced Relatives: dont / où, prep + lequel & ce dont / ce à quoi'
     ],
     existingTopicIds: ['a2_adverbs_dem_poss_pronouns', 'advanced_pronouns']
   },
