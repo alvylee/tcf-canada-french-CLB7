@@ -161,6 +161,11 @@
         border-right-color: transparent;
         pointer-events: none;
       }
+      html.sidebar-collapsed #btnOpenSidebar {
+        border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+        background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+        color: var(--primary);
+      }
     }
 
     /* Lesson typography scaling via --font-mult (95% to 190%, default 115%) */
@@ -202,7 +207,7 @@
               <span class="px-1.5 py-0.5 rounded-md tint-primary text-[var(--primary)] text-[10px] font-bold shrink-0">CLB 7</span>
             </div>
           </div>
-          <button id="btnCloseSidebar" type="button" class="p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer transition flex items-center justify-center" aria-label="Collapse sidebar" title="收起侧边栏 (Collapse sidebar)">
+          <button id="btnCloseSidebar" type="button" class="min-h-[36px] min-w-[36px] lg:min-h-0 lg:min-w-0 p-2 lg:p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer transition flex items-center justify-center" aria-label="Collapse sidebar" title="收起侧边栏 (Collapse sidebar)">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M11 17l-5-5 5-5"></path>
               <path d="M18 17l-5-5 5-5"></path>
@@ -235,9 +240,9 @@
       <div class="px-3.5 py-2.5 border-t border-[var(--border)] flex items-center justify-between gap-1.5 text-xs text-[var(--muted-foreground)]">
         <span id="streakDisplay" class="font-semibold tabular-nums truncate">🔥 0 XP</span>
         <div class="flex items-center gap-1 shrink-0">
-          <button id="btnOpenLegacy" type="button" class="px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer text-[11px] opacity-75 hover:opacity-100 transition border border-transparent" title="旧版课程归档 (Legacy TCF Courses, Units, Vocab &amp; Notes)">🗂️ 旧版</button>
+          <button id="btnOpenLegacy" type="button" class="min-h-[36px] sm:min-h-0 px-2.5 py-1.5 sm:px-2 sm:py-1 inline-flex items-center rounded-lg tint-muted-hover font-medium cursor-pointer text-[11px] opacity-75 hover:opacity-100 transition border border-transparent" title="旧版课程归档 (Legacy TCF Courses, Units, Vocab &amp; Notes)">🗂️ 旧版</button>
           <details id="sidebarDataMenu" class="sidebar-data-menu relative">
-            <summary class="px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer select-none">⋯ Data</summary>
+            <summary class="min-h-[36px] sm:min-h-0 px-2.5 py-1.5 sm:px-2 sm:py-1 inline-flex items-center rounded-lg tint-muted-hover font-medium cursor-pointer select-none">⋯ Data</summary>
             <div class="audio-popover absolute bottom-full right-0 mb-2 w-40 p-1.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] z-50 flex flex-col gap-0.5">
               <button id="btnExportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Download local progress backup (.json)">Export Backup</button>
               <button id="btnImportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Restore progress from backup (.json)">Import Backup</button>
@@ -255,11 +260,16 @@
     <div class="flex-1 flex flex-col min-w-0">
       <!-- Calm Sticky Top Bar -->
       <header class="sticky top-0 z-30 bg-[var(--background)]/92 backdrop-blur-md border-b border-[var(--border)]">
-        <div class="w-full max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
+        <div class="w-full max-w-[1080px] mx-auto px-3 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-2 sm:gap-3">
           <!-- Left: Sidebar Toggle + Active View Title + Live Audio Pill -->
-          <div class="flex items-center gap-2.5 min-w-0">
-            <button id="btnOpenSidebar" type="button" class="p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] cursor-pointer shrink-0 tint-muted-hover flex items-center justify-center" aria-label="Toggle navigation sidebar" title="收起 / 展开侧边栏">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <div class="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+            <button id="btnOpenSidebar" type="button" class="min-h-[36px] min-w-[36px] sm:min-h-0 sm:min-w-0 p-2 sm:p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] cursor-pointer shrink-0 tint-muted-hover flex items-center justify-center transition" aria-label="Toggle navigation sidebar" title="收起 / 展开侧边栏">
+              <svg class="w-4 h-4 lg:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7h16"></path>
+                <path d="M4 12h16"></path>
+                <path d="M4 17h16"></path>
+              </svg>
+              <svg class="w-4 h-4 hidden lg:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M15 18l-6-6 6-6"></path>
               </svg>
             </button>
@@ -281,26 +291,26 @@
             </button>
           </div>
 
-          <!-- Right: 4 Clean Controls (Language + Font Size + Audio Popover + Theme) -->
-          <div class="flex items-center gap-2 shrink-0">
-            <button id="btnToggleZh" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer" title="Toggle Mandarin Chinese contrastive explanations & glosses">
-              EN + 中文
+          <!-- Right: Responsive Controls (Desktop inline + Mobile compact menu) -->
+          <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button id="btnToggleZh" type="button" class="min-h-[36px] sm:min-h-0 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer" title="Toggle Mandarin Chinese contrastive explanations & glosses">
+              <span class="sm:hidden">中/EN</span><span class="hidden sm:inline">EN + 中文</span>
             </button>
 
-            <div class="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden" role="group" aria-label="Reading text size">
+            <div class="hidden sm:inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden" role="group" aria-label="Reading text size">
               <button id="btnFontDec" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="缩小字号 (Smaller)">A-</button>
               <button id="fontScaleLabel" type="button" class="px-2 py-1.5 text-[11px] font-bold text-[var(--primary)] border-x border-[var(--border)] tint-muted-hover cursor-pointer tabular-nums select-none" title="点击重置为默认字号 (115%)">115%</button>
               <button id="btnFontInc" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="放大字号 (Larger, max 190%)">A+</button>
             </div>
 
             <div id="audioPopoverWrap" class="relative">
-              <button id="btnAudioPopover" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover flex items-center gap-1.5 cursor-pointer" title="Speed, voice & audio settings">
+              <button id="btnAudioPopover" type="button" class="min-h-[36px] sm:min-h-0 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover flex items-center gap-1 sm:gap-1.5 cursor-pointer" title="Speed, voice & audio settings">
                 <span>🔊</span>
-                <span id="audioPopoverSpeedLabel" class="tabular-nums">0.88x</span>
+                <span id="audioPopoverSpeedLabel" class="hidden sm:inline tabular-nums">0.88x</span>
                 <span class="opacity-60 text-[10px]">▾</span>
               </button>
 
-              <div id="audioPopoverPanel" class="hidden audio-popover absolute right-0 top-full mt-2 w-72 p-3.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
+              <div id="audioPopoverPanel" class="hidden audio-popover fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-16 sm:top-full sm:mt-2 w-auto sm:w-72 p-3.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
                 <div>
                   <div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5">Playback Speed</div>
                   <div class="grid grid-cols-4 gap-1 p-0.5 rounded-xl bg-[var(--content)] border border-[var(--border)]" role="group" aria-label="Speech Speed">
@@ -326,9 +336,9 @@
             </div>
 
             <div id="abbrPopoverWrap" class="relative">
-              <button id="btnAbbrPopover" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Abbreviations & Grammar Terms Guide">? Terms</button>
+              <button id="btnAbbrPopover" type="button" class="hidden sm:inline-flex px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Abbreviations & Grammar Terms Guide">? Terms</button>
 
-              <div id="abbrPopoverPanel" class="hidden audio-popover absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[75vh] overflow-y-auto p-4 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
+              <div id="abbrPopoverPanel" class="hidden audio-popover fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-16 sm:top-full sm:mt-2 w-auto sm:w-96 max-h-[75vh] overflow-y-auto p-4 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
                 <div class="flex items-center justify-between gap-2 pb-2 border-b border-[var(--border)]">
                   <div>
                     <div class="text-xs font-bold text-[var(--foreground)]">Abbreviations &amp; Grammar Terms</div>
@@ -340,7 +350,30 @@
               </div>
             </div>
 
-            <button id="btnToggleTheme" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Switch Light / Dark theme">🌙</button>
+            <button id="btnToggleTheme" type="button" class="hidden sm:inline-flex px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover cursor-pointer" title="Switch Light / Dark theme">🌙</button>
+
+            <div id="mobileMoreWrap" class="relative sm:hidden">
+              <button id="btnMobileMore" type="button" class="min-h-[36px] px-2.5 py-1.5 rounded-lg text-xs font-bold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover flex items-center gap-1 cursor-pointer" aria-label="Display, font size, terms and theme settings" title="字号、语法术语与主题设置">
+                <span>Aa</span>
+                <span class="opacity-60 text-[10px]">▾</span>
+              </button>
+
+              <div id="mobileMorePanel" class="hidden audio-popover fixed left-3 right-3 top-16 p-3.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] z-50 space-y-3">
+                <div>
+                  <div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1.5">Text Size · 字体大小</div>
+                  <div class="grid grid-cols-3 rounded-xl border border-[var(--border)] bg-[var(--content)] overflow-hidden" role="group" aria-label="Mobile reading text size">
+                    <button id="btnFontDecMobile" type="button" class="min-h-[40px] px-3 py-2 text-sm font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="缩小字号 (Smaller)">A-</button>
+                    <button id="fontScaleLabelMobile" type="button" class="min-h-[40px] px-3 py-2 text-xs font-bold text-[var(--primary)] border-x border-[var(--border)] tint-muted-hover cursor-pointer tabular-nums select-none" title="点击重置为默认字号 (115%)">115%</button>
+                    <button id="btnFontIncMobile" type="button" class="min-h-[40px] px-3 py-2 text-sm font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="放大字号 (Larger, max 190%)">A+</button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--border)]">
+                  <button id="btnMobileAbbr" type="button" class="min-h-[40px] px-3 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--content)] text-[var(--foreground)] tint-muted-hover cursor-pointer flex items-center justify-center gap-1.5">? Terms</button>
+                  <button id="btnToggleThemeMobile" type="button" class="min-h-[40px] px-3 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] bg-[var(--content)] text-[var(--foreground)] tint-muted-hover cursor-pointer flex items-center justify-center gap-1.5">🌙 Dark Mode</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2906,6 +2939,13 @@
         btnFontDec: document.getElementById('btnFontDec'),
         btnFontInc: document.getElementById('btnFontInc'),
         fontScaleLabel: document.getElementById('fontScaleLabel'),
+        mobileMoreWrap: document.getElementById('mobileMoreWrap'),
+        btnMobileMore: document.getElementById('btnMobileMore'),
+        mobileMorePanel: document.getElementById('mobileMorePanel'),
+        btnFontDecMobile: document.getElementById('btnFontDecMobile'),
+        btnFontIncMobile: document.getElementById('btnFontIncMobile'),
+        fontScaleLabelMobile: document.getElementById('fontScaleLabelMobile'),
+        btnMobileAbbr: document.getElementById('btnMobileAbbr'),
         audioPopoverWrap: document.getElementById('audioPopoverWrap'),
         btnAudioPopover: document.getElementById('btnAudioPopover'),
         audioPopoverPanel: document.getElementById('audioPopoverPanel'),
@@ -3868,9 +3908,11 @@
         }
 
         els.btnToggleZh.className = state.showZh
-          ? 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-primary-soft tint-primary text-[var(--primary)] cursor-pointer'
-          : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] cursor-pointer';
-        els.btnToggleZh.textContent = state.showZh ? 'EN + 中文' : 'EN Only';
+          ? 'min-h-[36px] sm:min-h-0 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-primary-soft tint-primary text-[var(--primary)] cursor-pointer'
+          : 'min-h-[36px] sm:min-h-0 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] cursor-pointer';
+        els.btnToggleZh.innerHTML = state.showZh
+          ? '<span class="sm:hidden">中/EN</span><span class="hidden sm:inline">EN + 中文</span>'
+          : '<span class="sm:hidden">EN</span><span class="hidden sm:inline">EN Only</span>';
 
         applySidebarCollapse();
         applyFontScale();
@@ -3882,12 +3924,12 @@
         if (els.btnOpenSidebar) {
           els.btnOpenSidebar.setAttribute('aria-expanded', String(!state.sidebarCollapsed));
           els.btnOpenSidebar.title = state.sidebarCollapsed ? '展开侧边栏 (Show sidebar)' : '收起侧边栏 (Hide sidebar)';
-          els.btnOpenSidebar.className = state.sidebarCollapsed
-            ? 'p-1.5 rounded-lg border border-primary-soft tint-primary text-[var(--primary)] cursor-pointer shrink-0 flex items-center justify-center transition'
-            : 'p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] cursor-pointer shrink-0 tint-muted-hover flex items-center justify-center transition';
-          els.btnOpenSidebar.innerHTML = state.sidebarCollapsed
-            ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><path d="M13 10l2.5 2-2.5 2"></path></svg>'
-            : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><path d="M15.5 10l-2.5 2 2.5 2"></path></svg>';
+          els.btnOpenSidebar.className = 'min-h-[36px] min-w-[36px] sm:min-h-0 sm:min-w-0 p-2 sm:p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] cursor-pointer shrink-0 tint-muted-hover flex items-center justify-center transition';
+          const mobileHamburger = '<svg class="w-4 h-4 lg:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg>';
+          const desktopIcon = state.sidebarCollapsed
+            ? '<svg class="w-4 h-4 hidden lg:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><path d="M13 10l2.5 2-2.5 2"></path></svg>'
+            : '<svg class="w-4 h-4 hidden lg:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><path d="M15.5 10l-2.5 2 2.5 2"></path></svg>';
+          els.btnOpenSidebar.innerHTML = `${mobileHamburger}${desktopIcon}`;
         }
       }
 
@@ -3897,9 +3939,15 @@
         const sc = FONT_SCALE_STEPS.includes(Number(state.fontScale)) ? Number(state.fontScale) : 115;
         state.fontScale = sc;
         document.documentElement.style.setProperty('--font-mult', String(sc / 100));
-        if (els.fontScaleLabel) els.fontScaleLabel.textContent = `${sc}%`;
-        if (els.btnFontDec) els.btnFontDec.disabled = (sc <= FONT_SCALE_STEPS[0]);
-        if (els.btnFontInc) els.btnFontInc.disabled = (sc >= FONT_SCALE_STEPS[FONT_SCALE_STEPS.length - 1]);
+        const label = `${sc}%`;
+        const atMin = (sc <= FONT_SCALE_STEPS[0]);
+        const atMax = (sc >= FONT_SCALE_STEPS[FONT_SCALE_STEPS.length - 1]);
+        if (els.fontScaleLabel) els.fontScaleLabel.textContent = label;
+        if (els.fontScaleLabelMobile) els.fontScaleLabelMobile.textContent = label;
+        if (els.btnFontDec) els.btnFontDec.disabled = atMin;
+        if (els.btnFontDecMobile) els.btnFontDecMobile.disabled = atMin;
+        if (els.btnFontInc) els.btnFontInc.disabled = atMax;
+        if (els.btnFontIncMobile) els.btnFontIncMobile.disabled = atMax;
       }
 
       const WORKSPACES = [
@@ -5353,11 +5401,11 @@
                 </div>
                 <div class="text-xs text-[var(--foreground)]">${esc(dailyOut.label)}</div>
               </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <button type="button" id="btnDailyOutOpen" data-out-jump="${dailyOut.tab}" data-out-task="${dailyOut.taskId}" class="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] cursor-pointer">
+              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <button type="button" id="btnDailyOutOpen" data-out-jump="${dailyOut.tab}" data-out-task="${dailyOut.taskId}" class="min-h-[36px] sm:min-h-0 px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--link)] cursor-pointer">
                   Open ${dailyOut.tab === 'ee' ? 'Writing (EE)' : 'Speaking (EO)'} Studio →
                 </button>
-                <button type="button" id="btnDailyOutDone" class="px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
+                <button type="button" id="btnDailyOutDone" class="min-h-[36px] sm:min-h-0 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer ${
                   outputDoneToday ? 'tint-success border border-success-soft text-[var(--success)]' : 'bg-[var(--primary)] text-[var(--primary-foreground)]'
                 }">
                   ${outputDoneToday ? '✓ Completed' : 'Mark Done (+15 XP)'}
@@ -7737,12 +7785,13 @@
           ` : '';
 
           const sectionsHTML = sections.map((sec) => {
+            const tableHeaders = sec.table ? (sec.table.headers || []) : [];
             const tableHTML = sec.table ? `
-              <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+              <div class="hidden sm:block overflow-x-auto rounded-xl border border-[var(--border)]">
                 <table class="w-full text-left border-collapse deep-table">
                   <thead>
                     <tr class="bg-[var(--content)] border-b border-[var(--border)] text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
-                      ${(sec.table.headers || []).map((h) => `<th class="px-3.5 py-2.5">${esc(h)}</th>`).join('')}
+                      ${tableHeaders.map((h) => `<th class="px-3.5 py-2.5">${esc(h)}</th>`).join('')}
                       <th class="px-2.5 py-2.5 text-right">🔊</th>
                     </tr>
                   </thead>
@@ -7757,6 +7806,39 @@
                     `).join('')}
                   </tbody>
                 </table>
+              </div>
+              <div class="sm:hidden space-y-2.5">
+                ${(sec.table.rows || []).map((r) => {
+                  const cols = r.cols || [];
+                  const primaryCol = cols[0] != null ? String(cols[0]) : '';
+                  const restCols = cols.slice(1);
+                  return `
+                    <div class="p-3.5 rounded-xl bg-[var(--content)] border border-[var(--border)] space-y-2">
+                      <div class="flex items-start justify-between gap-2.5">
+                        <div class="min-w-0 space-y-0.5">
+                          ${tableHeaders[0] ? `<div class="text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">${esc(tableHeaders[0])}</div>` : ''}
+                          <div class="deep-table font-bold text-[var(--primary)] break-words">${esc(primaryCol)}</div>
+                        </div>
+                        ${r.audio ? `<button type="button" data-speak="${escAttr(r.audio)}" class="speak-btn shrink-0 min-h-[38px] min-w-[38px] px-2.5 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm cursor-pointer tint-muted-hover flex items-center justify-center">🔊</button>` : ''}
+                      </div>
+                      ${restCols.some((c) => c != null && String(c).trim() !== '') ? `
+                        <div class="space-y-1.5 pt-2 border-t border-[var(--border)]">
+                          ${restCols.map((c, rIdx) => {
+                            const txt = c != null ? String(c) : '';
+                            if (!txt.trim()) return '';
+                            const hdr = tableHeaders[rIdx + 1] || '';
+                            return `
+                              <div class="space-y-0.5">
+                                ${hdr ? `<div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">${esc(hdr)}</div>` : ''}
+                                <div class="deep-table text-[var(--foreground)] break-words">${esc(txt)}</div>
+                              </div>
+                            `;
+                          }).join('')}
+                        </div>
+                      ` : ''}
+                    </div>
+                  `;
+                }).join('')}
               </div>
             ` : '';
 
@@ -7783,7 +7865,7 @@
                       <div class="deep-sub text-[var(--muted-foreground)]">${esc(ex.en)}</div>
                       ${state.showZh && ex.zh ? `<div class="deep-sub text-[var(--primary)]">${esc(ex.zh)}</div>` : ''}
                     </div>
-                    <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn shrink-0 px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm font-semibold cursor-pointer tint-muted-hover">🔊</button>
+                    <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn shrink-0 min-h-[36px] min-w-[36px] px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm font-semibold cursor-pointer tint-muted-hover flex items-center justify-center">🔊</button>
                   </div>
                 `;
                 }).join('')}
@@ -7821,7 +7903,7 @@
                           <div class="deep-sub text-[var(--muted-foreground)]">${esc(ln.en)}</div>
                           ${state.showZh && ln.zh ? `<div class="deep-sub text-[var(--primary)]">${esc(ln.zh)}</div>` : ''}
                         </div>
-                        <button type="button" data-speak="${escAttr(ln.fr)}" class="speak-btn shrink-0 px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm font-semibold cursor-pointer">🔊</button>
+                        <button type="button" data-speak="${escAttr(ln.fr)}" class="speak-btn shrink-0 min-h-[36px] min-w-[36px] px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm font-semibold cursor-pointer flex items-center justify-center">🔊</button>
                       </div>
                     `;
                   }).join('')}
@@ -7886,7 +7968,7 @@
             `;
 
             return `
-              <section id="deep-sec-${sec.id}" class="studio-card p-5 sm:p-6 space-y-4">
+              <section id="deep-sec-${sec.id}" class="studio-card p-4 sm:p-6 space-y-4">
                 ${cartoonHTML ? `
                   <div class="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
                     <div class="flex-1 min-w-0">
@@ -8000,16 +8082,16 @@
                   ${inlineHTML}
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <button type="button" data-deep-check="${d.id}" ${st.answered && st.ok ? 'disabled' : ''} class="px-3.5 py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer">
+                  <button type="button" data-deep-check="${d.id}" ${st.answered && st.ok ? 'disabled' : ''} class="min-h-[36px] sm:min-h-0 px-3.5 py-2 sm:py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold disabled:opacity-45 cursor-pointer">
                     ${st.answered && !st.ok ? 'Re-check' : 'Check'}
                   </button>
                   ${!st.answered ? `
-                    <button type="button" data-deep-reveal="${d.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">Reveal</button>
+                    <button type="button" data-deep-reveal="${d.id}" class="min-h-[36px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">Reveal</button>
                   ` : `
-                    <button type="button" data-deep-clear="${d.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] tint-muted-hover cursor-pointer">Try Again</button>
+                    <button type="button" data-deep-clear="${d.id}" class="min-h-[36px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] tint-muted-hover cursor-pointer">Try Again</button>
                   `}
                   ${d.hint ? `
-                    <button type="button" data-deep-hint="${d.id}" class="px-2.5 py-1 text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">
+                    <button type="button" data-deep-hint="${d.id}" class="min-h-[36px] sm:min-h-0 px-2.5 py-1.5 sm:py-1 rounded-lg tint-muted-hover text-xs font-semibold text-[var(--link)] hover:underline cursor-pointer">
                       ${st.showHint ? 'Hide Hint' : '💡 Hint'}
                     </button>
                   ` : ''}
@@ -8042,18 +8124,18 @@
                   </span>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <button type="button" id="btnTogglePeekRules" class="px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer ${state.deepPeekRulesOpen ? 'tint-primary border-primary-soft text-[var(--primary)]' : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
+                  <button type="button" id="btnTogglePeekRules" class="min-h-[36px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl border text-xs font-semibold cursor-pointer ${state.deepPeekRulesOpen ? 'tint-primary border-primary-soft text-[var(--primary)]' : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
                     📖 ${state.deepPeekRulesOpen ? 'Hide Rules' : 'Peek Lesson Rules'}
                   </button>
-                  <button type="button" id="btnDeepCheckAll" class="px-3 py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                  <button type="button" id="btnDeepCheckAll" class="min-h-[36px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
                     ✓ Check All Blanks
                   </button>
                   ${drillWrongCount > 0 ? `
-                    <button type="button" id="btnDeepRetryMissed" class="px-3 py-1.5 rounded-xl tint-warning border border-warning-soft text-xs font-bold text-[var(--foreground)] cursor-pointer">
+                    <button type="button" id="btnDeepRetryMissed" class="min-h-[36px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl tint-warning border border-warning-soft text-xs font-bold text-[var(--foreground)] cursor-pointer">
                       🔁 Retry Missed (${drillWrongCount})
                     </button>
                   ` : ''}
-                  <button type="button" id="btnDeepResetAll" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] tint-muted-hover cursor-pointer">
+                  <button type="button" id="btnDeepResetAll" class="min-h-[36px] sm:min-h-0 px-3 py-2 sm:py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--muted-foreground)] tint-muted-hover cursor-pointer">
                     Reset
                   </button>
                 </div>
@@ -8064,7 +8146,7 @@
               <!-- Sticky Accent Keypad -->
               <div class="p-2.5 rounded-2xl bg-[var(--card)] border border-[var(--card-border)] flex flex-wrap items-center gap-1.5">
                 <span class="text-xs font-semibold text-[var(--muted-foreground)] mr-1">Accents (inserts into active blank):</span>
-                ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', 'œ', '’'].map((ac) => `<button type="button" data-deep-accent="${escAttr(ac)}" class="px-2.5 py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-bold tint-muted-hover cursor-pointer">${ac}</button>`).join('')}
+                ${['é', 'è', 'ê', 'à', 'ç', 'ô', 'û', 'î', 'ù', 'œ', '’'].map((ac) => `<button type="button" data-deep-accent="${escAttr(ac)}" class="min-h-[36px] min-w-[34px] sm:min-h-0 sm:min-w-0 px-2.5 py-1.5 sm:py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-sm sm:text-xs font-bold tint-muted-hover cursor-pointer">${ac}</button>`).join('')}
               </div>
 
               <!-- Drills List -->
@@ -10993,33 +11075,26 @@
         }
       };
       els.mobileBackdrop.onclick = closeMobileSidebar;
-      if (els.btnFontDec) {
-        els.btnFontDec.onclick = () => {
-          const idx = FONT_SCALE_STEPS.indexOf(Number(state.fontScale));
-          if (idx > 0) {
-            state.fontScale = FONT_SCALE_STEPS[idx - 1];
-            applyFontScale();
-            saveState();
-          }
-        };
-      }
-      if (els.fontScaleLabel) {
-        els.fontScaleLabel.onclick = () => {
-          state.fontScale = 115;
+      function stepFontScale(delta) {
+        const idx = FONT_SCALE_STEPS.indexOf(Number(state.fontScale));
+        const nextIdx = idx + delta;
+        if (idx >= 0 && nextIdx >= 0 && nextIdx < FONT_SCALE_STEPS.length) {
+          state.fontScale = FONT_SCALE_STEPS[nextIdx];
           applyFontScale();
           saveState();
-        };
+        }
       }
-      if (els.btnFontInc) {
-        els.btnFontInc.onclick = () => {
-          const idx = FONT_SCALE_STEPS.indexOf(Number(state.fontScale));
-          if (idx >= 0 && idx < FONT_SCALE_STEPS.length - 1) {
-            state.fontScale = FONT_SCALE_STEPS[idx + 1];
-            applyFontScale();
-            saveState();
-          }
-        };
+      function resetFontScale() {
+        state.fontScale = 115;
+        applyFontScale();
+        saveState();
       }
+      if (els.btnFontDec) els.btnFontDec.onclick = () => stepFontScale(-1);
+      if (els.btnFontDecMobile) els.btnFontDecMobile.onclick = () => stepFontScale(-1);
+      if (els.fontScaleLabel) els.fontScaleLabel.onclick = resetFontScale;
+      if (els.fontScaleLabelMobile) els.fontScaleLabelMobile.onclick = resetFontScale;
+      if (els.btnFontInc) els.btnFontInc.onclick = () => stepFontScale(1);
+      if (els.btnFontIncMobile) els.btnFontIncMobile.onclick = () => stepFontScale(1);
       els.btnGlobalStop.onclick = stopAudio;
       els.btnDismissSpeechWarn.onclick = () => els.speechWarning.classList.add('hidden');
 
@@ -11027,12 +11102,30 @@
         els.btnAudioPopover.onclick = (e) => {
           e.stopPropagation();
           if (els.abbrPopoverPanel) els.abbrPopoverPanel.classList.add('hidden');
+          if (els.mobileMorePanel) els.mobileMorePanel.classList.add('hidden');
           els.audioPopoverPanel.classList.toggle('hidden');
         };
       }
       if (els.btnAbbrPopover && els.abbrPopoverPanel) {
         els.btnAbbrPopover.onclick = (e) => {
           e.stopPropagation();
+          if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
+          if (els.mobileMorePanel) els.mobileMorePanel.classList.add('hidden');
+          els.abbrPopoverPanel.classList.toggle('hidden');
+        };
+      }
+      if (els.btnMobileMore && els.mobileMorePanel) {
+        els.btnMobileMore.onclick = (e) => {
+          e.stopPropagation();
+          if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
+          if (els.abbrPopoverPanel) els.abbrPopoverPanel.classList.add('hidden');
+          els.mobileMorePanel.classList.toggle('hidden');
+        };
+      }
+      if (els.btnMobileAbbr && els.abbrPopoverPanel) {
+        els.btnMobileAbbr.onclick = (e) => {
+          e.stopPropagation();
+          if (els.mobileMorePanel) els.mobileMorePanel.classList.add('hidden');
           if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
           els.abbrPopoverPanel.classList.toggle('hidden');
         };
@@ -11047,6 +11140,9 @@
         if (els.abbrPopoverPanel && els.abbrPopoverWrap && typeof els.abbrPopoverWrap.contains === 'function' && !els.abbrPopoverWrap.contains(e.target)) {
           els.abbrPopoverPanel.classList.add('hidden');
         }
+        if (els.mobileMorePanel && els.mobileMoreWrap && typeof els.mobileMoreWrap.contains === 'function' && !els.mobileMoreWrap.contains(e.target)) {
+          els.mobileMorePanel.classList.add('hidden');
+        }
         const dm = document.getElementById('sidebarDataMenu');
         if (dm && dm.open && typeof dm.contains === 'function' && !dm.contains(e.target)) {
           dm.open = false;
@@ -11056,6 +11152,7 @@
         if (e.key === 'Escape') {
           if (els.audioPopoverPanel) els.audioPopoverPanel.classList.add('hidden');
           if (els.abbrPopoverPanel) els.abbrPopoverPanel.classList.add('hidden');
+          if (els.mobileMorePanel) els.mobileMorePanel.classList.add('hidden');
           const dm = document.getElementById('sidebarDataMenu');
           if (dm) dm.open = false;
         }
@@ -11242,20 +11339,22 @@
       (function setupTheme() {
         const key = "tcf_studio_theme_v1";
         const btn = document.getElementById("btnToggleTheme");
+        const btnMobile = document.getElementById("btnToggleThemeMobile");
         const apply = (dark) => {
           document.documentElement.classList.toggle("dark", dark);
           if (btn) btn.textContent = dark ? "☀️" : "🌙";
+          if (btnMobile) btnMobile.textContent = dark ? "☀️ Light Mode" : "🌙 Dark Mode";
         };
         const saved = localStorage.getItem(key);
         const initialDark = saved ? saved === "dark" : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
         apply(initialDark);
-        if (btn) {
-          btn.onclick = () => {
-            const next = !document.documentElement.classList.contains("dark");
-            localStorage.setItem(key, next ? "dark" : "light");
-            apply(next);
-          };
-        }
+        const toggleTheme = () => {
+          const next = !document.documentElement.classList.contains("dark");
+          localStorage.setItem(key, next ? "dark" : "light");
+          apply(next);
+        };
+        if (btn) btn.onclick = toggleTheme;
+        if (btnMobile) btnMobile.onclick = toggleTheme;
       })();
 
       init();
