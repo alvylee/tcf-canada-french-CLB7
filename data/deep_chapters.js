@@ -288,14 +288,16 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     texPageCount: 9,
     icon: '💭',
     title: 'Tense & Mood III: The Subjunctive Mood Mastery',
-    titleZh: '第十章 C · 虚拟式全解（规则与不规则词干、义务/怀疑/意愿/连词触发、过去虚拟式与规避技巧）',
-    desc: 'Tex tas1–tas8: regular & irregular subjunctive stems, obligation (il faut que), doubt (negative/interrogative), will/emotion, subjunctive conjunctions, past subjunctive, and ways to avoid subjunctive.',
-    descZh: '对标 Tex tas1–tas8：虚拟式变位全规、必要性/怀疑/意志情绪触发机制、虚拟式连词、过去虚拟式与同主语规避转化。',
-    status: 'existing',
+    titleZh: '第十章 C · 虚拟式全解（词干构成、十大触发语境、过去虚拟式与规避技巧）',
+    desc: 'Tex tas1–tas8 (9 bite-sized pages): regular & 2-stem subjunctive, big-5 irregulars (avoir/être/faire/savoir/pouvoir), obligation (il faut que), doubt & neg/int flips + relatives/superlatives, will/emotion (espérer trap!), 5 subjunctive conjunction families (+ 4 same-subject exceptions), past subjunctive, WEDDINGS summary & 4 avoidance strategies.',
+    descZh: '对标 Tex 原版 tas1–tas8（9 小页）：规则与双词干虚拟式、五大不规则词干、义务 il faut que、怀疑与否定/疑问翻转、意愿情绪（espérer 陷阱）、五大虚拟式连词及 4 个同主语例外、过去虚拟式、WEDDINGS 口诀总结与四大规避转换。',
+    status: 'deep',
+    deepChapterId: 'ch10c_subjunctive',
     plannedTopics: [
-      'Regular & Irregular Subjunctive Stems (tas1–tas2)',
-      'Triggers: Obligation, Doubt, Will & Emotion (tas3–tas4)',
-      'Past Subjunctive, Summary & Infinitive Avoidance (tas5–tas8)'
+      '10C.1–10C.2 Regular (ils-stem), 2-Stem Boot & Big-5 Irregular Stems',
+      '10C.3–10C.5 Triggers: Obligation, Doubt Flip, Relatives, Superlatives, Will & Emotion',
+      '10C.6–10C.7 Subjunctive Conjunctions (+ 4 Same-Subject Exceptions) & Past Subjunctive',
+      '10C.8–10C.9 WEDDINGS Mnemonic Summary & 4 Ways to Avoid the Subjunctive'
     ],
     existingTopicIds: ['subjunctive']
   },
