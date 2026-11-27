@@ -312,6 +312,8 @@
   <script src="./data/deep_ch2_determiners.js"></script>
   <script src="./data/deep_ch3_adjectives.js"></script>
   <script src="./data/deep_ch4_adverbs.js"></script>
+  <script src="./data/deep_ch5_negation.js"></script>
+  <script src="./data/deep_ch6_prepositions.js"></script>
   <script src="./data/audio_manifest.js?v=2"></script>
 
   <!-- ========================================================= -->
@@ -8462,8 +8464,8 @@
 
         const levelIntro = {
           A0: 'Build crisp French pronunciation and ear decoding first: Mandarin ü vs u, nasal vowels, liaisons, and Canadian spoken contractions.',
-          A1: 'Tex Slow-Paced Foundations (Chapters 1–3 · 36 bite-sized pages): Ch 1 Nouns (gender, plurals, exceptions) → Ch 2 Determiners & Articles (definite, indefinite, partitive, demonstratives, possessives) → Ch 3 Adjectives (agreement, BAGS placement, comparatives).',
-          A2: 'Tex Slow-Paced Expansion (Chapter 4 live · 7 pages, more Tex chapters building here): Ch 4 Adverbs (-ment formation, irregulars, placement, comparative/superlative, bon vs bien).',
+          A1: 'Tex Slow-Paced Foundations (Chapters 1–3 & 5 · 43 bite-sized pages): Ch 1 Nouns → Ch 2 Determiners & Articles → Ch 3 Adjectives → Ch 5 Negation.',
+          A2: 'Tex Slow-Paced Expansion (Chapters 4 & 6 · 18 bite-sized pages): Ch 4 Adverbs (-ment formation, placement, comparatives) → Ch 6 Prepositions (contractions, places, depuis/pendant/pour, infinitives).',
           B1: 'Intermediate Fluency: Tex slow-paced B1 chapters are coming next — browse the 11-Topic Grammar Index or review earlier Tex chapters anytime.',
           B2: 'CLB 7 Mastery: Tex slow-paced B2 chapters are coming next — browse the 11-Topic Grammar Index or explore Practice & TCF Exam studios.'
         }[curLvl];
@@ -8495,11 +8497,9 @@
         `;
 
         const latestDeepCh = DEEP_CHAPTERS.length ? DEEP_CHAPTERS[DEEP_CHAPTERS.length - 1] : null;
-        const lastLevelDeepCh = levelDeepChapters.length ? levelDeepChapters[levelDeepChapters.length - 1] : null;
-        const lastDeepIdx = lastLevelDeepCh ? DEEP_CHAPTERS.indexOf(lastLevelDeepCh) : -1;
-        const nextLvlDeepCh = (lastDeepIdx >= 0 && DEEP_CHAPTERS[lastDeepIdx + 1] && DEEP_CHAPTERS[lastDeepIdx + 1].level !== curLvl)
-          ? DEEP_CHAPTERS[lastDeepIdx + 1]
-          : null;
+        const lvlOrder = ['A1', 'A2', 'B1', 'B2'];
+        const nextLevelName = lvlOrder[lvlOrder.indexOf(curLvl) + 1] || null;
+        const nextLvlDeepCh = nextLevelName ? (DEEP_CHAPTERS.find((c) => c.level === nextLevelName) || null) : null;
 
         const deepPilotHTML = levelDeepChapters.length ? `
           <section class="space-y-4">

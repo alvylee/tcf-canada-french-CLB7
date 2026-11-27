@@ -118,11 +118,14 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     titleZh: '否定句体系（ne...pas/jamais/rien/personne/plus/que）',
     desc: 'Basic ne...pas, negative words (jamais, rien, personne, plus, aucun), article shift to de, and negation with infinitives & compound tenses.',
     descZh: '基本否定框架 ne...pas、延伸否定副词（从不/不再/没有人/没有什么）、否定后的 de 变化与语序。',
-    status: 'existing',
+    status: 'deep',
+    deepChapterId: 'ch5_negation',
     plannedTopics: [
-      'ne...pas & De-Shift Rule',
-      'ne...jamais, ne...plus, ne...rien, ne...personne',
-      'ne...que (Only) & Infinitive Negation'
+      '5.1 Intro: Two-Word Sandwich & Vowel Elision',
+      '5.2 Basic ne...pas (Compound Tenses & Spoken French)',
+      '5.3–5.4 Alternate Forms (jamais, plus, pas encore) & personne/rien',
+      '5.5–5.6 ne...aucun(e), ne...ni...ni & ne...que ("Only")',
+      '5.7 One-Word Responses: oui vs. si, non, jamais!'
     ],
     existingTopicIds: ['a1_negation_questions']
   },
@@ -150,12 +153,14 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     titleZh: '介词（地点方位、国家城市、时间 depuis/pendant/pour、动词搭配）',
     desc: 'Location & countries (à, en, au, aux), contractions (au/du), time prepositions (depuis, pendant, pour, il y a), and verb + à / de patterns.',
     descZh: '城市与国家介词选择、缩合冠词、时间介词四姐妹辨析，以及常考动词固定介词搭配。',
-    status: 'existing',
+    status: 'deep',
+    deepChapterId: 'ch6_prepositions',
     plannedTopics: [
-      'Place Prepositions & Countries (à, en, au, dans, chez)',
-      'Contractions with à & de',
-      'Time: Depuis, Pendant, Pour & Il y a',
-      'Verbs + Preposition (à / de)'
+      '6.1–6.4 Intro & Common Prepositions A–V + Mismatches',
+      '6.5 Contractions of à & de (au, aux, du, des)',
+      '6.6–6.7 Prepositions with Places & Countries (To/In & From)',
+      '6.8–6.9 Time: depuis (Present/Imparfait), il y a...que, pendant, pour',
+      '6.10–6.11 Infinitives: Verbs + à / de, Adj. + de/à & après Past Inf.'
     ],
     existingTopicIds: ['a1_possessives_places', 'a2_time_depuis_pendant', 'connectors_prep_gerondif']
   },
