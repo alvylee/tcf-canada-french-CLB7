@@ -81,23 +81,62 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     existingTopicIds: ['a1_cest_adjectives', 'a2_y_en_comparatives']
   },
   {
-    id: 'verbs',
-    code: '05',
-    cefr: 'A1–B1',
-    texPageCount: 28,
+    id: 'verbs_a',
+    code: '05A',
+    cefr: 'A1',
+    texPageCount: 10,
     icon: '🔤',
-    title: 'Verbs (Les Verbes)',
-    titleZh: '第五章 · 动词基础（être/avoir、规则变位、词干变化、情态与常用不规则）',
-    desc: 'Être, avoir & avoir idioms, regular -ER/-IR/-RE verbs, stem-changing verbs, core irregulars (aller/faire/venir), pronominals, modals & savoir vs. connaître.',
-    descZh: '法语动词核心支柱：être/avoir 与习语、三大规则变位组、词干变化、情态/代词式动词与 savoir/connaître 等 28 个原站主题。',
+    title: 'Verbs I: Intro & -ER / -IR / -RE Families',
+    titleZh: '第五章 A · 动词入门与三大动词族（-er / -ir / -re）',
+    desc: 'Infinitives, paradigms, participles, modals, regular & stem-changing -ER (elision/liaison), plus regular & irregular -IR (ouvrir, partir/sortir/dormir) and -RE (prendre, mettre, suivre/vivre).',
+    descZh: '动词入门概念（不定式/分词/情态/及物性/英语 get 陷阱）、第一组规则与六大词干变化 -er、以及 -ir（finir/ouvrir/partir）和 -re（descendre/prendre/mettre/suivre/vivre）全家族。',
+    status: 'deep',
+    deepChapterId: 'ch5a_verbs_regular',
+    plannedTopics: [
+      '5A.1–5A.2 Intro to Verbs, Participles, Modals & Particle Traps',
+      '5A.3–5A.6 Regular -ER (Boot, Élision, Liaison) & 6 Stem Changes',
+      '5A.7–5A.9 Regular -IR (finir), ouvrir & partir / sortir / dormir',
+      '5A.10–5A.13 Regular -RE (descendre), prendre, mettre, suivre / vivre'
+    ],
+    existingTopicIds: ['a1_regular_present', 'a1_stem_irregulars']
+  },
+  {
+    id: 'verbs_b',
+    code: '05B',
+    cefr: 'A1–A2',
+    texPageCount: 10,
+    icon: '🔑',
+    title: 'Verbs II: Core Irregular Verbs & Idioms',
+    titleZh: '第五章 B · 核心高频不规则动词与习语（être/avoir/aller/faire/venir/savoir…）',
+    desc: 'Tex’s 10 core irregular lessons: être, avoir & avoir idioms, aller, faire & faire idioms, venir, boire/croire/voir, savoir vs. connaître, and dire/lire/écrire.',
+    descZh: 'Tex 原版 10 篇核心高频不规则动词：être、avoir 及习语、aller、faire 及习语、venir、boire/croire/voir、savoir vs connaître，以及 dire/lire/écrire。',
     status: 'existing',
     plannedTopics: [
-      'Être, Avoir & Avoir Expressions',
-      'Regular -ER, -IR & -RE Present Tense',
-      'Stem-Changing -ER (-ger, -cer, -yer, -e_er)',
-      'Irregulars, Modals, Pronominal Verbs & Causative faire'
+      'être, avoir & avoir Expressions (il y a, avoir besoin de...)',
+      'aller, faire & faire Expressions (Weather, Sports, Chores)',
+      'venir (devenir/revenir) & boire, croire, voir',
+      'savoir vs. connaître & dire, lire, écrire'
     ],
-    existingTopicIds: ['a1_subject_etre_avoir', 'a1_regular_present', 'a1_irregular_modals', 'a1_stem_irregulars', 'a1_imperative', 'a2_savoir_connaitre_leave']
+    existingTopicIds: ['a1_subject_etre_avoir', 'a1_irregular_modals', 'a2_savoir_connaitre_leave']
+  },
+  {
+    id: 'verbs_c',
+    code: '05C',
+    cefr: 'A2–B1',
+    texPageCount: 8,
+    icon: '🧩',
+    title: 'Verbs III: Pronominals, Modals & Constructions',
+    titleZh: '第五章 C · 专项动词结构（代动词、情态、无人称、不定式、使役 faire 与现在分词）',
+    desc: 'Tex’s 8 specialized verb topics: pronominal verbs, modals (vouloir/pouvoir/devoir), impersonal verbs (il faut), quitter/partir/sortir/laisser, infinitive constructions, causative faire, transitivity & present participle.',
+    descZh: 'Tex 原版 8 篇进阶专项结构：代动词（se lever/se disputer）、情态动词、无人称 il faut、四种“离开”辨析、不定式结构、使役 faire、及物性及现在分词。',
+    status: 'existing',
+    plannedTopics: [
+      'Pronominal Verbs (Reflexive, Reciprocal & Idiomatic)',
+      'Modal Verbs (vouloir, pouvoir, devoir) & Impersonal il faut',
+      'quitter / partir / sortir / laisser & Infinitive Constructions',
+      'Causative faire, Transitivity & Present Participle'
+    ],
+    existingTopicIds: ['a1_irregular_modals', 'a1_imperative', 'a2_savoir_connaitre_leave']
   },
   {
     id: 'negation',

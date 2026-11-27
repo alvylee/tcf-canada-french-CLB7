@@ -312,6 +312,7 @@
   <script src="./data/deep_ch2_determiners.js"></script>
   <script src="./data/deep_ch4_adverbs.js"></script>
   <script src="./data/deep_ch3_adjectives.js"></script>
+  <script src="./data/deep_ch5a_verbs_regular.js"></script>
   <script src="./data/deep_ch5_negation.js"></script>
   <script src="./data/deep_ch6_prepositions.js"></script>
   <script src="./data/audio_manifest.js?v=2"></script>
@@ -8347,8 +8348,8 @@
         const readyCount = GRAMMAR_DIRECTORY.filter((c) => c.status === 'deep' && getDeepChapter(c.deepChapterId)).length;
 
         const filterPills = [
-          { id: 'all', label: `📚 All Tex Chapters (${GRAMMAR_DIRECTORY.length})` },
-          { id: 'live', label: `✨ Live Now (${readyCount} Ch · ${deepTotalPages}p)` },
+          { id: 'all', label: `📚 All Tex Units (${GRAMMAR_DIRECTORY.length})` },
+          { id: 'live', label: `✨ Live Now (${readyCount} · ${deepTotalPages}p)` },
           { id: 'A0', label: `🔊 A0 Sounds (${soundsList.length})` },
           { id: 'A1', label: 'CEFR: A1' },
           { id: 'A2', label: 'CEFR: A2' }
@@ -8389,7 +8390,7 @@
         });
 
         const chaptersListHTML = visibleCats.map((cat) => {
-          const chNum = parseInt(cat.code, 10) || 1;
+          const chLabel = String(cat.code || '1').replace(/^0+/, '');
           const dCh = (cat.status === 'deep' && cat.deepChapterId) ? getDeepChapter(cat.deepChapterId) : null;
           const cefrLabel = cat.cefr || (dCh ? dCh.level : 'A1');
           const badgeLevel = cefrLabel.slice(0, 2);
@@ -8405,7 +8406,7 @@
                   <div class="space-y-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-2">
                       <span class="text-lg">${dCh.icon || cat.icon}</span>
-                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-primary text-[var(--primary)] border-primary-soft">Ch ${chNum}</span>
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-primary text-[var(--primary)] border-primary-soft">Ch ${esc(chLabel)}</span>
                       <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(badgeLevel)}">${esc(cefrLabel)}</span>
                       <span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Tex Depth · ${dPages.length} Pages</span>
                     </div>
@@ -8427,7 +8428,7 @@
                 </div>
                 <details open class="group">
                   <summary class="text-xs font-bold text-[var(--link)] cursor-pointer select-none mb-2.5">
-                    Show / Hide all ${dPages.length} sub-pages (Ch ${chNum})
+                    Show / Hide all ${dPages.length} sub-pages (Ch ${esc(chLabel)})
                   </summary>
                   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     ${dPages.map((p) => {
@@ -8459,7 +8460,7 @@
                 <div class="space-y-1 min-w-0">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="text-lg">${cat.icon}</span>
-                    <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">Ch ${chNum}</span>
+                    <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">Ch ${esc(chLabel)}</span>
                     <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(badgeLevel)}">${esc(cefrLabel)}</span>
                     ${cat.texPageCount ? `<span class="text-[11px] text-[var(--muted-foreground)] font-medium">${cat.texPageCount} Tex pages</span>` : ''}
                   </div>
@@ -8487,7 +8488,7 @@
                 </p>
               </div>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
-                Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${readyCount}/${GRAMMAR_DIRECTORY.length} Chapters Live
+                Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${readyCount}/${GRAMMAR_DIRECTORY.length} Units Live
               </div>
             </div>
 
