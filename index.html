@@ -2904,6 +2904,26 @@
         return ch.pages.find((p) => !(state.deepProgress[p.id] && state.deepProgress[p.id].completed)) || ch.pages[0];
       }
 
+      function getTotalDeepPagesCount() {
+        return DEEP_CHAPTERS.reduce((sum, ch) => sum + ((ch.pages || []).length), 0);
+      }
+
+      function getTotalDeepPagesDoneCount() {
+        return DEEP_CHAPTERS.reduce((sum, ch) => sum + getDeepChapterDoneCount(ch.id), 0);
+      }
+
+      function getRecommendedNextDeepPageGlobal() {
+        for (const ch of DEEP_CHAPTERS) {
+          const pages = ch.pages || [];
+          const next = pages.find((p) => !(state.deepProgress[p.id] && state.deepProgress[p.id].completed));
+          if (next) return { chapter: ch, page: next };
+        }
+        if (DEEP_CHAPTERS.length && (DEEP_CHAPTERS[0].pages || []).length) {
+          return { chapter: DEEP_CHAPTERS[0], page: DEEP_CHAPTERS[0].pages[0] };
+        }
+        return null;
+      }
+
       function openDeepPage(chapterId, pageId, tab = 'study') {
         const ch = getDeepChapter(chapterId);
         if (!ch) return;
@@ -3787,15 +3807,16 @@
         const vlTotal = Math.max(1, VOCAB_SYLLABUS.length);
         const vDone = countMasteredVocab();
         const dueCount = countDueVocab();
-        const masteredCourses = GRAMMAR_QUIZZES.filter((t) => state.topicQuizBest[t.id] && state.topicQuizBest[t.id].best >= 7).length;
+        const deepDone = getTotalDeepPagesDoneCount();
+        const deepTotal = getTotalDeepPagesCount();
         const readiness = Math.min(
           100,
-          Math.round(((gDone / gTotal) * 25) + ((masteredCourses / Math.max(1, GRAMMAR_QUIZZES.length)) * 20) + ((vlDone / vlTotal) * 15) + ((chDone / CHAPTERS.length) * 20) + ((vDone / Math.max(1, ALL_VOCAB.length)) * 20))
+          Math.round(((deepDone / Math.max(1, deepTotal)) * 30) + ((gDone / gTotal) * 15) + ((vlDone / vlTotal) * 15) + ((chDone / CHAPTERS.length) * 20) + ((vDone / Math.max(1, ALL_VOCAB.length)) * 20))
         );
 
         if (els.sidebarProgressText) els.sidebarProgressText.textContent = `${readiness}%`;
         if (els.sidebarProgressBar) els.sidebarProgressBar.style.width = `${readiness}%`;
-        if (els.sidebarChaptersStat) els.sidebarChaptersStat.textContent = `${masteredCourses}/${GRAMMAR_QUIZZES.length} courses · ${vlDone}/${VOCAB_SYLLABUS.length} voc`;
+        if (els.sidebarChaptersStat) els.sidebarChaptersStat.textContent = `${deepDone}/${deepTotal} Tex pages · ${vlDone}/${VOCAB_SYLLABUS.length} voc`;
         if (els.sidebarVocabStat) els.sidebarVocabStat.textContent = `${chDone}/${CHAPTERS.length} units`;
 
         if (els.topbarViewTitle) {
@@ -3847,7 +3868,7 @@
 
             let badge = '';
             if (w.id === 'course') {
-              badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${masteredCourses}/${GRAMMAR_QUIZZES.length}</span>`;
+              badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] font-semibold tabular-nums shrink-0">${deepDone}/${deepTotal}p</span>`;
             } else if (w.id === 'practice') {
               if (state.mistakes.length > 0) {
                 badge = `<span class="text-[11px] px-1.5 py-0.5 rounded-full tint-error text-[var(--error)] font-bold tabular-nums shrink-0" title="Missed items to review">${state.mistakes.length} fix</span>`;
@@ -5042,7 +5063,7 @@
         const weeks = Math.round(totalHoursNeeded / (state.dailyHours * 7));
         const months = (weeks / 4.3).toFixed(1);
 
-        const nextCourse = getRecommendedNextCourseTopic();
+        const nextDeep = getRecommendedNextDeepPageGlobal();
         const nextGram = GRAMMAR_SYLLABUS.find((g) => !state.completedGrammar.includes(g.id)) || GRAMMAR_SYLLABUS[0];
         const nextVocab = VOCAB_SYLLABUS.find((v) => !state.completedVocabLessons.includes(v.id)) || VOCAB_SYLLABUS[0];
         const nextUnit = CHAPTERS.find((c) => !state.completedChapters.includes(c.id)) || CHAPTERS[0];
@@ -5063,11 +5084,15 @@
           const gDone = gLessons.filter((g) => state.completedGrammar.includes(g.id)).length;
           const vLessons = VOCAB_SYLLABUS.filter((v) => v.level === lvl);
           const vDone = vLessons.filter((v) => state.completedVocabLessons.includes(v.id)).length;
+          const dChs = DEEP_CHAPTERS.filter((c) => c.level === lvl);
+          const dTotal = dChs.reduce((acc, c) => acc + (c.pages || []).length, 0);
+          const dDone = dChs.reduce((acc, c) => acc + getDeepChapterDoneCount(c.id), 0);
           return {
             lvl,
             chDone, chTotal: chs.length, firstCh: chs[0].id,
             gDone, gTotal: gLessons.length, firstGram: gLessons[0] ? gLessons[0].id : 'p_1',
-            vDone, vTotal: vLessons.length
+            vDone, vTotal: vLessons.length,
+            dDone, dTotal
           };
         });
 
@@ -5163,16 +5188,16 @@
             </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              ${nextCourse ? `
-                <button type="button" data-today-course="${nextCourse.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+              ${nextDeep ? `
+                <button type="button" data-today-deep="${nextDeep.chapter.id}::${nextDeep.page.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
                   <div>
                     <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--primary)]">1. Course · 8m</span>
-                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextCourse.level)}">${esc(nextCourse.badge)}</span>
+                      <span class="font-bold text-[var(--primary)]">1. Tex Course · 8m</span>
+                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextDeep.chapter.level)}">${esc(nextDeep.chapter.code)} · ${esc(nextDeep.page.code)}</span>
                     </div>
-                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${nextCourse.icon} ${esc(nextCourse.title)}</div>
+                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${nextDeep.chapter.icon} ${esc(nextDeep.page.shortTitle)}</div>
                   </div>
-                  <span class="text-xs font-bold text-[var(--link)]">Continue Course →</span>
+                  <span class="text-xs font-bold text-[var(--link)]">Open Page →</span>
                 </button>
               ` : nextGram ? `
                 <button type="button" data-today-gram="${nextGram.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
@@ -5279,8 +5304,8 @@
             <!-- 4 CEFR Band Progress Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               ${levelStats.map((s) => {
-                const total = s.chTotal + s.gTotal + s.vTotal;
-                const done = s.chDone + s.gDone + s.vDone;
+                const total = s.chTotal + s.gTotal + s.vTotal + s.dTotal;
+                const done = s.chDone + s.gDone + s.vDone + s.dDone;
                 const pct = total ? Math.round((done / total) * 100) : 0;
                 const desc = { A1: 'Gender, Present, Schedules, Errands', A2: 'Past, Futur, Housing, Canada Life', B1: 'Dont, Conditionnel, Work, Collocations', B2: 'Subjunctive, Climate, Economy, Nuance' }[s.lvl];
                 return `
@@ -5296,7 +5321,9 @@
                       </div>
                     </div>
                     <div class="flex items-center justify-between gap-1 text-xs pt-2 border-t border-[var(--border)] tabular-nums">
-                      <button type="button" data-go-gram-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.gDone}/${s.gTotal}</button>
+                      ${s.dTotal > 0
+                        ? `<button type="button" data-go-course-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.dDone}/${s.dTotal}p</button>`
+                        : `<button type="button" data-go-gram-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.gDone}/${s.gTotal}</button>`}
                       <button type="button" data-go-vsyl-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📚 ${s.vDone}/${s.vTotal}</button>
                       <button type="button" data-go-ch="${s.firstCh}" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-semibold cursor-pointer">🎧 ${s.chDone}/${s.chTotal}</button>
                     </div>
@@ -5472,7 +5499,7 @@
               <div>
                 <h2 class="text-2xl font-bold text-[var(--foreground)]">Today’s Study Plan</h2>
                 <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">
-                  ${GRAMMAR_SYLLABUS.length || 38} Grammar · ${VOCAB_SYLLABUS.length || 16} Vocab · 12 Units · ${audioClipCount} FR/CA neural audio clips
+                  ${DEEP_CHAPTERS.length} Tex Chapters (${getTotalDeepPagesCount()}p) · ${VOCAB_SYLLABUS.length || 16} Vocab · 12 Units · ${audioClipCount} FR/CA neural audio clips
                 </p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
@@ -5545,12 +5572,16 @@
             renderRoadmapView();
           };
         }
-        els.mainContent.querySelectorAll('[data-today-course]').forEach((b) => (b.onclick = () => {
-          openTopicQuiz(b.dataset.todayCourse, 'learn', 'course');
+        els.mainContent.querySelectorAll('[data-today-deep]').forEach((b) => (b.onclick = () => {
+          const [cid, pid] = String(b.dataset.todayDeep || '').split('::');
+          openDeepPage(cid, pid, 'study');
         }));
         els.mainContent.querySelectorAll('[data-go-course-lvl]').forEach((b) => (b.onclick = () => {
           state.courseLevel = b.dataset.goCourseLvl || 'A1';
+          state.courseBrowseMode = 'path';
           state.activeTopicQuizId = null;
+          state.activeDeepChapterId = null;
+          state.activeDeepPageId = null;
           navigate('ws', 'course');
         }));
         els.mainContent.querySelectorAll('[data-today-gram]').forEach((b) => (b.onclick = () => {
@@ -8320,8 +8351,9 @@
 
         const curLvl = ['A0', 'A1', 'A2', 'B1', 'B2'].includes(state.courseLevel) ? state.courseLevel : 'A1';
         state.courseLevel = curLvl;
-        const rec = getRecommendedNextCourseTopic();
-        const masteredCourses = GRAMMAR_QUIZZES.filter((t) => state.topicQuizBest[t.id] && state.topicQuizBest[t.id].best >= 7).length;
+        const deepTotalPages = getTotalDeepPagesCount();
+        const deepDonePages = getTotalDeepPagesDoneCount();
+        const recDeep = getRecommendedNextDeepPageGlobal();
 
         const modeSwitchHTML = `
           <div class="flex flex-wrap items-center gap-2">
@@ -8342,9 +8374,6 @@
             const isDeepReady = Boolean(deepCh);
             const deepPages = deepCh ? (deepCh.pages || []) : [];
             const deepDone = deepCh ? getDeepChapterDoneCount(deepCh.id) : 0;
-            const linkedTopics = (cat.existingTopicIds || [])
-              .map((tid) => GRAMMAR_QUIZZES.find((q) => q.id === tid))
-              .filter(Boolean);
 
             return `
               <div class="studio-card p-5 space-y-3 ${isDeepReady ? 'border-primary-soft ring-1 ring-[var(--primary)]/15' : ''}">
@@ -8355,8 +8384,9 @@
                       <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">${esc(cat.code)}</span>
                       <h3 class="text-base font-bold text-[var(--foreground)]">${esc(cat.title)}</h3>
                       ${isDeepReady
-                        ? `<span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Deep Slow-Paced Ready (${deepDone}/${deepPages.length} pages)</span>`
-                        : `<span class="px-2 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold">Linked Modules Ready (${linkedTopics.length})</span>`}
+                        ? `<span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(deepCh.level)}">${esc(deepCh.level)} · ${esc(deepCh.code)}</span>
+                           <span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Deep Slow-Paced Ready (${deepDone}/${deepPages.length} pages)</span>`
+                        : `<span class="px-2.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold">🚧 Coming Soon · Tex Slow-Paced</span>`}
                     </div>
                     ${state.showZh && cat.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(cat.titleZh)}</div>` : ''}
                     <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && cat.descZh ? cat.descZh : cat.desc)}</p>
@@ -8384,15 +8414,6 @@
                     <div class="flex flex-wrap gap-1.5">
                       ${(cat.plannedTopics || []).map((pt) => `<span class="px-2 py-0.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">${esc(pt)}</span>`).join('')}
                     </div>
-                    ${linkedTopics.length ? `
-                      <div class="flex flex-wrap gap-2 pt-1">
-                        ${linkedTopics.map((lt) => `
-                          <button type="button" data-course-start="${lt.id}" class="px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                            ${lt.icon} [${esc(lt.badge)}] ${esc(lt.title)} →
-                          </button>
-                        `).join('')}
-                      </div>
-                    ` : ''}
                   </div>
                 `}
               </div>
@@ -8405,11 +8426,11 @@
                 <div>
                   <h2 class="text-2xl font-bold text-[var(--foreground)]">📚 Grammar Directory (11 Categories · Tex Structure)</h2>
                   <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                    Browse all 11 grammar categories systematically. ${readyCats} of ${GRAMMAR_DIRECTORY.length} categories now run on the slow-paced Tex-depth format!
+                    Browse all 11 Tex grammar categories systematically. ${readyCats} of ${GRAMMAR_DIRECTORY.length} categories (${deepTotalPages} bite-sized pages) are live now!
                   </p>
                 </div>
                 <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
-                  Courses Mastered: <span class="text-[var(--success)]">${masteredCourses} / ${GRAMMAR_QUIZZES.length}</span>
+                  Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${readyCats} Ch
                 </div>
               </div>
               ${modeSwitchHTML}
@@ -8432,29 +8453,33 @@
               openDeepPage(cid, pid, 'study');
             };
           });
-          els.mainContent.querySelectorAll('[data-course-start]').forEach((b) => {
-            b.onclick = () => openTopicQuiz(b.dataset.courseStart, 'learn', 'course');
-          });
           return;
         }
 
         const soundsList = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
-        const levelCourses = GRAMMAR_QUIZZES.filter((t) => t.level === curLvl);
+        const levelDeepChapters = DEEP_CHAPTERS.filter((c) => c.level === curLvl);
         const levelVocab = VOCAB_SYLLABUS.filter((v) => v.level === curLvl);
         const levelUnits = CHAPTERS.filter((c) => c.level === curLvl);
         const levelNotes = GRAMMAR_SYLLABUS.filter((g) => g.level === curLvl);
 
+        const formatLvlTabLabel = (lvl, baseLabel) => {
+          const chs = DEEP_CHAPTERS.filter((c) => c.level === lvl);
+          if (!chs.length) return `${baseLabel} (Upcoming)`;
+          const pgs = chs.reduce((sum, c) => sum + ((c.pages || []).length), 0);
+          return `${baseLabel} (${chs.length} Ch · ${pgs}p)`;
+        };
+
         const levelTabs = [
           { id: 'A0', label: `🔊 A0 Sounds (${soundsList.length})` },
-          { id: 'A1', label: `A1 Foundations (${GRAMMAR_QUIZZES.filter((t) => t.level === 'A1').length})` },
-          { id: 'A2', label: `A2 Elementary (${GRAMMAR_QUIZZES.filter((t) => t.level === 'A2').length})` },
-          { id: 'B1', label: `B1 Intermediate (${GRAMMAR_QUIZZES.filter((t) => t.level === 'B1').length})` },
-          { id: 'B2', label: `B2 CLB 7 (${GRAMMAR_QUIZZES.filter((t) => t.level === 'B2').length})` }
+          { id: 'A1', label: formatLvlTabLabel('A1', 'A1 Foundations') },
+          { id: 'A2', label: formatLvlTabLabel('A2', 'A2 Elementary') },
+          { id: 'B1', label: formatLvlTabLabel('B1', 'B1 Intermediate') },
+          { id: 'B2', label: formatLvlTabLabel('B2', 'B2 CLB 7') }
         ];
 
         const typeFilters = [
           { id: 'all', label: 'All' },
-          { id: 'grammar', label: `📘 Guided Courses (${levelCourses.length})` },
+          { id: 'grammar', label: `📘 Tex Chapters (${levelDeepChapters.length})` },
           { id: 'units', label: `🎧 Listening & Reading Units (${levelUnits.length})` },
           { id: 'vocab', label: `📚 Vocab Themes (${levelVocab.length})` },
           { id: 'notes', label: `📄 Grammar Notes (${levelNotes.length})` }
@@ -8463,16 +8488,16 @@
 
         const levelIntro = {
           A0: 'Build crisp French pronunciation and ear decoding first: Mandarin ü vs u, nasal vowels, liaisons, and Canadian spoken contractions.',
-          A1: 'True Beginner Step-by-Step Path (12 modules): Subject Pronouns + Être/Avoir → Gender & Articles → C’est/Il est → Regular, Irregular & Boot Verbs → Negation & Questions → Possessives, Contractions & Quantities → Tonic & Reflexives → Near Future, Recent Past & Imperative.',
-          A2: 'Elementary Expansion (11 modules): Passé Composé (avoir / être) → Imparfait → PC vs IMP → Depuis/Pendant/Pour → Savoir/Connaître & Leave Verbs → Futur Simple → COD, COI, Y, EN, Comparatives & Adverbs/Demonstrative/Possessive Pronouns.',
-          B1: 'Intermediate Fluency: Plus-que-parfait → Conditionnel & Si-Clauses → Double Object & Relative Pronouns (qui/que/où/dont) → Cause/Contrast Connectors & Gérondif.',
-          B2: 'CLB 7 Mastery: Subjunctive Triggers vs. Indicative Look-Alikes, Type 3 Regrets, Compound Relatives & Academic Nuance.'
+          A1: 'Tex Slow-Paced Foundations (Chapters 1–3 · 36 bite-sized pages): Ch 1 Nouns (gender, plurals, exceptions) → Ch 2 Determiners & Articles (definite, indefinite, partitive, demonstratives, possessives) → Ch 3 Adjectives (agreement, BAGS placement, comparatives).',
+          A2: 'Tex Slow-Paced Expansion (Chapter 4 live · 7 pages, more Tex chapters building here): Ch 4 Adverbs (-ment formation, irregulars, placement, comparative/superlative, bon vs bien) + TCF Listening/Reading Units & Vocab.',
+          B1: 'Intermediate Fluency: Tex slow-paced B1 chapters are coming next — explore B1 Listening & Reading Units, Thematic Vocab, and Grammar Notes below in the meantime.',
+          B2: 'CLB 7 Mastery: Tex slow-paced B2 chapters are coming next — explore B2 Listening & Reading Units, Thematic Vocab, and Grammar Notes below in the meantime.'
         }[curLvl];
 
         const a0BodyHTML = `
           <div class="space-y-4">
             <div class="p-3.5 rounded-xl tint-primary border border-primary-soft text-xs text-[var(--foreground)]">
-              💡 <strong>Suggested Pacing:</strong> Complete <strong>P.1–P.3</strong> (U vs OU, Nasals, Liaisons) before or alongside <strong>A1 · 1</strong>, then use <strong>P.4–P.7</strong> (Voiced/Voiceless, é/è, Canadian French) as you advance through A1–A2.
+              💡 <strong>Suggested Pacing:</strong> Complete <strong>P.1–P.3</strong> (U vs OU, Nasals, Liaisons) before or alongside <strong>Ch 1 (Nouns)</strong>, then use <strong>P.4–P.7</strong> (Voiced/Voiceless, é/è, Canadian French) as you advance through A1–A2.
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               ${soundsList.map((g, idx) => {
@@ -8494,65 +8519,6 @@
             </div>
           </div>
         `;
-
-        const guidedCoursesHTML = levelCourses.length ? `
-          <section class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <h3 class="text-base font-bold text-[var(--foreground)]">1. Step-by-Step Grammar Courses (${curLvl})</h3>
-              <span class="text-xs text-[var(--muted-foreground)]">Micro-teach pages + FIB + Mini Dictée + Spot + Builder + 8-Q Quiz</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-              ${levelCourses.map((t) => {
-                const slides = GRAMMAR_LESSONS[t.id] || [];
-                const donePages = getTopicLessonDoneCount(t.id);
-                const recBest = state.topicQuizBest[t.id];
-                const best = recBest ? recBest.best : null;
-                const total = (t.questions || []).length;
-                const mastered = best !== null && best >= 7;
-                const isNextRec = rec && rec.id === t.id;
-                const pagePct = slides.length ? Math.round((donePages / slides.length) * 100) : 0;
-
-                return `
-                  <div class="studio-card p-4 flex flex-col justify-between gap-3 ${isNextRec ? 'border-primary-soft ring-1 ring-[var(--primary)]/20' : ''}">
-                    <div class="space-y-2">
-                      <div class="flex flex-wrap items-center justify-between gap-2">
-                        <div class="flex items-center gap-2 min-w-0">
-                          <span class="text-lg shrink-0">${t.icon}</span>
-                          <span class="px-2 py-0.5 rounded border text-[11px] font-bold shrink-0 ${levelBadgeStyle(t.level)}">${esc(t.badge)}</span>
-                          ${isNextRec ? '<span class="px-2 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[10px] font-bold">✨ Next Recommended</span>' : ''}
-                        </div>
-                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold tabular-nums ${
-                          mastered ? 'tint-success text-[var(--success)]' : best !== null ? 'tint-primary text-[var(--primary)]' : 'tint-muted text-[var(--muted-foreground)]'
-                        }">
-                          ${mastered ? `✓ ${best}/${total}` : best !== null ? `Best ${best}/${total}` : `${slides.length} pages`}
-                        </span>
-                      </div>
-                      <h4 class="text-sm font-bold text-[var(--foreground)]">${esc(t.title)}</h4>
-                      <p class="text-xs text-[var(--muted-foreground)] leading-snug">${esc(t.subtitle)}</p>
-                      <div class="space-y-1">
-                        <div class="flex items-center justify-between text-[11px] text-[var(--muted-foreground)] tabular-nums">
-                          <span>Lesson Progress</span>
-                          <span>${donePages} / ${slides.length} pages</span>
-                        </div>
-                        <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
-                          <div class="h-full rounded-full ${mastered ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${pagePct}%"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
-                      <button type="button" data-course-start="${t.id}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer bg-[var(--primary)] text-[var(--primary-foreground)]">
-                        ${donePages > 0 && donePages < slides.length ? 'Resume Lesson →' : donePages >= slides.length ? 'Review Lesson →' : 'Start Lesson →'}
-                      </button>
-                      <button type="button" data-course-quiz="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover">
-                        ${best !== null ? 'Retake Quiz' : `Quiz (${total} Q)`}
-                      </button>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </section>
-        ` : '';
 
         const unitsHTML = levelUnits.length ? `
           <section class="space-y-3">
@@ -8625,16 +8591,26 @@
           </section>
         ` : '';
 
-        const levelDeepChapters = DEEP_CHAPTERS.filter((c) => c.level === curLvl);
+        const latestDeepCh = DEEP_CHAPTERS.length ? DEEP_CHAPTERS[DEEP_CHAPTERS.length - 1] : null;
+        const lastLevelDeepCh = levelDeepChapters.length ? levelDeepChapters[levelDeepChapters.length - 1] : null;
+        const lastDeepIdx = lastLevelDeepCh ? DEEP_CHAPTERS.indexOf(lastLevelDeepCh) : -1;
+        const nextLvlDeepCh = (lastDeepIdx >= 0 && DEEP_CHAPTERS[lastDeepIdx + 1] && DEEP_CHAPTERS[lastDeepIdx + 1].level !== curLvl)
+          ? DEEP_CHAPTERS[lastDeepIdx + 1]
+          : null;
+
         const deepPilotHTML = levelDeepChapters.length ? `
-          <div class="space-y-4">
+          <section class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-base font-bold text-[var(--foreground)]">1. Tex Slow-Paced Grammar Chapters (${curLvl})</h3>
+              <span class="text-xs text-[var(--muted-foreground)]">Bite-sized rules + original cartoons + focused drills</span>
+            </div>
             ${levelDeepChapters.map((dCh) => {
               const dPages = dCh.pages || [];
               const dDone = getDeepChapterDoneCount(dCh.id);
               const dNext = getNextRecommendedDeepPage(dCh.id);
               const dPct = dPages.length ? Math.round((dDone / dPages.length) * 100) : 0;
               return `
-                <section class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/15">
+                <div class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/15">
                   <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="space-y-1 min-w-0">
                       <div class="flex flex-wrap items-center gap-2">
@@ -8642,7 +8618,7 @@
                         <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(dCh.level)}">${esc(dCh.code)} · Deep Slow-Paced</span>
                         <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">✨ Tex Depth · ${dPages.length} Bite-Sized Pages</span>
                       </div>
-                      <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(dCh.title)}</h3>
+                      <h4 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(dCh.title)}</h4>
                       ${state.showZh && dCh.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(dCh.titleZh)}</div>` : ''}
                       <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && dCh.subtitleZh ? dCh.subtitleZh : dCh.subtitle)}</p>
                     </div>
@@ -8682,11 +8658,52 @@
                       }).join('')}
                     </div>
                   </details>
-                </section>
+                </div>
               `;
             }).join('')}
-          </div>
-        ` : '';
+            ${nextLvlDeepCh ? `
+              <div class="studio-card p-4 border-primary-soft bg-[var(--content)] flex flex-wrap items-center justify-between gap-3">
+                <div class="space-y-0.5 min-w-0">
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">➡️ Next in Tex Curriculum (${esc(nextLvlDeepCh.level)})</div>
+                  <div class="text-sm font-bold text-[var(--foreground)]">${nextLvlDeepCh.icon} [${esc(nextLvlDeepCh.code)}] ${esc(nextLvlDeepCh.title)}</div>
+                  <div class="text-xs text-[var(--muted-foreground)]">${(nextLvlDeepCh.pages || []).length} bite-sized pages · ${esc(nextLvlDeepCh.subtitle)}</div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                  <button type="button" data-course-lvl="${esc(nextLvlDeepCh.level)}" class="px-3.5 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                    View ${esc(nextLvlDeepCh.level)} Level →
+                  </button>
+                  ${(nextLvlDeepCh.pages || []).length ? `
+                    <button type="button" data-open-deep="${nextLvlDeepCh.id}::${nextLvlDeepCh.pages[0].id}" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                      Start ${esc(nextLvlDeepCh.code)} (${esc(nextLvlDeepCh.pages[0].code)}) →
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+          </section>
+        ` : `
+          <section class="studio-card p-5 space-y-3 border-dashed border-[var(--border)]">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="space-y-1">
+                <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(curLvl)}">${curLvl} · Upcoming Tex Chapters</span>
+                <h3 class="text-base font-bold text-[var(--foreground)]">🚧 Tex Slow-Paced Chapters for ${curLvl} Are Coming Next</h3>
+                <p class="text-xs text-[var(--muted-foreground)]">
+                  We’re building the slow-paced Tex chapters progressively. Meanwhile, explore ${curLvl} Listening &amp; Reading Units, Vocab Themes, and Quick Notes below, or view the 11-Topic Grammar Index.
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                ${latestDeepCh ? `
+                  <button type="button" data-course-lvl="${esc(latestDeepCh.level)}" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                    Jump to ${esc(latestDeepCh.code)} (${esc(latestDeepCh.level)}) →
+                  </button>
+                ` : ''}
+                <button type="button" data-course-browse="index" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                  📚 Grammar Index →
+                </button>
+              </div>
+            </div>
+          </section>
+        `;
 
         els.mainContent.innerHTML = `
           <div class="space-y-5">
@@ -8695,25 +8712,25 @@
               <div>
                 <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 Structured French Course (A0 → B2)</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  One clear learning path — follow the highlighted recommendation step by step, or jump freely to any level.
+                  Slow-paced Tex-depth French grammar chapters — tiny digestible rules, original cartoons, and focused drills, plus TCF Canada units &amp; vocab.
                 </p>
               </div>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
-                Courses Mastered: <span class="text-[var(--success)]">${masteredCourses} / ${GRAMMAR_QUIZZES.length}</span>
+                Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${DEEP_CHAPTERS.length} Chapters
               </div>
             </div>
 
             ${modeSwitchHTML}
 
-            ${rec ? `
+            ${recDeep ? `
               <div class="studio-card p-4 border-primary-soft flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-0.5 min-w-0">
-                  <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">✨ Next Recommended Lesson (Soft-Guided)</div>
-                  <div class="text-sm font-bold text-[var(--foreground)]">${rec.icon} [${esc(rec.badge)}] ${esc(rec.title)}</div>
-                  <div class="text-xs text-[var(--muted-foreground)]">${esc(rec.subtitle)}</div>
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">✨ Next Recommended Tex Lesson</div>
+                  <div class="text-sm font-bold text-[var(--foreground)]">${recDeep.chapter.icon} [${esc(recDeep.chapter.level)} · ${esc(recDeep.chapter.code)} · ${esc(recDeep.page.code)}] ${esc(recDeep.page.title)}</div>
+                  <div class="text-xs text-[var(--muted-foreground)]">${esc(recDeep.chapter.title)} · ${esc(recDeep.page.shortTitle)}</div>
                 </div>
                 <button type="button" id="btnResumeRecommended" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer shrink-0">
-                  Continue Course →
+                  ${deepDonePages > 0 ? `Continue ${esc(recDeep.page.code)} →` : `Start ${esc(recDeep.page.code)} →`}
                 </button>
               </div>
             ` : ''}
@@ -8745,7 +8762,6 @@
               </div>
               <div class="space-y-6">
                 ${(tf === 'all' || tf === 'grammar') ? deepPilotHTML : ''}
-                ${tf === 'all' || tf === 'grammar' ? guidedCoursesHTML : ''}
                 ${tf === 'all' || tf === 'units' ? unitsHTML : ''}
                 ${tf === 'all' || tf === 'vocab' ? vocabHTML : ''}
                 ${tf === 'all' || tf === 'notes' ? notesHTML : ''}
@@ -8755,7 +8771,7 @@
         `;
 
         const bRec = document.getElementById('btnResumeRecommended');
-        if (bRec && rec) bRec.onclick = () => openTopicQuiz(rec.id, 'learn', 'course');
+        if (bRec && recDeep) bRec.onclick = () => openDeepPage(recDeep.chapter.id, recDeep.page.id, 'study');
 
         els.mainContent.querySelectorAll('[data-course-browse]').forEach((b) => {
           b.onclick = () => {
@@ -8784,12 +8800,6 @@
             state.courseTypeFilter = b.dataset.courseTf;
             renderCourseView();
           };
-        });
-        els.mainContent.querySelectorAll('[data-course-start]').forEach((b) => {
-          b.onclick = () => openTopicQuiz(b.dataset.courseStart, 'learn', 'course');
-        });
-        els.mainContent.querySelectorAll('[data-course-quiz]').forEach((b) => {
-          b.onclick = () => openTopicQuiz(b.dataset.courseQuiz, 'quiz', 'practice');
         });
         els.mainContent.querySelectorAll('[data-course-ch]').forEach((b) => {
           b.onclick = () => navigate('ch', b.dataset.courseCh);
