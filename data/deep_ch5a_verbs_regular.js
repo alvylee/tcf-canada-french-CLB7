@@ -2675,7 +2675,8 @@
         ],
         related: [
           { chapterId: 'ch5a_verbs_regular', pageId: 'v5a_1', label: 'Back to 5A.1 Intro to Verbs' },
-          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Continue to Ch 6 Negation' }
+          { chapterId: 'ch5b_verbs_irregular', pageId: 'v5b_1', label: 'Continue to Ch 5B (5B.1 être)' },
+          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Jump to Ch 6 Negation' }
         ]
       }
     ]

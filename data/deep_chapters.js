@@ -108,14 +108,15 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     icon: '🔑',
     title: 'Verbs II: Core Irregular Verbs & Idioms',
     titleZh: '第五章 B · 核心高频不规则动词与习语（être/avoir/aller/faire/venir/savoir…）',
-    desc: 'Tex’s 10 core irregular lessons: être, avoir & avoir idioms, aller, faire & faire idioms, venir, boire/croire/voir, savoir vs. connaître, and dire/lire/écrire.',
-    descZh: 'Tex 原版 10 篇核心高频不规则动词：être、avoir 及习语、aller、faire 及习语、venir、boire/croire/voir、savoir vs connaître，以及 dire/lire/écrire。',
-    status: 'existing',
+    desc: 'Tex’s 10 core irregular lessons: être, avoir (+ il y a & 12 idioms), aller, faire (+ weather, sports & chores), venir family, boire/croire/voir, savoir vs. connaître & dire/lire/écrire.',
+    descZh: 'Tex 原版 10 篇核心高频不规则动词（拆成 12 小页）：être、avoir 及 il y a 与 12 习语、aller、faire 及天气/运动/家务、venir、boire/croire/voir、savoir vs connaître 及 dire/lire/écrire。',
+    status: 'deep',
+    deepChapterId: 'ch5b_verbs_irregular',
     plannedTopics: [
-      'être, avoir & avoir Expressions (il y a, avoir besoin de...)',
-      'aller, faire & faire Expressions (Weather, Sports, Chores)',
-      'venir (devenir/revenir) & boire, croire, voir',
-      'savoir vs. connaître & dire, lire, écrire'
+      '5B.1–5B.3 être, avoir, il y a & 12 avoir Idioms',
+      '5B.4–5B.7 aller, faire & Weather / Sports / Chores',
+      '5B.8–5B.9 venir Family & boire / croire / voir',
+      '5B.10–5B.12 savoir vs. connaître & dire / lire / écrire'
     ],
     existingTopicIds: ['a1_subject_etre_avoir', 'a1_irregular_modals', 'a2_savoir_connaitre_leave']
   },
