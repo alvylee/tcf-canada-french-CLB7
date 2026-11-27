@@ -1244,7 +1244,7 @@
             examples: [
               { fr: 'du pain · du vin · du fromage (masculine)', en: '(some) bread · (some) wine · (some) cheese', zh: '（一些）面包 · 葡萄酒 · 奶酪（阳性 du）', tag: 'du (m.)' },
               { fr: 'de la viande · de la chance · de la glace (feminine)', en: '(some) meat · luck · ice cream', zh: '（一些）肉 · 运气 · 冰淇淋（阴性 de la）', tag: 'de la (f.)' },
-              { fr: 'de l’ail (m.) · de l’eau (f.) (before vowel/silent h)', en: '(some) garlic · (some) water', zh: '（一些）大蒜 · 水（元音/哑音 h 前不分男女统一用 de l’）', tag: 'de l’ (vowel)' },
+              { fr: 'de l’ail (m.) · de l’eau (f.) (before vowel/silent h)', en: '(some) garlic · (some) water', zh: '（一些）大蒜 · 水（元音/哑音 h 前不分阴阳性，统一用 de l’）', tag: 'de l’ (vowel)' },
               { fr: 'Édouard : Comme dessert, nous avons de la mousse au chocolat, de la glace parfumée à la vanille et du sorbet à l’ananas.', en: 'For dessert, we have chocolate mousse, vanilla ice cream, and pineapple sorbet.', zh: 'Édouard：甜点我们有巧克力慕斯、香草冰淇淋和菠萝雪葩。', tag: 'Partitive Foods' }
             ]
           },
@@ -2825,7 +2825,7 @@
             hint: 'Invariable word for "each / every" (never changes even for feminine "semaine"!).',
             audio: 'J’écris un nouveau poème chaque semaine.',
             explain: '"chaque" stays identical for both masculine and feminine singular nouns: "chaque semaine".',
-            explainZh: 'chaque 男女同形永不变，表示“每周”填 "chaque"。'
+            explainZh: 'chaque 阴阳性同形且永不变形，表示“每周”填 "chaque"。'
           },
           {
             id: 'd214_d8',

@@ -202,7 +202,7 @@
         titleZh: '常规形容词变化（+e / +s / +es · 混合性别规则）与后置对话 + Tex 12 题',
         estMin: 4,
         summary: 'Master regular 4-form adjective endings (petit / petite / petits / petites), the mixed-gender masculine plural rule ("Tammy et Tex sont petits"), post-noun placement examples, the Gregory Gym dispute dialogue, and all 12 Tex adj2 drills!',
-        summaryZh: '掌握规则形容词“男单/女单/男复/女复”四格变化（并听辨复数 -s 不发音的规律）、男女混合用阳复的铁律、大量后置例句、健身房斗嘴对话以及 Tex 原版 12 题。',
+        summaryZh: '掌握规则形容词“阳单/阴单/阳复/阴复”四格变化（并听辨复数 -s 不发音的规律）、男女混合用阳复的规则、常见后置例句、健身房斗嘴对话以及 Tex 原版 12 题。',
         cheatSummary: [
           { label: 'Regular 4-Form Grid', rule: 'Masc. sg. = base (petit) · Fem. sg. = +e (petite) · Masc. pl. = +s (petits) · Fem. pl. = +es (petites). Note: singular & plural sound the same; adding -e makes silent final consonants (like t, d, s) audible!', ruleZh: '常规四格：原型 / +e / +s / +es。注意 -s 不发音，所以 petit 和 petits 读音相同，但加 -e 变成 petite 时尾音 t 要读出！' },
           { label: 'Mixed Gender → Masc. Plural', rule: 'Even one masculine noun in a group makes the plural adjective masculine: "Tammy (f.) et Tex (m.) sont petits."', ruleZh: '只要复数群里有一个阳性（哪怕 99 个女生+1 个男生），形容词就用阳性复数：Tammy et Tex sont petits。' }
@@ -573,7 +573,7 @@
             hint: 'Already ends in -e!',
             audio: 'Bette est une jeune chatte opportuniste.',
             explain: '"jeune" stays identical in masculine and feminine singular.',
-            explainZh: 'jeune 本身已带 -e，男女单数同形："jeune"。'
+            explainZh: 'jeune 原词尾已带 -e，阴阳性单数同形："jeune"。'
           },
           {
             id: 'd33_d9',
@@ -826,20 +826,20 @@
         titleZh: '不规则形容词（二）：-e 结尾不变词、复数特殊规则（-s/-x 不变，-al→-aux）与 Tex 12 题总测',
         estMin: 5,
         summary: 'Learn adjectives that keep the exact same masculine & feminine form (ending in -e + cool/snob), master the two plural exceptions (-s/-x unchanged, -al → -aux), read Tex & Tammy’s jealousy confrontation, and finish all 12 Tex adj4 drills!',
-        summaryZh: '掌握以 -e 结尾和外来词（snob, cool）的男女同形规律、复数两大例外（-s/-x 阳复不变；-al 阳复变 -aux 但阴复仍规则加 -es！），并完成原版对话和 Tex 12 题。',
+        summaryZh: '掌握以 -e 结尾词与外来词（snob, cool）的阴阳性同形规律、复数两大例外（-s/-x 阳复不变；-al 阳复变 -aux 但阴复仍规则加 -es），并完成原版对话和 Tex 12 题。',
         cheatSummary: [
-          { label: 'Unchanged Masc. & Fem.', rule: 'Adjectives already ending in silent -e (pauvre, difficile, sensible, riche, calme, mince, ridicule, propre, ironique, imaginaire) + loanwords (snob, cool) look identical in m.sg. & f.sg. (just add -s in plural!).', ruleZh: '阳性本身以 -e 结尾的形容词（如 pauvre, difficile, sensible, riche, mince, ridicule, cosmopolite）以及外来词（snob, cool）男女单数同形！' },
+          { label: 'Unchanged Masc. & Fem.', rule: 'Adjectives already ending in silent -e (pauvre, difficile, sensible, riche, calme, mince, ridicule, propre, ironique, imaginaire) + loanwords (snob, cool) look identical in m.sg. & f.sg. (just add -s in plural!).', ruleZh: '阳性原形以 -e 结尾的形容词（如 pauvre, difficile, sensible, riche, mince, ridicule, cosmopolite）以及外来词（snob, cool），阴阳性单数同形。' },
           { label: 'Two Plural Exceptions', rule: '1. Ending in -s or -x: m.pl. unchanged (un tatou heureux / des tatous heureux), while f.pl. is regular (des filles heureuses). 2. Ending in -al: m.pl. → -aux (des animaux internationaux / géniaux), while f.pl. is regular -ales (les revues internationales).', ruleZh: '复数两大规则：① -s / -x 结尾：阳复不变（heureux），阴复规则（heureuses）；② -al 结尾：阳复变 -aux（internationaux, géniaux），阴复规则 -ales（internationales）！' }
         ],
         sections: [
           {
             id: 'irr_unchanged',
             heading: '1. Unchanged -e Adjectives & The Two Plural Rules',
-            headingZh: '一、男女同形词 + 两大复数例外（对比阳复 vs 阴复！）',
+            headingZh: '一、阴阳性同形词 + 两大复数例外（对比阳复 vs 阴复）',
             lead: 'Good news: if the masculine singular adjective ALREADY ends in unaccented -e (or is a borrowed word like snob / cool), you do NOT add a second -e! And watch the plural asymmetry on -s/-x and -al words: feminine plurals are ALWAYS regular (+ -es or + -ales), while only masculine plurals change!',
-            leadZh: '好消息：几十个高频形容词阳性词尾本来就是 -e（加上 snob, cool），男女单数完全一样！另外注意复数的“男女有别”：-s/-x 和 -al 的特殊规则只影响**阳性复数**，**阴性复数永远乖乖规则加 -s**（heureuses, internationales）！',
+            leadZh: '几十个高频形容词阳性词尾本来就是 -e（外加 snob, cool），阴阳性单数拼写完全一致。另外注意复数差异：-s/-x 和 -al 的特殊变化只影响**阳性复数**，**阴性复数一律规则加 -s**（heureuses, internationales）。',
             examples: [
-              { fr: 'Tex est imaginaire ; Tammy aussi est imaginaire. Ils sont imaginaires.', en: 'Both masc. & fem. sg. are "imaginaire" (same for pauvre, difficile, sensible, riche, calme, semblable, mince, minuscule, ridicule, propre, ironique, snob, cool).', zh: '以 -e 结尾与外来词男女单数一样，复数统一加 -s。', tag: 'Unchanged -e' },
+              { fr: 'Tex est imaginaire ; Tammy aussi est imaginaire. Ils sont imaginaires.', en: 'Both masc. & fem. sg. are "imaginaire" (same for pauvre, difficile, sensible, riche, calme, semblable, mince, minuscule, ridicule, propre, ironique, snob, cool).', zh: '以 -e 结尾词与外来词阴阳性单数相同，复数统一加 -s。', tag: 'Unchanged -e' },
               { fr: 'un animal heureux → des animaux heureux (m.pl.) vs. une fille heureuse → des filles heureuses (f.pl.)', en: '-x stays "heureux" in masc. plural, while fem. plural adds -s normally!', zh: '-x 阳复不变（des animaux heureux），阴复正常加 s（des filles heureuses）！', tag: '-s / -x Plural' },
               { fr: 'un tatou international → des animaux internationaux (m.pl.) vs. les revues internationales (f.pl.)', en: '-al turns into -aux ONLY in masc. plural; fem. plural is regular -ales!', zh: '-al 只有阳性复数变 -aux（internationaux）；阴性复数还是规则的 -ales（internationales）！', tag: '-al → -aux' }
             ]

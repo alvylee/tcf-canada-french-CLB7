@@ -216,7 +216,12 @@
               <span class="px-1.5 py-0.5 rounded-md tint-primary text-[var(--primary)] text-[10px] font-bold shrink-0">CLB 7</span>
             </div>
           </div>
-          <button id="btnCloseSidebar" type="button" class="p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] cursor-pointer text-xs font-bold" aria-label="Collapse sidebar" title="Collapse sidebar">✕</button>
+          <button id="btnCloseSidebar" type="button" class="p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer transition flex items-center justify-center" aria-label="Collapse sidebar" title="收起侧边栏 (Collapse sidebar)">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11 17l-5-5 5-5"></path>
+              <path d="M18 17l-5-5 5-5"></path>
+            </svg>
+          </button>
         </div>
 
         <div class="mt-3 space-y-1.5">
@@ -267,7 +272,11 @@
         <div class="w-full max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
           <!-- Left: Sidebar Toggle + Active View Title + Live Audio Pill -->
           <div class="flex items-center gap-2.5 min-w-0">
-            <button id="btnOpenSidebar" type="button" class="px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer shrink-0 tint-muted-hover" aria-label="Toggle navigation sidebar" title="Show / Hide sidebar">☰</button>
+            <button id="btnOpenSidebar" type="button" class="p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] cursor-pointer shrink-0 tint-muted-hover flex items-center justify-center" aria-label="Toggle navigation sidebar" title="收起 / 展开侧边栏">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
 
             <span id="topbarViewTitle" class="text-sm font-semibold text-[var(--foreground)] truncate">Today &amp; Plan</span>
 
@@ -3882,9 +3891,13 @@
         document.documentElement.classList.toggle('sidebar-collapsed', Boolean(state.sidebarCollapsed));
         if (els.btnOpenSidebar) {
           els.btnOpenSidebar.setAttribute('aria-expanded', String(!state.sidebarCollapsed));
+          els.btnOpenSidebar.title = state.sidebarCollapsed ? '展开侧边栏 (Show sidebar)' : '收起侧边栏 (Hide sidebar)';
           els.btnOpenSidebar.className = state.sidebarCollapsed
-            ? 'px-2.5 py-1.5 rounded-lg border border-primary-soft tint-primary text-[var(--primary)] text-xs font-semibold cursor-pointer shrink-0'
-            : 'px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer shrink-0 tint-muted-hover';
+            ? 'p-1.5 rounded-lg border border-primary-soft tint-primary text-[var(--primary)] cursor-pointer shrink-0 flex items-center justify-center transition'
+            : 'p-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] cursor-pointer shrink-0 tint-muted-hover flex items-center justify-center transition';
+          els.btnOpenSidebar.innerHTML = state.sidebarCollapsed
+            ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><path d="M13 10l2.5 2-2.5 2"></path></svg>'
+            : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line><path d="M15.5 10l-2.5 2 2.5 2"></path></svg>';
         }
       }
 
@@ -7759,10 +7772,21 @@
               </div>
             ` : '';
 
+            const isCompactExamples = Boolean(
+              sec.examples &&
+              sec.examples.length >= 2 &&
+              sec.examples.every((ex) =>
+                String(ex.fr || '').length <= 44 &&
+                String(ex.en || '').length <= 68 &&
+                String(ex.zh || '').length <= 48
+              )
+            );
             const examplesHTML = (sec.examples && sec.examples.length) ? `
-              <div class="space-y-2.5">
-                ${sec.examples.map((ex) => `
-                  <div class="p-3.5 sm:p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] flex items-start justify-between gap-3">
+              <div class="${isCompactExamples ? 'grid grid-cols-1 md:grid-cols-2 gap-3' : 'space-y-2.5'}">
+                ${sec.examples.map((ex, idx) => {
+                  const spanLast = (isCompactExamples && sec.examples.length % 2 === 1 && idx === sec.examples.length - 1) ? 'md:col-span-2' : '';
+                  return `
+                  <div class="p-3.5 sm:p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] flex items-start justify-between gap-3 ${spanLast}">
                     <div class="space-y-1 min-w-0">
                       <div class="flex flex-wrap items-center gap-2">
                         <span class="deep-fr font-bold text-[var(--foreground)]">${esc(ex.fr)}</span>
@@ -7773,7 +7797,8 @@
                     </div>
                     <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn shrink-0 px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm font-semibold cursor-pointer tint-muted-hover">🔊</button>
                   </div>
-                `).join('')}
+                `;
+                }).join('')}
               </div>
             ` : '';
 

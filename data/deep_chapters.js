@@ -326,11 +326,11 @@ window.__TCF_DEEP_CHAPTERS__ = [
             lead: 'Count nouns identify separate objects that can be counted (1, 2, 3...). Mass nouns treat something as an uncountable whole or substance. Just like in English ("eat bread" vs. "two loaves"), a normally countable thing can even become a mass noun when viewed as substance rather than whole units!',
             leadZh: '可数名词可以一个个计数（一个、两个……）；不可数名词（物质名词）则表示无法拆分计数的整体或材料。有时同一个东西，整只看是可数，按材料/肉块看就成了不可数。',
             examples: [
-              { fr: 'un tatou, deux tatous', en: 'one armadillo, two armadillos (countable units)', zh: '一只犰狳，两只犰狳（可数个体）', tag: 'Count' },
-              { fr: 'un café, deux cafés', en: 'one cup of coffee, two coffees (countable cups)', zh: '一杯咖啡，两杯咖啡（可数杯数）', tag: 'Count' },
+              { fr: 'un tatou, deux tatous', en: 'one armadillo, two armadillos (countable units)', zh: '一只犰狳、两只犰狳（可数）', tag: 'Count' },
+              { fr: 'un café, deux cafés', en: 'one cup of coffee, two coffees (countable cups)', zh: '一杯咖啡、两杯咖啡（可数）', tag: 'Count' },
               { fr: 'Tex mange du pain.', en: 'Tex is eating bread (uncountable mass).', zh: 'Tex 在吃面包（整体/物质，不可数）。', tag: 'Mass' },
               { fr: 'Tammy boit de l’eau.', en: 'Tammy drinks water (uncountable liquid).', zh: 'Tammy 在喝水（液体物质，不可数）。', tag: 'Mass' },
-              { fr: 'Berk ! Il y a du tatou écrasé partout sur la route.', en: 'Yuck! There is squashed armadillo all over the road (counted animal viewed as mass!).', zh: '哎呀！路上到处是碾扁的犰狳肉（原本可数的动物，被当成物质看待）。', tag: 'Count → Mass' }
+              { fr: 'Berk ! Il y a du tatou écrasé partout sur la route.', en: 'Yuck! There is squashed armadillo all over the road (counted animal viewed as mass!).', zh: '哎呀！路上到处是碾扁的犰狳肉（原本可数的动物，这里按不可数物质看待）。', tag: 'Count → Mass' }
             ],
             quickCheck: {
               prompt: 'Why does "Tex mange du pain." use "du pain" instead of "un pain" here?',
@@ -485,7 +485,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
         summaryZh: '理解为什么法语没有“中性 it”、阴阳性本质只是“A 类 / B 类”语法标签，以及为什么必须连同冠词一起记名词。',
         cheatSummary: [
           { label: 'Singular vs. Plural', rule: 'Most count nouns form the plural with a silent -s: le tatou → les tatous. Mass nouns usually stay singular only (l’eau, le pain).', ruleZh: '可数名词通常加不发音的 -s 变复数；不可数物质名词通常只有单数形式。' },
-          { label: 'No Neuter Gender', rule: 'Every French noun is either masculine (le / un) or feminine (la / une) — even tables, desks, and ideas. Think of them as "Class A" and "Class B".', ruleZh: '法语没有“中性”，连桌子、书桌、抽象概念都非男即女。把它们当成“A 类 / B 类”标签最容易理解。' },
+          { label: 'No Neuter Gender', rule: 'Every French noun is either masculine (le / un) or feminine (la / une) — even tables, desks, and ideas. Think of them as "Class A" and "Class B".', ruleZh: '法语没有中性词，连桌子、书桌、抽象概念都分阴阳性。把它们当成“A 类 / B 类”语法标签最容易理解。' },
           { label: 'Golden Study Habit', rule: 'Always memorize the article + spelling + sound together: say "la table" and "le bureau", never just "table" or "bureau".', ruleZh: '黄金记忆法：永远把“冠词 + 拼写 + 读音”绑在一起背，记 "la table"，不要只背 "table"。' }
         ],
         sections: [
@@ -506,12 +506,12 @@ window.__TCF_DEEP_CHAPTERS__ = [
             heading: '2. Masculine vs. Feminine = "Noun Class A" & "Noun Class B"',
             headingZh: '二、阳性 vs 阴性：不是生理性别，而是“A 类 / B 类”标签',
             lead: 'In English, gender follows biology (he/she/it). In French, there is NO neuter "it": EVERY noun—including tables, desks, and abstract concepts—belongs to either masculine (le / un) or feminine (la / une). Remember: grammatical gender for objects has nothing to do with biology; it is simply Noun Class A vs. Noun Class B!',
-            leadZh: '英语的“他/她/它”基本按生物性别走，但法语没有中性的“它”，桌子、电脑、城市全都分成阳性（le / un）或阴性（la / une）。别去硬想“桌子为什么是女性”，把它当成“A 组 / B 组”标签就好！',
+            leadZh: '法语没有中性词，哪怕是桌子、电脑、城市这类无生命物体，也都有固定的“阳性（le / un）”或“阴性（la / une）”归类。不需要纠结“桌子为什么是阴性”，把它当成名词自带的语法分组标签来记即可。',
             examples: [
               { fr: 'le garçon', en: 'the boy (masculine)', zh: '男孩（阳性）', tag: 'Masculine (le)' },
               { fr: 'la fille', en: 'the girl (feminine)', zh: '女孩（阴性）', tag: 'Feminine (la)' },
-              { fr: 'la table', en: 'the table (feminine object!)', zh: '桌子（物体也是阴性！）', tag: 'Feminine (la)' },
-              { fr: 'le bureau', en: 'the desk / office (masculine object!)', zh: '书桌 / 办公室（物体是阳性！）', tag: 'Masculine (le)' },
+              { fr: 'la table', en: 'the table (feminine object!)', zh: '桌子（阴性，无生命物体同样分性）', tag: 'Feminine (la)' },
+              { fr: 'le bureau', en: 'the desk / office (masculine object!)', zh: '书桌 / 办公室（阳性，无生命物体同样分性）', tag: 'Masculine (le)' },
               { fr: 'le livre / la maison', en: 'the book (m.) / the house (f.)', zh: '书（阳性）/ 房子（阴性）', tag: 'm. vs. f.' }
             ],
             quickCheck: {
@@ -537,7 +537,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
             examples: [
               { fr: 'Le bureau est grand.', en: 'The desk is big.', zh: '这张书桌很大。', tag: 'Sing. m.' },
               { fr: 'La table est ronde.', en: 'The table is round.', zh: '这张桌子是圆的。', tag: 'Sing. f.' },
-              { fr: 'Les tables sont propres.', en: 'The tables are clean.', zh: '这些桌子很干净（复数不再区分男女，统一用 les）。', tag: 'Plural' }
+              { fr: 'Les tables sont propres.', en: 'The tables are clean.', zh: '这些桌子很干净（复数不再区分阴阳性，统一用 les）。', tag: 'Plural' }
             ]
           }
         ],
@@ -1331,7 +1331,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
         cheatSummary: [
           { label: 'People: General + -e', rule: 'étudiant → étudiante, ami → amie, voisin → voisine (adding -e often makes the final consonant heard!).', ruleZh: '人物名词一般直接在阳性后加 -e（加了 -e 后，原本不读的尾辅音往往要读出来）。' },
           { label: 'Profession Shifts', rule: '-eur → -euse (serveur/serveuse); -ien → -ienne (musicien/musicienne); -teur → -trice (acteur/actrice, séducteur/séductrice); -on → -onne (champion/championne); -ain → -ine (copain/copine); -er → -ère (boulanger/boulangère).', ruleZh: '高频职业词尾变化：-eur→-euse，-ien→-ienne，-teur→-trice，-on→-onne，-ain→-ine，-er→-ère。' },
-          { label: 'Ends in -e & Animals', rule: 'Nouns ending in -e stay the same (le/la secrétaire, le/la poète). Animals can be fixed gender (un escargot, la fourmi) or paired (le chat / la chatte, le coq / la poule).', ruleZh: '本身以 -e 结尾的职业词男女同形，靠冠词区分；动物有的全物种固定一性，有的公母成对。' }
+          { label: 'Ends in -e & Animals', rule: 'Nouns ending in -e stay the same (le/la secrétaire, le/la poète). Animals can be fixed gender (un escargot, la fourmi) or paired (le chat / la chatte, le coq / la poule).', ruleZh: '本身以 -e 结尾的职业词阴阳性同形，靠冠词区分；动物名词有的固定一性，有的按雌雄成对。' }
         ],
         sections: [
           {
@@ -1341,7 +1341,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
             lead: 'When a noun refers to a person, grammatical gender usually follows the person’s gender. Often the feminine form simply adds -e to the masculine form—and that silent final consonant in the masculine suddenly becomes audible in the feminine!',
             leadZh: '指代人的名词通常按人的性别区分。最基本的规则是在阳性后面加 -e：注意加了 -e 之后，阳性原本哑巴的尾辅音在阴性里往往要清晰读出！',
             examples: [
-              { fr: 'Joe-Bob est étudiant, Tammy est aussi étudiante.', en: 'Joe-Bob is a student, Tammy is also a student (t becomes audible!).', zh: 'Joe-Bob 是男生，Tammy 也是女生（t 从不发音变成清晰可读）。', tag: '-t → -te' },
+              { fr: 'Joe-Bob est étudiant, Tammy est aussi étudiante.', en: 'Joe-Bob is a student, Tammy is also a student (t becomes audible!).', zh: 'Joe-Bob 是男学生，Tammy 也是女学生（加 -e 后词尾 t 变得清晰可读）。', tag: '-t → -te' },
               { fr: 'Tex est ami avec Joe-Bob, Tammy est aussi amie avec Joe-Bob.', en: 'Tex is friends with Joe-Bob, Tammy is also friends with Joe-Bob.', zh: 'Tex 和 Joe-Bob 是朋友，Tammy 也是。', tag: 'Silent +e' },
               { fr: 'un voisin / une voisine · un client / une cliente', en: 'a neighbor (m./f.) · a customer (m./f.)', zh: '男邻居/女邻居 · 男顾客/女顾客', tag: 'Pair' }
             ]
@@ -1386,13 +1386,13 @@ window.__TCF_DEEP_CHAPTERS__ = [
               src: './assets/tex_cartoons/no3_ritatex.gif',
               alt: 'Tex est poète. Rita est secrétaire.',
               caption: 'Tex est poète. Rita est secrétaire. (Unchanged -e)',
-              captionZh: '词尾已有 -e 的职业男女同形'
+              captionZh: '词尾已有 -e 的职业阴阳性同形'
             },
             lead: 'When the masculine noun ALREADY ends in -e, it stays unchanged in the feminine—only the article tells you whether the person is a man or a woman! Meanwhile, basic family nouns use completely separate words.',
             leadZh: '如果阳性名词本身已经以 -e 结尾，变阴性时单词本身不再多加一个 -e，单靠前面的冠词或上下文来辨别！亲属称谓则各有独立单词。',
             examples: [
               { fr: 'Tex et Rita sont frère et sœur, mais ils ont des métiers différents.', en: 'Tex and Rita are brother and sister, but they have different jobs.', zh: 'Tex 和 Rita 是兄妹，但他们职业截然不同。', tag: 'Family Pair' },
-              { fr: 'Tex est poète. Rita est secrétaire. Tex n’est pas secrétaire et Rita n’est pas poète.', en: 'Both "poète" and "secrétaire" end in -e, so they stay identical for men and women!', zh: 'poète 和 secrétaire 词尾已有 -e，男女拼写完全一样，只靠冠词 le/la 区分！', tag: 'Unchanged -e' },
+              { fr: 'Tex est poète. Rita est secrétaire. Tex n’est pas secrétaire et Rita n’est pas poète.', en: 'Both "poète" and "secrétaire" end in -e, so they stay identical for men and women!', zh: 'poète 和 secrétaire 原词尾已有 -e，阴阳性拼写相同，仅靠冠词 le / la 区分。', tag: 'Unchanged -e' },
               { fr: 'le grand-père / la grand-mère · le père / la mère · un acteur / une actrice', en: 'grandfather / grandmother · father / mother · actor / actress', zh: '祖父 / 祖母 · 父亲 / 母亲 · 男演员 / 女演员', tag: 'TCF Core' }
             ]
           },
@@ -1403,7 +1403,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
             lead: 'Many animal names have only ONE fixed gender for the whole species—even if the animal is female! Others have separate masculine and feminine forms.',
             leadZh: '不少动物单词全物种只用一个固定性别（不管公母都用同一个冠词）；也有些常见家畜和宠物有公母成对写法：',
             examples: [
-              { fr: 'un escargot (always m.) / la fourmi (always f.) / la souris (always f.)', en: 'snail (always m.) / ant (always f.) / mouse (always f.)', zh: '蜗牛（永远阳性）/ 蚂蚁（永远阴性）/ 老鼠（永远阴性）', tag: 'Fixed Gender' },
+              { fr: 'un escargot (always m.) / la fourmi (always f.) / la souris (always f.)', en: 'snail (always m.) / ant (always f.) / mouse (always f.)', zh: '蜗牛（固定阳性）/ 蚂蚁（固定阴性）/ 老鼠（固定阴性）', tag: 'Fixed Gender' },
               { fr: 'le chat / la chatte · le chien / la chienne', en: 'cat (m./f.) · dog (m./f.)', zh: '公猫 / 母猫 · 公狗 / 母狗', tag: 'Paired' },
               { fr: 'le coq / la poule · le taureau / la vache', en: 'rooster / hen · bull / cow', zh: '公鸡 / 母鸡 · 公牛 / 母牛', tag: 'Different Words' }
             ]
@@ -1900,7 +1900,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
             lead: 'Later in A2, you will see that the verb "avoir" inside "il y a" can change tense just like any other verb:',
             leadZh: '在后面的 A2 课程里，你会看到 il y a 里的动词 avoir 也可以变成过去或将来（这里先认识即可，暂时不考拼写）：',
             examples: [
-              { fr: 'il y avait (past: there was / were)', en: 'Hier, il y avait du soleil à Québec.', zh: '昨天魁北克市有太阳（过去有）。', tag: 'Past Preview' },
+              { fr: 'il y avait (past: there was / were)', en: 'Hier, il y avait du soleil à Québec.', zh: '昨天魁北克市出太阳了（过去时）。', tag: 'Past Preview' },
               { fr: 'il y aura (future: there will be)', en: 'Demain, il y aura un examen.', zh: '明天将会有一场考试（将来有）。', tag: 'Future Preview' }
             ]
           }
@@ -2247,7 +2247,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
             examples: [
               { fr: 'Paw-Paw : Tex, tu es où ? Tu es en retard ! — Tex : Mais non, j’ai le temps ! Quel temps fait-il à Opelousas ?', en: 'Paw-Paw: Tex, where are you? You’re late! — Tex: No I’m not, I have time! What’s the weather like in Opelousas?', zh: '爷爷：Tex 你在哪儿？你要迟到了！——Tex：哪有，我有的是时间！老家天气怎么样？', tag: 'Time + Weather' },
               { fr: 'Il fait beau temps / mauvais temps aujourd’hui.', en: 'The weather is nice / bad today.', zh: '今天天气好 / 天气不好。', tag: 'Weather' },
-              { fr: 'Paw-Paw : Les temps changent... — Tex : Laissez les bons temps rouler !', en: 'Times change... / Let the good times roll! (Louisiana French saying)', zh: '时代在变…… / 让美好时光滚滚向前！（美国路易斯安那法语名谚）', tag: 'Plural Phrases' }
+              { fr: 'Paw-Paw : Les temps changent... — Tex : Laissez les bons temps rouler !', en: 'Times change... / Let the good times roll! (Louisiana French saying)', zh: '时代在变…… / 尽情享受好时光！（路易斯安那州法语谚语）', tag: 'Plural Phrases' }
             ]
           },
           {
