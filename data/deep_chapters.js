@@ -227,15 +227,17 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     cefr: 'A2–B2',
     texPageCount: 3,
     icon: '🔗',
-    title: 'Conjunctions (Les Conjonctions)',
-    titleZh: '第九章 · 连词与逻辑连接词（并列连词、从属连词与虚拟语气触发）',
-    desc: 'Coordinating conjunctions (mais, ou, et, donc, or, ni, car), subordinating connectors (parce que, pendant que), and conjunctions triggering subjunctive.',
-    descZh: '并列连词、高分时间/因果/转折从属连词，以及要求接虚拟式的连词（bien que, avant que, afin que 等 3 大原站页面）。',
-    status: 'existing',
+    title: 'Conjunctions & Logical Connectors (Les Conjonctions)',
+    titleZh: '第九章 · 连词与逻辑连接词（并列、从属、虚拟式连词与 TCF 高分衔接）',
+    desc: 'Tex con1–con3 + B2 connectors (5 bite-sized pages): coordinating (mais, ou, et, donc, or, ni, car), indicative subordinators (quand + future, pendant vs. tandis que, depuis que, puisque), subjunctive vs. same-subject infinitive (bien que, avant que/de, pour que/de), and B2 TCF discourse markers.',
+    descZh: '对标 Tex 第九章（con1–con3）并升级 TCF B2 逻辑衔接（5 小页）：七大并列连词、直陈式从属连词精辨、虚拟式连词与同主语不定式切换、以及 B2 议论写作高分连接词。',
+    status: 'deep',
+    deepChapterId: 'ch9_conjunctions',
     plannedTopics: [
-      'Coordinating Conjunctions',
-      'Subordinating Conjunctions',
-      'Conjunctions Taking the Subjunctive'
+      '9.1–9.2 Intro & Coordinating (mais, ou, et, donc, or, ni, car)',
+      '9.3 Subordinating (+ Ind.): quand, tandis que, depuis que, puisque',
+      '9.4 Subjunctive Conjunctions & Same-Subject Infinitive Rule',
+      '9.5 TCF B2 Logical Connectors & Ch 9 Synthesis'
     ],
     existingTopicIds: ['connectors_prep_gerondif']
   },
