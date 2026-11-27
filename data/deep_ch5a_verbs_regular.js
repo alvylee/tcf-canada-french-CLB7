@@ -2520,9 +2520,9 @@
             },
             examples: [
               { fr: 'Edouard : Bonsoir. Suivez-moi, s’il vous plaît.', en: 'Edouard: Good evening. Follow me, please.', zh: 'Edouard：晚上好，请跟我来（Suivez-moi）。', tag: 'suivre (imp.)' },
-              { fr: 'Client : Excusez-moi, mais le service est vraiment très lent.', en: 'Client: Excuse me, but the service is really very slow.', zh: '顾客：抱歉，这里上菜实在太慢了！', tag: 'Dialogue' },
+              { fr: 'Client : Excusez-moi, mais le service est vraiment très lent.', en: 'Client: Excuse me, but the service is really very slow.', zh: '顾客：抱歉，这里上菜实在太慢了！', tag: 'Adjective Context' },
               { fr: 'Edouard : La qualité, ça prend du temps, monsieur. Les fastfoods, quelle horreur. Vive la cuisine française !', en: 'Edouard: Quality takes time, monsieur. Fast food, how dreadful. Long live French cuisine!', zh: 'Edouard：好品质需要时间嘛，先生！快餐真是恐怖。法国美食万岁（Vive la cuisine française）！', tag: 'Vive...!' },
-              { fr: 'Idioms: suivre un cours (to take a course) · la vie (life) · vivre (to be alive / live a lifestyle) vs. habiter (to reside at an address)', en: 'Use "suivre un cours" (NOT prendre!) for taking a class, and note p.p. "vécu" (J’ai vécu à Paris).', zh: '重要搭配：“选修一门课”法语说 suivre un cours；vive 来自虚拟式感叹“……万岁”。', tag: 'Tex Must-Know' }
+              { fr: 'Idioms: suivre un cours (to take a course) · la vie (life) · vivre (to be alive / live a lifestyle) vs. habiter (to reside at an address)', en: 'Use "suivre un cours" (NOT prendre!) for taking a class, and note p.p. "vécu" (J’ai vécu à Paris).', zh: '重要搭配：“选修一门课”法语说 suivre un cours；vive 来自虚拟式感叹“……万岁”。', tag: 'Key Idioms' }
             ],
             quickCheck: {
               prompt: 'What does "Je suis un cours de français" mean?',

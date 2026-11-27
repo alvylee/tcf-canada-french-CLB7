@@ -678,7 +678,7 @@
             },
             examples: [
               { fr: 'Corey : Salut, Joe-Bob, où vas-tu ? — Joe-Bob : Je vais au café.', en: 'Hey, Joe-Bob, where are you going? — I’m going to a coffee shop.', zh: 'Corey：去哪儿呀？— 我去咖啡馆。', tag: 'Literal Going' },
-              { fr: 'Joe-Bob : Oui, mais le prof est horrible, vraiment horrible ! — Corey : Attention ! Il arrive !', en: 'Yes, but the prof is horrible, really horrible! — Watch out! He’s coming!', zh: '糟了，教授走过来了！', tag: 'Campus Scene' },
+              { fr: 'Joe-Bob : Oui, mais le prof est horrible, vraiment horrible ! — Corey : Attention ! Il arrive !', en: 'Yes, but the prof is horrible, really horrible! — Watch out! He’s coming!', zh: '糟了，教授走过来了！', tag: 'Context Cue' },
               { fr: 'Joe-Bob : Ah, bonjour monsieur le professeur. Comment allez-vous aujourd’hui ?', en: 'Oh, hello, professor. How are you today?', zh: '一秒变脸：“教授您好，您今天身体好吗？”', tag: 'Health Salutation' }
             ],
             quickCheck: {
@@ -1868,7 +1868,7 @@
               ]
             },
             examples: [
-              { fr: 'Joe-Bob : Tex, explique-moi la différence entre savoir et connaître. Je ne comprends pas.', en: 'Tex, explain the difference between savoir and connaître to me. I don’t understand.', zh: 'Joe-Bob：Tex 给我讲讲 savoir 和 connaître 的区别吧。', tag: 'Question' },
+              { fr: 'Joe-Bob : Tex, explique-moi la différence entre savoir et connaître. Je ne comprends pas.', en: 'Tex, explain the difference between savoir and connaître to me. I don’t understand.', zh: 'Joe-Bob：Tex 给我讲讲 savoir 和 connaître 的区别吧。', tag: 'Contrast Setup' },
               { fr: 'Tex : On sait des faits mais on connaît des gens et des endroits. Par exemple, je connais Tammy, la France et la Tour Eiffel.', en: 'One knows (with savoir) facts, but one knows (with connaître) people and places. For example, I know Tammy, France, the Eiffel Tower.', zh: '事实用 savoir；人名（Tammy）、国家（la France）、地标（la Tour Eiffel）必须用 connaître！', tag: 'People & Places' },
               { fr: 'Joe-Bob : Oh, OK, et moi, je sais jouer de la guitare et je sais où se trouve l’université du Texas.', en: 'Oh, OK, and I know how to play the guitar and I know where the University of Texas is located.', zh: '我“会”弹吉他（+ 不定式 jouer），且“知道……在哪里”（+ 疑问从句 où se trouve...），两个都用 savoir！', tag: 'Skill & Clause' }
             ],

@@ -244,7 +244,7 @@
               captionZh: '几乎所有修饰特征的形容词（jaunes / pointu / désagréable）都放在名词后面！'
             },
             examples: [
-              { fr: 'Tex porte un béret rond. Il aime les romans existentialistes et habitait chez des nonnes catholiques.', en: 'round beret · existentialist novels · Catholic nuns', zh: '圆贝雷帽 · 存在主义小说 · 天主教修女', tag: 'Tex Examples' },
+              { fr: 'Tex porte un béret rond. Il aime les romans existentialistes et habitait chez des nonnes catholiques.', en: 'round beret · existentialist novels · Catholic nuns', zh: '圆贝雷帽 · 存在主义小说 · 天主教修女', tag: 'After Noun' },
               { fr: 'Tammy a un nez pointu. C’est une tatou mince et sympathique qui apprend la langue française.', en: 'pointed nose · slim and nice armadillo · French language', zh: '尖鼻子 · 苗条友善的犰狳 · 法语', tag: 'Tammy' }
             ],
             dialogue: {

@@ -247,7 +247,7 @@
             },
             examples: [
               { fr: 'Corey : Tu connais la tour de l’Université du Texas ? — Tex : Bien sûr, c’est le symbole de l’Université !', en: 'Do you know the UT Tower? — Of course, it’s the symbol of the University!', zh: '你认识德州大学的钟楼吗？——当然，它是学校的象征！', tag: 'Specific' },
-              { fr: 'Corey : Et la Sixième rue ? — Tex : Eh bien, c’est les Champs-Élysées d’Austin !', en: 'What about Sixth Street? — Well, it’s the Champs-Élysées of Austin!', zh: '那第六街呢？——嗨，那就是奥斯汀的“香榭丽舍”！', tag: 'Tex Classic' }
+              { fr: 'Corey : Et la Sixième rue ? — Tex : Eh bien, c’est les Champs-Élysées d’Austin !', en: 'What about Sixth Street? — Well, it’s the Champs-Élysées of Austin!', zh: '那第六街呢？——嗨，那就是奥斯汀的“香榭丽舍”！', tag: 'Specific Landmark' }
             ]
           },
           {
@@ -1245,7 +1245,7 @@
               { fr: 'du pain · du vin · du fromage (masculine)', en: '(some) bread · (some) wine · (some) cheese', zh: '（一些）面包 · 葡萄酒 · 奶酪（阳性 du）', tag: 'du (m.)' },
               { fr: 'de la viande · de la chance · de la glace (feminine)', en: '(some) meat · luck · ice cream', zh: '（一些）肉 · 运气 · 冰淇淋（阴性 de la）', tag: 'de la (f.)' },
               { fr: 'de l’ail (m.) · de l’eau (f.) (before vowel/silent h)', en: '(some) garlic · (some) water', zh: '（一些）大蒜 · 水（元音/哑音 h 前不分男女统一用 de l’）', tag: 'de l’ (vowel)' },
-              { fr: 'Édouard : Comme dessert, nous avons de la mousse au chocolat, de la glace parfumée à la vanille et du sorbet à l’ananas.', en: 'For dessert, we have chocolate mousse, vanilla ice cream, and pineapple sorbet.', zh: 'Édouard：甜点我们有巧克力慕斯、香草冰淇淋和菠萝雪葩。', tag: 'Tex Menu' }
+              { fr: 'Édouard : Comme dessert, nous avons de la mousse au chocolat, de la glace parfumée à la vanille et du sorbet à l’ananas.', en: 'For dessert, we have chocolate mousse, vanilla ice cream, and pineapple sorbet.', zh: 'Édouard：甜点我们有巧克力慕斯、香草冰淇淋和菠萝雪葩。', tag: 'Partitive Foods' }
             ]
           },
           {
@@ -1647,7 +1647,7 @@
               ]
             },
             examples: [
-              { fr: 'Tex présente sa famille : Voici mon frère Trey, ma sœur Rita avec ses enfants et leur chien Fido. Notre famille est formidable !', en: 'Tex introduces his family: Here is my brother Trey, my sister Rita with her children and their dog Fido. Our family is great!', zh: 'Tex 介绍家人：这是我哥哥 Trey，我妹妹 Rita 和她的孩子，还有他们的狗 Fido。我们的家太棒了！', tag: 'Tex Family' }
+              { fr: 'Tex présente sa famille : Voici mon frère Trey, ma sœur Rita avec ses enfants et leur chien Fido. Notre famille est formidable !', en: 'Tex introduces his family: Here is my brother Trey, my sister Rita with her children and their dog Fido. Our family is great!', zh: 'Tex 介绍家人：这是我哥哥 Trey，我妹妹 Rita 和她的孩子，还有他们的狗 Fido。我们的家太棒了！', tag: 'Possessive Mix' }
             ]
           },
           {
@@ -2310,7 +2310,7 @@
               ]
             },
             examples: [
-              { fr: 'Malgré toutes les filles que j’ai connues, je pense à toi tout le temps, toute la journée, tous les soirs, toutes les nuits.', en: 'In spite of all the girls I’ve known, I think of you all the time, all day long, every evening, every night.', zh: '尽管我认识过那么多女孩，我还是时时刻刻、整日、每晚、每个深夜都在想你。', tag: 'Tex Poem' },
+              { fr: 'Malgré toutes les filles que j’ai connues, je pense à toi tout le temps, toute la journée, tous les soirs, toutes les nuits.', en: 'In spite of all the girls I’ve known, I think of you all the time, all day long, every evening, every night.', zh: '尽管我认识过那么多女孩，我还是时时刻刻、整日、每晚、每个深夜都在想你。', tag: 'All 4 tout Forms' },
               { fr: 'Tout tatou est poète ! / toute sa vie / tous mes poèmes', en: 'Every armadillo is a poet! / all his life / all my poems', zh: '每一只犰狳都是诗人！/ 她的一生 / 我所有的诗', tag: 'No Article / Poss.' }
             ]
           },

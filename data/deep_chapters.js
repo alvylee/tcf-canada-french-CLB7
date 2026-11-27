@@ -330,7 +330,7 @@ window.__TCF_DEEP_CHAPTERS__ = [
               { fr: 'un café, deux cafés', en: 'one cup of coffee, two coffees (countable cups)', zh: '一杯咖啡，两杯咖啡（可数杯数）', tag: 'Count' },
               { fr: 'Tex mange du pain.', en: 'Tex is eating bread (uncountable mass).', zh: 'Tex 在吃面包（整体/物质，不可数）。', tag: 'Mass' },
               { fr: 'Tammy boit de l’eau.', en: 'Tammy drinks water (uncountable liquid).', zh: 'Tammy 在喝水（液体物质，不可数）。', tag: 'Mass' },
-              { fr: 'Berk ! Il y a du tatou écrasé partout sur la route.', en: 'Yuck! There is squashed armadillo all over the road (counted animal viewed as mass!).', zh: '哎呀！路上到处是碾扁的犰狳肉（原本可数的动物，被当成物质看待）。', tag: 'Tex Classic' }
+              { fr: 'Berk ! Il y a du tatou écrasé partout sur la route.', en: 'Yuck! There is squashed armadillo all over the road (counted animal viewed as mass!).', zh: '哎呀！路上到处是碾扁的犰狳肉（原本可数的动物，被当成物质看待）。', tag: 'Count → Mass' }
             ],
             quickCheck: {
               prompt: 'Why does "Tex mange du pain." use "du pain" instead of "un pain" here?',
@@ -735,9 +735,9 @@ window.__TCF_DEEP_CHAPTERS__ = [
               ]
             },
             examples: [
-              { fr: 'Tex a un long nez. Les tatous ont toujours de longs nez.', en: 'Tex has a long nose. Armadillos always have long noses.', zh: 'Tex 有一个长鼻子。犰狳总是有长鼻子。', tag: 'Tex -z' },
-              { fr: 'Les écureuils adorent les noix. Joe-Bob mange au moins une noix par jour.', en: 'Squirrels adore nuts. Joe-Bob eats at least one nut every day.', zh: '松鼠超爱坚果。Joe-Bob 每天至少吃一颗坚果。', tag: 'Tex -x' },
-              { fr: 'Les chats mangent des souris. Est-ce que Bette a jamais mangé une souris ?', en: 'Cats eat mice. Has Bette ever eaten a mouse?', zh: '猫吃老鼠。Bette 吃过一只老鼠吗？', tag: 'Tex -s' }
+              { fr: 'Tex a un long nez. Les tatous ont toujours de longs nez.', en: 'Tex has a long nose. Armadillos always have long noses.', zh: 'Tex 有一个长鼻子。犰狳总是有长鼻子。', tag: '-z Unchanged' },
+              { fr: 'Les écureuils adorent les noix. Joe-Bob mange au moins une noix par jour.', en: 'Squirrels adore nuts. Joe-Bob eats at least one nut every day.', zh: '松鼠超爱坚果。Joe-Bob 每天至少吃一颗坚果。', tag: '-x Unchanged' },
+              { fr: 'Les chats mangent des souris. Est-ce que Bette a jamais mangé une souris ?', en: 'Cats eat mice. Has Bette ever eaten a mouse?', zh: '猫吃老鼠。Bette 吃过一只老鼠吗？', tag: '-s Unchanged' }
             ]
           }
         ],

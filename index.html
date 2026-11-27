@@ -139,6 +139,57 @@
       border-color: var(--primary) !important;
       background-color: color-mix(in srgb, var(--primary) 12%, transparent) !important;
     }
+
+    /* Collapsible desktop sidebar */
+    @media (min-width: 1024px) {
+      html.sidebar-collapsed #sidebar {
+        display: none;
+      }
+    }
+
+    /* Lesson typography scaling (default: large / comfortable reading) */
+    :root {
+      --lesson-h3: 1.25rem;
+      --lesson-h3-zh: 0.94rem;
+      --lesson-lead: 1.05rem;
+      --lesson-lead-zh: 0.98rem;
+      --lesson-fr: 1.22rem;
+      --lesson-sub: 0.92rem;
+      --lesson-table: 0.95rem;
+      --lesson-dlg-fr: 1.08rem;
+      --lesson-qc: 0.96rem;
+    }
+    html.font-scale-normal {
+      --lesson-h3: 1.1rem;
+      --lesson-h3-zh: 0.82rem;
+      --lesson-lead: 0.9375rem;
+      --lesson-lead-zh: 0.875rem;
+      --lesson-fr: 1.05rem;
+      --lesson-sub: 0.8125rem;
+      --lesson-table: 0.85rem;
+      --lesson-dlg-fr: 0.95rem;
+      --lesson-qc: 0.85rem;
+    }
+    html.font-scale-xlarge {
+      --lesson-h3: 1.4rem;
+      --lesson-h3-zh: 1.04rem;
+      --lesson-lead: 1.18rem;
+      --lesson-lead-zh: 1.1rem;
+      --lesson-fr: 1.4rem;
+      --lesson-sub: 1.04rem;
+      --lesson-table: 1.06rem;
+      --lesson-dlg-fr: 1.22rem;
+      --lesson-qc: 1.08rem;
+    }
+    .deep-h3 { font-size: var(--lesson-h3); line-height: 1.35; }
+    .deep-h3-zh { font-size: var(--lesson-h3-zh); line-height: 1.45; }
+    .deep-lead { font-size: var(--lesson-lead); line-height: 1.72; }
+    .deep-lead-zh { font-size: var(--lesson-lead-zh); line-height: 1.72; }
+    .deep-fr { font-size: var(--lesson-fr); line-height: 1.35; }
+    .deep-sub { font-size: var(--lesson-sub); line-height: 1.55; }
+    .deep-table { font-size: var(--lesson-table); line-height: 1.5; }
+    .deep-dlg-fr { font-size: var(--lesson-dlg-fr); line-height: 1.5; }
+    .deep-qc { font-size: var(--lesson-qc); line-height: 1.5; }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -165,7 +216,7 @@
               <span class="px-1.5 py-0.5 rounded-md tint-primary text-[var(--primary)] text-[10px] font-bold shrink-0">CLB 7</span>
             </div>
           </div>
-          <button id="btnCloseSidebar" type="button" class="lg:hidden p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] cursor-pointer" aria-label="Close sidebar">✕</button>
+          <button id="btnCloseSidebar" type="button" class="p-1.5 rounded-lg tint-muted-hover text-[var(--muted-foreground)] cursor-pointer text-xs font-bold" aria-label="Collapse sidebar" title="Collapse sidebar">✕</button>
         </div>
 
         <div class="mt-3 space-y-1.5">
@@ -213,10 +264,10 @@
     <div class="flex-1 flex flex-col min-w-0">
       <!-- Calm Sticky Top Bar -->
       <header class="sticky top-0 z-30 bg-[var(--background)]/92 backdrop-blur-md border-b border-[var(--border)]">
-        <div class="w-full max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
-          <!-- Left: Mobile Menu + Active View Title + Live Audio Pill -->
+        <div class="w-full max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
+          <!-- Left: Sidebar Toggle + Active View Title + Live Audio Pill -->
           <div class="flex items-center gap-2.5 min-w-0">
-            <button id="btnOpenSidebar" type="button" class="lg:hidden px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer shrink-0" aria-label="Open menu">☰</button>
+            <button id="btnOpenSidebar" type="button" class="px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer shrink-0 tint-muted-hover" aria-label="Toggle navigation sidebar" title="Show / Hide sidebar">☰</button>
 
             <span id="topbarViewTitle" class="text-sm font-semibold text-[var(--foreground)] truncate">Today &amp; Plan</span>
 
@@ -235,11 +286,17 @@
             </button>
           </div>
 
-          <!-- Right: 3 Clean Controls (Language + Audio Popover + Theme) -->
+          <!-- Right: 4 Clean Controls (Language + Font Size + Audio Popover + Theme) -->
           <div class="flex items-center gap-2 shrink-0">
             <button id="btnToggleZh" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer" title="Toggle Mandarin Chinese contrastive explanations & glosses">
               EN + 中文
             </button>
+
+            <div class="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] overflow-hidden" role="group" aria-label="Reading text size">
+              <button id="btnFontDec" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="Smaller reading text">A-</button>
+              <span id="fontScaleLabel" class="px-1.5 text-[11px] font-bold text-[var(--primary)] border-x border-[var(--border)] select-none">大</span>
+              <button id="btnFontInc" type="button" class="px-2 py-1.5 text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer disabled:opacity-35" title="Larger reading text">A+</button>
+            </div>
 
             <div id="audioPopoverWrap" class="relative">
               <button id="btnAudioPopover" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] tint-muted-hover flex items-center gap-1.5 cursor-pointer" title="Speed, voice & audio settings">
@@ -292,7 +349,7 @@
           </div>
         </div>
 
-        <div id="speechWarning" class="hidden w-full max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-2">
+        <div id="speechWarning" class="hidden w-full max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 pb-2">
           <div class="p-2 rounded-lg tint-warning border border-warning-soft text-xs text-[var(--foreground)] flex items-center justify-between gap-2">
             <span id="speechWarningText"></span>
             <button type="button" id="btnDismissSpeechWarn" class="font-bold cursor-pointer px-1">✕</button>
@@ -301,7 +358,7 @@
       </header>
 
       <!-- Main Dynamic Content -->
-      <main id="mainContent" class="flex-1 w-full max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"></main>
+      <main id="mainContent" class="flex-1 w-full max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"></main>
     </div>
   </div>
 
@@ -2532,6 +2589,8 @@
         examTab: normalizedInitExamTab, // 'mock' | 'output' | 'coach'
         activeChapterId: persisted.activeChapterId || 'a1_1',
         sidebarLevelFilter: 'all',
+        sidebarCollapsed: Boolean(persisted.sidebarCollapsed),
+        fontScale: ['normal', 'large', 'xlarge'].includes(persisted.fontScale) ? persisted.fontScale : 'large',
         showZh: persisted.showZh !== undefined ? persisted.showZh : true,
         speed: persisted.speed || 0.88,
         xp: persisted.xp || 0,
@@ -2699,6 +2758,8 @@
           activeGrammarId: state.activeGrammarId,
           activeVocabLessonId: state.activeVocabLessonId,
           showZh: state.showZh,
+          sidebarCollapsed: state.sidebarCollapsed,
+          fontScale: state.fontScale,
           speed: state.speed,
           xp: state.xp,
           studyDays: state.studyDays,
@@ -2843,6 +2904,9 @@
         globalWaveText: document.getElementById('globalWaveText'),
         btnGlobalStop: document.getElementById('btnGlobalStop'),
         btnToggleZh: document.getElementById('btnToggleZh'),
+        btnFontDec: document.getElementById('btnFontDec'),
+        btnFontInc: document.getElementById('btnFontInc'),
+        fontScaleLabel: document.getElementById('fontScaleLabel'),
         audioPopoverWrap: document.getElementById('audioPopoverWrap'),
         btnAudioPopover: document.getElementById('btnAudioPopover'),
         audioPopoverPanel: document.getElementById('audioPopoverPanel'),
@@ -3809,7 +3873,32 @@
           : 'px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] cursor-pointer';
         els.btnToggleZh.textContent = state.showZh ? 'EN + 中文' : 'EN Only';
 
+        applySidebarCollapse();
+        applyFontScale();
         renderAbbrPopover();
+      }
+
+      function applySidebarCollapse() {
+        document.documentElement.classList.toggle('sidebar-collapsed', Boolean(state.sidebarCollapsed));
+        if (els.btnOpenSidebar) {
+          els.btnOpenSidebar.setAttribute('aria-expanded', String(!state.sidebarCollapsed));
+          els.btnOpenSidebar.className = state.sidebarCollapsed
+            ? 'px-2.5 py-1.5 rounded-lg border border-primary-soft tint-primary text-[var(--primary)] text-xs font-semibold cursor-pointer shrink-0'
+            : 'px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] text-xs font-semibold cursor-pointer shrink-0 tint-muted-hover';
+        }
+      }
+
+      function applyFontScale() {
+        const sc = ['normal', 'large', 'xlarge'].includes(state.fontScale) ? state.fontScale : 'large';
+        state.fontScale = sc;
+        document.documentElement.classList.remove('font-scale-normal', 'font-scale-large', 'font-scale-xlarge');
+        document.documentElement.classList.add(`font-scale-${sc}`);
+        const labels = state.showZh
+          ? { normal: '标', large: '大', xlarge: '特' }
+          : { normal: 'S', large: 'M', xlarge: 'L' };
+        if (els.fontScaleLabel) els.fontScaleLabel.textContent = labels[sc];
+        if (els.btnFontDec) els.btnFontDec.disabled = (sc === 'normal');
+        if (els.btnFontInc) els.btnFontInc.disabled = (sc === 'xlarge');
       }
 
       const WORKSPACES = [
@@ -7649,19 +7738,19 @@
           const sectionsHTML = sections.map((sec) => {
             const tableHTML = sec.table ? `
               <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
-                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                <table class="w-full text-left border-collapse deep-table">
                   <thead>
-                    <tr class="bg-[var(--content)] border-b border-[var(--border)] text-[11px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
-                      ${(sec.table.headers || []).map((h) => `<th class="px-3 py-2">${esc(h)}</th>`).join('')}
-                      <th class="px-2 py-2 text-right">🔊</th>
+                    <tr class="bg-[var(--content)] border-b border-[var(--border)] text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+                      ${(sec.table.headers || []).map((h) => `<th class="px-3.5 py-2.5">${esc(h)}</th>`).join('')}
+                      <th class="px-2.5 py-2.5 text-right">🔊</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-[var(--border)]">
                     ${(sec.table.rows || []).map((r) => `
                       <tr class="bg-[var(--card)]">
-                        ${(r.cols || []).map((c, ci) => `<td class="px-3 py-2.5 ${ci === 0 ? 'font-bold text-[var(--primary)] whitespace-nowrap' : 'text-[var(--foreground)]'}">${esc(c)}</td>`).join('')}
-                        <td class="px-2 py-2.5 text-right">
-                          ${r.audio ? `<button type="button" data-speak="${escAttr(r.audio)}" class="speak-btn px-2 py-1 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs cursor-pointer">🔊</button>` : ''}
+                        ${(r.cols || []).map((c, ci) => `<td class="px-3.5 py-3 ${ci === 0 ? 'font-bold text-[var(--primary)] whitespace-nowrap' : 'text-[var(--foreground)]'}">${esc(c)}</td>`).join('')}
+                        <td class="px-2.5 py-3 text-right">
+                          ${r.audio ? `<button type="button" data-speak="${escAttr(r.audio)}" class="speak-btn px-2.5 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs cursor-pointer tint-muted-hover">🔊</button>` : ''}
                         </td>
                       </tr>
                     `).join('')}
@@ -7671,36 +7760,36 @@
             ` : '';
 
             const examplesHTML = (sec.examples && sec.examples.length) ? `
-              <div class="space-y-2">
+              <div class="space-y-2.5">
                 ${sec.examples.map((ex) => `
-                  <div class="p-3 rounded-xl bg-[var(--content)] border border-[var(--border)] flex items-start justify-between gap-3">
-                    <div class="space-y-0.5 min-w-0">
+                  <div class="p-3.5 sm:p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] flex items-start justify-between gap-3">
+                    <div class="space-y-1 min-w-0">
                       <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-sm sm:text-base font-bold text-[var(--foreground)]">${esc(ex.fr)}</span>
-                        ${ex.tag ? `<span class="px-2 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[10px] font-bold">${esc(ex.tag)}</span>` : ''}
+                        <span class="deep-fr font-bold text-[var(--foreground)]">${esc(ex.fr)}</span>
+                        ${ex.tag ? `<span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">${esc(ex.tag)}</span>` : ''}
                       </div>
-                      <div class="text-xs text-[var(--muted-foreground)]">${esc(ex.en)}</div>
-                      ${state.showZh && ex.zh ? `<div class="text-xs text-[var(--primary)]">${esc(ex.zh)}</div>` : ''}
+                      <div class="deep-sub text-[var(--muted-foreground)]">${esc(ex.en)}</div>
+                      ${state.showZh && ex.zh ? `<div class="deep-sub text-[var(--primary)]">${esc(ex.zh)}</div>` : ''}
                     </div>
-                    <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn shrink-0 px-2.5 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold cursor-pointer tint-muted-hover">🔊</button>
+                    <button type="button" data-speak="${escAttr(ex.fr)}" class="speak-btn shrink-0 px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm font-semibold cursor-pointer tint-muted-hover">🔊</button>
                   </div>
                 `).join('')}
               </div>
             ` : '';
 
             const dialogueHTML = sec.dialogue ? `
-              <div class="p-4 rounded-2xl bg-[var(--content)] border border-[var(--border)] space-y-3">
+              <div class="p-4 sm:p-5 rounded-2xl bg-[var(--content)] border border-[var(--border)] space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <div class="text-sm font-bold text-[var(--foreground)]">💬 ${esc(sec.dialogue.title)}</div>
-                    ${state.showZh && sec.dialogue.titleZh ? `<div class="text-xs text-[var(--primary)]">${esc(sec.dialogue.titleZh)}</div>` : ''}
-                    ${sec.dialogue.legend ? `<div class="text-[11px] font-semibold text-[var(--muted-foreground)] mt-0.5">${esc(sec.dialogue.legend)}</div>` : ''}
+                    <div class="deep-lead font-bold text-[var(--foreground)]">💬 ${esc(sec.dialogue.title)}</div>
+                    ${state.showZh && sec.dialogue.titleZh ? `<div class="deep-sub text-[var(--primary)]">${esc(sec.dialogue.titleZh)}</div>` : ''}
+                    ${sec.dialogue.legend ? `<div class="text-xs font-semibold text-[var(--muted-foreground)] mt-0.5">${esc(sec.dialogue.legend)}</div>` : ''}
                   </div>
-                  <button type="button" data-deep-play-dlg="${sec.id}" class="px-3 py-1.5 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                  <button type="button" data-deep-play-dlg="${sec.id}" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
                     ▶ Play Dialogue
                   </button>
                 </div>
-                <div class="space-y-2">
+                <div class="space-y-2.5">
                   ${(sec.dialogue.lines || []).map((ln) => {
                     const frHTML = Array.isArray(ln.tokens)
                       ? ln.tokens.map((tk) => {
@@ -7710,16 +7799,16 @@
                         }).join('')
                       : esc(ln.fr);
                     return `
-                      <div class="p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-start justify-between gap-3">
+                      <div class="p-3.5 rounded-xl bg-[var(--card)] border border-[var(--border)] flex items-start justify-between gap-3">
                         <div class="space-y-1 min-w-0">
-                          <div class="text-sm text-[var(--foreground)]">
-                            <span class="font-bold text-[var(--primary)] mr-1">${esc(ln.speaker)}:</span>
+                          <div class="deep-dlg-fr text-[var(--foreground)]">
+                            <span class="font-bold text-[var(--primary)] mr-1.5">${esc(ln.speaker)}:</span>
                             <span>${frHTML}</span>
                           </div>
-                          <div class="text-xs text-[var(--muted-foreground)]">${esc(ln.en)}</div>
-                          ${state.showZh && ln.zh ? `<div class="text-xs text-[var(--primary)]">${esc(ln.zh)}</div>` : ''}
+                          <div class="deep-sub text-[var(--muted-foreground)]">${esc(ln.en)}</div>
+                          ${state.showZh && ln.zh ? `<div class="deep-sub text-[var(--primary)]">${esc(ln.zh)}</div>` : ''}
                         </div>
-                        <button type="button" data-speak="${escAttr(ln.fr)}" class="speak-btn shrink-0 px-2.5 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold cursor-pointer">🔊</button>
+                        <button type="button" data-speak="${escAttr(ln.fr)}" class="speak-btn shrink-0 px-3 py-1.5 rounded-xl bg-[var(--content)] border border-[var(--border)] text-sm font-semibold cursor-pointer">🔊</button>
                       </div>
                     `;
                   }).join('')}
@@ -7731,11 +7820,11 @@
             const qcChosen = state.deepQuickChecks[qcKey];
             const qcAnswered = qcChosen !== undefined && qcChosen !== null;
             const qcHTML = sec.quickCheck ? `
-              <div class="p-3.5 rounded-xl tint-primary border border-primary-soft space-y-2.5">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">✓ Quick Check (Tap to Verify)</div>
-                <div class="text-xs sm:text-sm font-bold text-[var(--foreground)]">${esc(sec.quickCheck.prompt)}</div>
-                ${state.showZh && sec.quickCheck.promptZh ? `<div class="text-xs text-[var(--primary)]">${esc(sec.quickCheck.promptZh)}</div>` : ''}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="p-4 rounded-xl tint-primary border border-primary-soft space-y-3">
+                <div class="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">✓ Quick Check (Tap to Verify)</div>
+                <div class="deep-qc font-bold text-[var(--foreground)]">${esc(sec.quickCheck.prompt)}</div>
+                ${state.showZh && sec.quickCheck.promptZh ? `<div class="deep-sub text-[var(--primary)]">${esc(sec.quickCheck.promptZh)}</div>` : ''}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   ${sec.quickCheck.options.map((opt, oi) => {
                     let cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover';
                     if (qcAnswered) {
@@ -7743,11 +7832,11 @@
                       else if (oi === qcChosen) cls = 'tint-error border-error-soft text-[var(--error)]';
                       else cls = 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] opacity-60';
                     }
-                    return `<button type="button" data-deep-qc="${qcKey}" data-qc-opt="${oi}" class="text-left px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition ${cls}">${esc(opt)}</button>`;
+                    return `<button type="button" data-deep-qc="${qcKey}" data-qc-opt="${oi}" class="text-left px-3.5 py-2.5 rounded-xl border deep-sub font-semibold cursor-pointer transition ${cls}">${esc(opt)}</button>`;
                   }).join('')}
                 </div>
                 ${qcAnswered ? `
-                  <div class="text-xs pt-1 space-y-0.5">
+                  <div class="deep-sub pt-1 space-y-0.5">
                     <div class="font-bold ${qcChosen === sec.quickCheck.answerIdx ? 'text-[var(--success)]' : 'text-[var(--warning)]'}">
                       ${qcChosen === sec.quickCheck.answerIdx ? '✓ Correct!' : 'Not quite —'} ${esc(sec.quickCheck.explain)}
                     </div>
@@ -7758,33 +7847,41 @@
             ` : '';
 
             const cartoonHTML = (sec.cartoon && sec.cartoon.src) ? `
-              <figure class="shrink-0 mx-auto sm:mx-0 max-w-[260px] rounded-2xl bg-white p-2.5 border border-[var(--border)] shadow-sm text-center space-y-1.5">
-                <img src="${escAttr(sec.cartoon.src)}" alt="${escAttr(sec.cartoon.alt || sec.cartoon.caption || '')}" loading="lazy" class="mx-auto max-h-[190px] w-auto rounded-lg object-contain" />
-                ${sec.cartoon.caption ? `<figcaption class="text-[11px] font-semibold text-slate-700 leading-snug">${esc(sec.cartoon.caption)}${state.showZh && sec.cartoon.captionZh ? `<div class="text-[10px] text-indigo-600 mt-0.5">${esc(sec.cartoon.captionZh)}</div>` : ''}</figcaption>` : ''}
+              <figure class="shrink-0 mx-auto sm:mx-0 w-full sm:w-[250px] md:w-[270px] rounded-2xl bg-white p-3 border border-[var(--border)] shadow-sm text-center space-y-1.5">
+                <img src="${escAttr(sec.cartoon.src)}" alt="${escAttr(sec.cartoon.alt || sec.cartoon.caption || '')}" loading="lazy" class="mx-auto max-h-[195px] w-auto rounded-lg object-contain" />
+                ${sec.cartoon.caption ? `<figcaption class="text-xs font-semibold text-slate-700 leading-snug">${esc(sec.cartoon.caption)}${state.showZh && sec.cartoon.captionZh ? `<div class="text-[11px] text-indigo-600 mt-0.5">${esc(sec.cartoon.captionZh)}</div>` : ''}</figcaption>` : ''}
               </figure>
             ` : '';
 
+            const secHeaderAndLeadHTML = `
+              <div class="space-y-3">
+                <div class="space-y-1">
+                  <h3 class="deep-h3 font-bold text-[var(--foreground)]">${esc(sec.heading)}</h3>
+                  ${state.showZh && sec.headingZh ? `<div class="deep-h3-zh font-semibold text-[var(--primary)]">${esc(sec.headingZh)}</div>` : ''}
+                </div>
+                <div class="space-y-2">
+                  <p class="deep-lead text-[var(--foreground)]">${esc(sec.lead)}</p>
+                  ${state.showZh && sec.leadZh ? `<p class="deep-lead-zh text-[var(--muted-foreground)]">${esc(sec.leadZh)}</p>` : ''}
+                </div>
+                ${sec.tip ? `
+                  <div class="p-3.5 rounded-xl tint-warning border border-warning-soft deep-sub space-y-1">
+                    <div class="font-bold text-[var(--foreground)]">💡 Tip: ${esc(sec.tip)}</div>
+                    ${state.showZh && sec.tipZh ? `<div class="text-[var(--muted-foreground)]">${esc(sec.tipZh)}</div>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+
             return `
               <section id="deep-sec-${sec.id}" class="studio-card p-5 sm:p-6 space-y-4">
-                <div class="space-y-1">
-                  <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(sec.heading)}</h3>
-                  ${state.showZh && sec.headingZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(sec.headingZh)}</div>` : ''}
-                </div>
-                <div class="${cartoonHTML ? 'flex flex-col sm:flex-row sm:items-start gap-4' : 'space-y-3'}">
-                  <div class="flex-1 min-w-0 space-y-3">
-                    <div class="space-y-1">
-                      <p class="text-sm text-[var(--foreground)] leading-relaxed">${esc(sec.lead)}</p>
-                      ${state.showZh && sec.leadZh ? `<p class="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed">${esc(sec.leadZh)}</p>` : ''}
+                ${cartoonHTML ? `
+                  <div class="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
+                    <div class="flex-1 min-w-0">
+                      ${secHeaderAndLeadHTML}
                     </div>
-                    ${sec.tip ? `
-                      <div class="p-3 rounded-xl tint-warning border border-warning-soft text-xs space-y-0.5">
-                        <div class="font-bold text-[var(--foreground)]">💡 Tip: ${esc(sec.tip)}</div>
-                        ${state.showZh && sec.tipZh ? `<div class="text-[var(--muted-foreground)]">${esc(sec.tipZh)}</div>` : ''}
-                      </div>
-                    ` : ''}
+                    ${cartoonHTML}
                   </div>
-                  ${cartoonHTML}
-                </div>
+                ` : secHeaderAndLeadHTML}
                 ${tableHTML}
                 ${examplesHTML}
                 ${dialogueHTML}
@@ -10864,9 +10961,47 @@
       /* =========================================================
          17. GLOBAL EVENTS & BOOTSTRAP
       ========================================================= */
-      els.btnOpenSidebar.onclick = openMobileSidebar;
-      els.btnCloseSidebar.onclick = closeMobileSidebar;
+      els.btnOpenSidebar.onclick = () => {
+        if (window.innerWidth >= 1024) {
+          state.sidebarCollapsed = !state.sidebarCollapsed;
+          applySidebarCollapse();
+          saveState();
+        } else {
+          openMobileSidebar();
+        }
+      };
+      els.btnCloseSidebar.onclick = () => {
+        if (window.innerWidth >= 1024) {
+          state.sidebarCollapsed = true;
+          applySidebarCollapse();
+          saveState();
+        } else {
+          closeMobileSidebar();
+        }
+      };
       els.mobileBackdrop.onclick = closeMobileSidebar;
+      if (els.btnFontDec) {
+        els.btnFontDec.onclick = () => {
+          const order = ['normal', 'large', 'xlarge'];
+          const idx = order.indexOf(state.fontScale);
+          if (idx > 0) {
+            state.fontScale = order[idx - 1];
+            applyFontScale();
+            saveState();
+          }
+        };
+      }
+      if (els.btnFontInc) {
+        els.btnFontInc.onclick = () => {
+          const order = ['normal', 'large', 'xlarge'];
+          const idx = order.indexOf(state.fontScale);
+          if (idx < order.length - 1) {
+            state.fontScale = order[idx + 1];
+            applyFontScale();
+            saveState();
+          }
+        };
+      }
       els.btnGlobalStop.onclick = stopAudio;
       els.btnDismissSpeechWarn.onclick = () => els.speechWarning.classList.add('hidden');
 
