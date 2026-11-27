@@ -182,24 +182,43 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     existingTopicIds: ['a1_possessives_places', 'a2_time_depuis_pendant', 'connectors_prep_gerondif']
   },
   {
-    id: 'pronouns',
-    code: '08',
-    cefr: 'A1–B2',
-    texPageCount: 15,
+    id: 'pronouns_a',
+    code: '08A',
+    cefr: 'A1–B1',
+    texPageCount: 9,
     icon: '👤',
-    title: 'Pronouns (Les Pronoms)',
-    titleZh: '第八章 · 代词体系（主语、c’est/il est、重读、直宾、间宾、y/en、关系与指示）',
-    desc: 'Subject pronouns, c’est vs. il/elle est, disjunctive/tonic, direct (COD) & indirect (COI) objects, y & en, pronoun order, relative (qui/que/dont/lequel) & possessive.',
-    descZh: '按 Tex 渐进顺序：主语代词 → c’est vs il/elle est → 重读代词 → COD/COI → y / en → 关系代词与指示/物主代词（15 页原站体系）。',
+    title: 'Pronouns I: Subject, Tonic & Object Pronouns',
+    titleZh: '第八章 A · 核心人称与宾语代词（主语、c’est/il est、重读、COD/COI、y/en 与双宾语序）',
+    desc: 'Tex pro1–pro9 (11 bite-sized pages): antecedents, subject pronouns, c’est vs. il/elle est, tonic/disjunctive, COD + past participle agreement, y, en, COI & double object pronoun order in statements & imperatives.',
+    descZh: '对标 Tex 原版 pro1–pro9（11 小页）：先行词总览、主语代词与物品分性、c’est vs il/elle est、重读代词、直宾 COD 与复合过去时配合、地方代词 y、数量/de 代词 en、间宾 COI 与双宾语代词五槽语序。',
+    status: 'deep',
+    deepChapterId: 'ch8a_pronouns_personal',
+    plannedTopics: [
+      '8A.1–8A.3 Intro, Subject Pronouns & c’est vs. il/elle est',
+      '8A.4–8A.6 Tonic Pronouns & COD (+ Passé Composé Agreement)',
+      '8A.7–8A.9 Adverbial Y & EN + Indirect Object (COI)',
+      '8A.10–8A.11 Double Pronoun Order & Imperative Flip'
+    ],
+    existingTopicIds: ['a1_subject_etre_avoir', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives']
+  },
+  {
+    id: 'pronouns_b',
+    code: '08B',
+    cefr: 'A2–B2',
+    texPageCount: 6,
+    icon: '🎯',
+    title: 'Pronouns II: Relative, Demonstrative, Possessive & Indefinite',
+    titleZh: '第八章 B · 进阶代词（关系代词 qui/que/dont/où/lequel、指示、物主与不定代词）',
+    desc: 'Tex pro10–pro12 & pror1–pror3: indefinite (quelqu’un, chacun), demonstrative (celui-ci/celui de), possessive (le mien/la tienne), and relative clauses (qui, que, ce qui/ce que, dont, où, lequel).',
+    descZh: '对标 Tex 原版 pro10–pro12 与 pror1–pror3：不定代词、指示代词（celui 系列）、物主代词（le mien 系列），以及 TCF B2 核心长难句关系代词（qui/que/ce qui/ce que/dont/où/lequel）。',
     status: 'existing',
     plannedTopics: [
-      'Subject Pronouns & c’est vs. il/elle est',
-      'Disjunctive / Tonic Pronouns (moi, toi, lui...)',
-      'Direct Object (le, la, les) & Indirect Object (lui, leur)',
-      'Adverbial Pronouns Y & EN + Pronoun Order',
-      'Relative (qui, que, où, dont), Demonstrative & Possessive Pronouns'
+      'Indefinite Pronouns (pro10)',
+      'Demonstrative Pronouns celui / celle / ceux (pro11)',
+      'Possessive Pronouns le mien / le vôtre (pro12)',
+      'Relative Pronouns: qui/que, ce qui/ce que, dont/où/lequel (pror1–pror3)'
     ],
-    existingTopicIds: ['a1_subject_etre_avoir', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives', 'a2_adverbs_dem_poss_pronouns', 'advanced_pronouns']
+    existingTopicIds: ['a2_adverbs_dem_poss_pronouns', 'advanced_pronouns']
   },
   {
     id: 'conjunctions',
