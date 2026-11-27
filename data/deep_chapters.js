@@ -268,14 +268,16 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     texPageCount: 9,
     icon: '🚀',
     title: 'Tense & Mood II: Plus-que-parfait, Future, Passé Simple & Imperative',
-    titleZh: '第十章 B · 愈过去时、将来时体系（近将来/简单将来/先将来）、简单过去时与命令式',
-    desc: 'Tex tap9–11, taf1–5, tai1: plus-que-parfait ("had done"), passé simple & passé antérieur (reading/literary), futur proche, futur simple (regular & irregular stems) + futur antérieur, and imperative mood.',
-    descZh: '对标 Tex tap9–11, taf1–5, tai1：愈过去时、书面文学时态（简单过去/先过去）、近将来时、简单将来时与先将来时，以及命令式。',
-    status: 'existing',
+    titleZh: '第十章 B · 愈过去时、将来时全家族、文学过去时与命令式',
+    desc: 'Tex tap9–11, taf1–5, tai1 (9 bite-sized pages): plus-que-parfait ("had done"), passé simple & passé antérieur literary recognition (Cendrillon story!), futur proche & imparfait "was going to", regular & 17 irregular futur simple stems, futur proche vs. futur simple + mandatory future after quand/dès que, futur antérieur, and imperative mood.',
+    descZh: '对标 Tex tap9–11, taf1–5, tai1（9 小页）：愈过去时、简单过去/先过去时识别、近将来时、规则与不规则简单将来时（含 quand/dès que 从句必用将来时）、先将来时与命令式。',
+    status: 'deep',
+    deepChapterId: 'ch10b_tenses_future_imp',
     plannedTopics: [
-      'Plus-que-parfait & Passé Simple / Antérieur',
-      'Futur Proche, Futur Simple & Futur Antérieur',
-      'Imperative Mood (Affirmative & Negative)'
+      '10B.1–10B.3 Plus-que-parfait, Passé Simple & Passé Antérieur',
+      '10B.4–10B.6 Futur Proche & Futur Simple (Regular + 17 Irregular Stems)',
+      '10B.7–10B.8 Futur Proche vs. Futur Simple (+ quand/dès que) & Futur Antérieur',
+      '10B.9 The Imperative Mood (Affirmative, Negative & Pronouns)'
     ],
     existingTopicIds: ['a1_near_future_recent_past', 'a1_imperative', 'a2_futur_simple', 'plus_que_parfait']
   },
