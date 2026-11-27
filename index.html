@@ -190,16 +190,19 @@
       </nav>
 
       <!-- Minimal Footer -->
-      <div class="px-3.5 py-2.5 border-t border-[var(--border)] flex items-center justify-between gap-2 text-xs text-[var(--muted-foreground)]">
-        <span id="streakDisplay" class="font-semibold tabular-nums">🔥 0 XP</span>
-        <details id="sidebarDataMenu" class="sidebar-data-menu relative">
-          <summary class="px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer select-none">⋯ Data</summary>
-          <div class="audio-popover absolute bottom-full right-0 mb-2 w-40 p-1.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] z-50 flex flex-col gap-0.5">
-            <button id="btnExportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Download local progress backup (.json)">Export Backup</button>
-            <button id="btnImportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Restore progress from backup (.json)">Import Backup</button>
-            <button id="btnResetProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--error)] cursor-pointer" title="Reset saved local progress">Reset Progress</button>
-          </div>
-        </details>
+      <div class="px-3.5 py-2.5 border-t border-[var(--border)] flex items-center justify-between gap-1.5 text-xs text-[var(--muted-foreground)]">
+        <span id="streakDisplay" class="font-semibold tabular-nums truncate">🔥 0 XP</span>
+        <div class="flex items-center gap-1 shrink-0">
+          <button id="btnOpenLegacy" type="button" class="px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer text-[11px] opacity-75 hover:opacity-100 transition border border-transparent" title="旧版课程归档 (Legacy TCF Courses, Units, Vocab &amp; Notes)">🗂️ 旧版</button>
+          <details id="sidebarDataMenu" class="sidebar-data-menu relative">
+            <summary class="px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer select-none">⋯ Data</summary>
+            <div class="audio-popover absolute bottom-full right-0 mb-2 w-40 p-1.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] z-50 flex flex-col gap-0.5">
+              <button id="btnExportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Download local progress backup (.json)">Export Backup</button>
+              <button id="btnImportProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--foreground)] cursor-pointer" title="Restore progress from backup (.json)">Import Backup</button>
+              <button id="btnResetProgress" type="button" class="w-full text-left px-2.5 py-1.5 rounded-lg tint-muted-hover text-xs text-[var(--error)] cursor-pointer" title="Reset saved local progress">Reset Progress</button>
+            </div>
+          </details>
+        </div>
         <input id="importProgressFile" type="file" accept=".json" class="hidden" />
       </div>
     </aside>
@@ -2517,6 +2520,8 @@
         deepProgress: (persisted.deepProgress && typeof persisted.deepProgress === 'object') ? persisted.deepProgress : {},
         deepQuickChecks: {},
         deepDrillState: {},
+        legacyLevel: 'A1',
+        legacyTab: 'courses', // 'courses' | 'units' | 'vocab' | 'notes'
         practiceTab: normalizedInitPracticeTab, // 'mistakes' | 'srs' | 'quizzes' | 'conjugation' | 'cloze' | 'gender' | 'dictation' | 'fauxamis'
         examTab: normalizedInitExamTab, // 'mock' | 'output' | 'coach'
         activeChapterId: persisted.activeChapterId || 'a1_1',
@@ -2822,6 +2827,7 @@
         sidebarChaptersStat: document.getElementById('sidebarChaptersStat'),
         sidebarVocabStat: document.getElementById('sidebarVocabStat'),
         streakDisplay: document.getElementById('streakDisplay'),
+        btnOpenLegacy: document.getElementById('btnOpenLegacy'),
         btnExportProgress: document.getElementById('btnExportProgress'),
         btnImportProgress: document.getElementById('btnImportProgress'),
         importProgressFile: document.getElementById('importProgressFile'),
@@ -2960,16 +2966,22 @@
       }
 
       function rerenderActiveTopicView() {
-        if (state.activeView === 'course') renderCourseView();
+        if (state.activeView === 'legacy') renderLegacyView();
+        else if (state.activeView === 'course') renderCourseView();
         else renderPracticeView();
       }
 
       function openTopicQuiz(topicId, phase = 'learn', targetView) {
-        const dest = targetView || (phase === 'quiz' ? 'practice' : 'course');
+        const dest = targetView || (phase === 'quiz' ? 'practice' : 'legacy');
         const topic = GRAMMAR_QUIZZES.find((t) => t.id === topicId);
         if (topic && ['A1', 'A2', 'B1', 'B2'].includes(topic.level)) {
-          state.courseLevel = topic.level;
+          state.legacyLevel = topic.level;
         }
+        stopAudio();
+        clearTimers();
+        if (typeof stopVoiceRecording === 'function') stopVoiceRecording();
+        state.activeDeepChapterId = null;
+        state.activeDeepPageId = null;
         state.activeTopicQuizId = topicId || null;
         state.topicQuizPhase = phase || 'learn';
         state.topicLessonStep = 0;
@@ -2978,13 +2990,18 @@
         state.topicQuizFinished = false;
         state.topicQuizRetrySubset = null;
         state.topicQuizTypedVal = '';
+        state.topicQuizBlankVals = [];
         if (dest === 'practice') {
+          state.activeView = 'practice';
           state.practiceTab = 'quizzes';
           state.drillMode = 'topics';
-          navigate('ws', 'practice');
         } else {
-          navigate('ws', 'course');
+          state.activeView = dest === 'course' ? 'course' : 'legacy';
         }
+        saveState();
+        renderSidebar();
+        renderMain();
+        if (typeof window.scrollTo === 'function') window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       function countMasteredVocab() {
@@ -3800,33 +3817,30 @@
       ];
 
       function renderSidebar() {
-        const chDone = state.completedChapters.length;
-        const gDone = state.completedGrammar.length;
-        const gTotal = Math.max(1, GRAMMAR_SYLLABUS.length);
-        const vlDone = state.completedVocabLessons.length;
-        const vlTotal = Math.max(1, VOCAB_SYLLABUS.length);
         const vDone = countMasteredVocab();
         const dueCount = countDueVocab();
         const deepDone = getTotalDeepPagesDoneCount();
         const deepTotal = getTotalDeepPagesCount();
         const readiness = Math.min(
           100,
-          Math.round(((deepDone / Math.max(1, deepTotal)) * 30) + ((gDone / gTotal) * 15) + ((vlDone / vlTotal) * 15) + ((chDone / CHAPTERS.length) * 20) + ((vDone / Math.max(1, ALL_VOCAB.length)) * 20))
+          Math.round(((deepDone / Math.max(1, deepTotal)) * 75) + ((vDone / Math.max(1, ALL_VOCAB.length)) * 25))
         );
 
         if (els.sidebarProgressText) els.sidebarProgressText.textContent = `${readiness}%`;
         if (els.sidebarProgressBar) els.sidebarProgressBar.style.width = `${readiness}%`;
-        if (els.sidebarChaptersStat) els.sidebarChaptersStat.textContent = `${deepDone}/${deepTotal} Tex pages · ${vlDone}/${VOCAB_SYLLABUS.length} voc`;
-        if (els.sidebarVocabStat) els.sidebarVocabStat.textContent = `${chDone}/${CHAPTERS.length} units`;
+        if (els.sidebarChaptersStat) els.sidebarChaptersStat.textContent = `${deepDone}/${deepTotal} Tex pages`;
+        if (els.sidebarVocabStat) els.sidebarVocabStat.textContent = `${DEEP_CHAPTERS.length} chapters live`;
 
         if (els.topbarViewTitle) {
-          if (state.activeView === 'chapter') {
+          if (state.activeView === 'legacy') {
+            els.topbarViewTitle.textContent = '旧版归档 · Legacy Archive';
+          } else if (state.activeView === 'chapter') {
             const curCh = CHAPTERS.find((c) => c.id === state.activeChapterId) || CHAPTERS[0];
-            els.topbarViewTitle.textContent = `Course · ${curCh.code} ${curCh.shortTitle}`;
+            els.topbarViewTitle.textContent = `旧版 · ${curCh.code} ${curCh.shortTitle}`;
           } else if (state.activeView === 'grammar') {
-            els.topbarViewTitle.textContent = state.grammarFilterLevel === 'Sounds' ? 'Course · A0 Sounds' : 'Course · Grammar Notes';
+            els.topbarViewTitle.textContent = state.grammarFilterLevel === 'Sounds' ? 'Course · A0 Sounds' : '旧版 · Grammar Notes';
           } else if (state.activeView === 'vocabsyl') {
-            els.topbarViewTitle.textContent = 'Course · Vocab Themes';
+            els.topbarViewTitle.textContent = '旧版 · Vocab Themes';
           } else if (state.activeView === 'essentials') {
             els.topbarViewTitle.textContent = 'Quick Ref · Pronouns & Tables';
           } else if (state.activeView === 'course' && state.activeDeepChapterId) {
@@ -3847,9 +3861,16 @@
           { key: 'quickref', title: 'Quick Ref' }
         ];
 
-        const isCourseChild = ['course', 'grammar', 'vocabsyl', 'chapter'].includes(state.activeView);
+        const isCourseChild = state.activeView === 'course' || (state.activeView === 'grammar' && state.grammarFilterLevel === 'Sounds');
+        const isLegacyChild = ['legacy', 'vocabsyl', 'chapter'].includes(state.activeView) || (state.activeView === 'grammar' && state.grammarFilterLevel !== 'Sounds');
         const isPracticeChild = ['practice', 'drills', 'vocab'].includes(state.activeView);
         const isExamChild = ['exam', 'mock', 'output', 'coach'].includes(state.activeView);
+
+        if (els.btnOpenLegacy) {
+          els.btnOpenLegacy.className = isLegacyChild
+            ? 'px-2 py-1 rounded-lg tint-primary text-[var(--primary)] border border-primary-soft font-semibold cursor-pointer text-[11px] transition'
+            : 'px-2 py-1 rounded-lg tint-muted-hover font-medium cursor-pointer text-[11px] opacity-75 hover:opacity-100 transition border border-transparent';
+        }
 
         els.sidebarWorkspaces.innerHTML = groupsMeta.map((grp) => {
           const items = WORKSPACES.filter((w) => w.group === grp.key);
@@ -3978,6 +3999,7 @@
       function renderMain() {
         if (state.activeView === 'roadmap') renderRoadmapView();
         else if (state.activeView === 'course') renderCourseView();
+        else if (state.activeView === 'legacy') renderLegacyView();
         else if (state.activeView === 'practice' || state.activeView === 'drills') renderPracticeView();
         else if (state.activeView === 'vocab') { state.practiceTab = 'srs'; state.activeView = 'practice'; renderPracticeView(); }
         else if (state.activeView === 'exam') renderExamView();
@@ -4673,9 +4695,10 @@
         // Bindings
         const bBackCourseV = document.getElementById('btnBackToCourseFromVsyl');
         if (bBackCourseV) bBackCourseV.onclick = () => {
-          state.courseLevel = cur.level || 'A1';
+          state.legacyLevel = cur.level || 'A1';
+          state.legacyTab = 'vocab';
           state.activeTopicQuizId = null;
-          navigate('ws', 'course');
+          navigate('ws', 'legacy');
         };
         els.mainContent.querySelectorAll('[data-vl-filter]').forEach((b) => (b.onclick = () => {
           state.vocabLessonFilterLevel = b.dataset.vlFilter;
@@ -4980,9 +5003,15 @@
         // Bindings
         const bBackCourseG = document.getElementById('btnBackToCourseFromGram');
         if (bBackCourseG) bBackCourseG.onclick = () => {
-          state.courseLevel = cur.level === 'Sounds' ? 'A0' : (cur.level || 'A1');
           state.activeTopicQuizId = null;
-          navigate('ws', 'course');
+          if (cur.level === 'Sounds') {
+            state.courseLevel = 'A0';
+            navigate('ws', 'course');
+          } else {
+            state.legacyLevel = cur.level || 'A1';
+            state.legacyTab = 'notes';
+            navigate('ws', 'legacy');
+          }
         };
         els.mainContent.querySelectorAll('[data-g-filter]').forEach((b) => (b.onclick = () => {
           state.grammarFilterLevel = b.dataset.gFilter;
@@ -5064,9 +5093,6 @@
         const months = (weeks / 4.3).toFixed(1);
 
         const nextDeep = getRecommendedNextDeepPageGlobal();
-        const nextGram = GRAMMAR_SYLLABUS.find((g) => !state.completedGrammar.includes(g.id)) || GRAMMAR_SYLLABUS[0];
-        const nextVocab = VOCAB_SYLLABUS.find((v) => !state.completedVocabLessons.includes(v.id)) || VOCAB_SYLLABUS[0];
-        const nextUnit = CHAPTERS.find((c) => !state.completedChapters.includes(c.id)) || CHAPTERS[0];
         const dueCount = countDueVocab();
         const mistakeCount = state.mistakes.length;
         const streak = getStudyStreak();
@@ -5076,25 +5102,6 @@
           const p = state.weeklyPlan[wk.w] || {};
           return p.rec && p.text && p.err;
         }).length;
-
-        const levelStats = ['A1', 'A2', 'B1', 'B2'].map((lvl) => {
-          const chs = CHAPTERS.filter((c) => c.level === lvl);
-          const chDone = chs.filter((c) => state.completedChapters.includes(c.id)).length;
-          const gLessons = GRAMMAR_SYLLABUS.filter((g) => g.level === lvl);
-          const gDone = gLessons.filter((g) => state.completedGrammar.includes(g.id)).length;
-          const vLessons = VOCAB_SYLLABUS.filter((v) => v.level === lvl);
-          const vDone = vLessons.filter((v) => state.completedVocabLessons.includes(v.id)).length;
-          const dChs = DEEP_CHAPTERS.filter((c) => c.level === lvl);
-          const dTotal = dChs.reduce((acc, c) => acc + (c.pages || []).length, 0);
-          const dDone = dChs.reduce((acc, c) => acc + getDeepChapterDoneCount(c.id), 0);
-          return {
-            lvl,
-            chDone, chTotal: chs.length, firstCh: chs[0].id,
-            gDone, gTotal: gLessons.length, firstGram: gLessons[0] ? gLessons[0].id : 'p_1',
-            vDone, vTotal: vLessons.length,
-            dDone, dTotal
-          };
-        });
 
         const soundLessons = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
         const soundDone = soundLessons.filter((g) => state.completedGrammar.includes(g.id)).length;
@@ -5192,36 +5199,23 @@
                 <button type="button" data-today-deep="${nextDeep.chapter.id}::${nextDeep.page.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
                   <div>
                     <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--primary)]">1. Tex Course · 8m</span>
+                      <span class="font-bold text-[var(--primary)]">1. Tex Study · 10m</span>
                       <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextDeep.chapter.level)}">${esc(nextDeep.chapter.code)} · ${esc(nextDeep.page.code)}</span>
                     </div>
                     <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${nextDeep.chapter.icon} ${esc(nextDeep.page.shortTitle)}</div>
                   </div>
-                  <span class="text-xs font-bold text-[var(--link)]">Open Page →</span>
+                  <span class="text-xs font-bold text-[var(--link)]">Open Study Page →</span>
                 </button>
-              ` : nextGram ? `
-                <button type="button" data-today-gram="${nextGram.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
-                  <div>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--primary)]">1. Course · 5m</span>
-                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextGram.level)}">${nextGram.code}</span>
-                    </div>
-                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextGram.title)}</div>
-                  </div>
-                  <span class="text-xs font-bold text-[var(--link)]">Start Lesson →</span>
-                </button>
-              ` : ''}
 
-              ${nextVocab ? `
-                <button type="button" data-today-vsyl="${nextVocab.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                <button type="button" data-today-deep-drills="${nextDeep.chapter.id}::${nextDeep.page.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
                   <div>
                     <div class="flex items-center justify-between text-xs">
-                      <span class="font-bold text-[var(--success)]">2. Vocab · 5m</span>
-                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextVocab.level)}">${nextVocab.code}</span>
+                      <span class="font-bold text-[var(--success)]">2. Tex Drills · 8m</span>
+                      <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold tint-success text-[var(--success)] border-success-soft">${(nextDeep.page.drills || []).length} Q</span>
                     </div>
-                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextVocab.title)}</div>
+                    <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">✍️ Practice: ${esc(nextDeep.page.shortTitle)}</div>
                   </div>
-                  <span class="text-xs font-bold text-[var(--link)]">Learn Theme →</span>
+                  <span class="text-xs font-bold text-[var(--link)]">Practice Drills →</span>
                 </button>
               ` : ''}
 
@@ -5240,15 +5234,15 @@
                 <span class="text-xs font-bold text-[var(--link)]">${mistakeCount > 0 ? 'Fix Mistakes →' : 'Open Due Deck →'}</span>
               </button>
 
-              <button type="button" data-go-ch="${nextUnit.id}" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+              <button type="button" data-go-ws="exam" class="text-left p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
                 <div>
                   <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-[var(--primary)]">4. Listen/Read · 10m</span>
-                    <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(nextUnit.level)}">${nextUnit.code}</span>
+                    <span class="font-bold text-[var(--primary)]">4. TCF Exam · 10m</span>
+                    <span class="px-1.5 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">CO/CE/EE/EO</span>
                   </div>
-                  <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">${esc(nextUnit.shortTitle)}</div>
+                  <div class="text-xs font-semibold text-[var(--foreground)] mt-2 leading-snug">Mock tests, Writing &amp; Speaking studio</div>
                 </div>
-                <span class="text-xs font-bold text-[var(--link)]">Open Unit →</span>
+                <span class="text-xs font-bold text-[var(--link)]">Open Exam Studio →</span>
               </button>
             </div>
 
@@ -5276,11 +5270,14 @@
             </div>
           </section>
 
-          <!-- CEFR SYLLABUS OVERVIEW (A1 -> B2) -->
+          <!-- TEX CURRICULUM OVERVIEW -->
           <section class="studio-card p-5 sm:p-6 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <h3 class="text-base font-bold text-[var(--foreground)]">Curriculum Progress (A1 → B2)</h3>
+              <h3 class="text-base font-bold text-[var(--foreground)]">Tex Curriculum Progress (${DEEP_CHAPTERS.length} Chapters · ${getTotalDeepPagesCount()} Pages)</h3>
               <div class="flex flex-wrap gap-2">
+                <button type="button" id="btnTodayGrammarIndex" class="px-3 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
+                  📚 All 11 Grammar Topics →
+                </button>
                 <button type="button" data-go-ws="mock" class="px-3 py-1.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
                   🎯 TCF Mock (CO/CE)
                 </button>
@@ -5301,31 +5298,28 @@
               </button>
             </div>
 
-            <!-- 4 CEFR Band Progress Cards -->
+            <!-- Live Tex Deep Chapters Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              ${levelStats.map((s) => {
-                const total = s.chTotal + s.gTotal + s.vTotal + s.dTotal;
-                const done = s.chDone + s.gDone + s.vDone + s.dDone;
-                const pct = total ? Math.round((done / total) * 100) : 0;
-                const desc = { A1: 'Gender, Present, Schedules, Errands', A2: 'Past, Futur, Housing, Canada Life', B1: 'Dont, Conditionnel, Work, Collocations', B2: 'Subjunctive, Climate, Economy, Nuance' }[s.lvl];
+              ${DEEP_CHAPTERS.map((dCh) => {
+                const pages = dCh.pages || [];
+                const dDone = getDeepChapterDoneCount(dCh.id);
+                const dPct = pages.length ? Math.round((dDone / pages.length) * 100) : 0;
+                const dNext = getNextRecommendedDeepPage(dCh.id);
                 return `
                   <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] flex flex-col justify-between gap-3">
                     <div>
-                      <div class="flex items-center justify-between">
-                        <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(s.lvl)}">${s.lvl}</span>
-                        <span class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${pct}%</span>
+                      <div class="flex items-center justify-between gap-1">
+                        <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(dCh.level)}">${esc(dCh.level)} · ${esc(dCh.code)}</span>
+                        <span class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${dPct}%</span>
                       </div>
-                      <div class="text-xs font-medium text-[var(--foreground)] mt-2">${desc}</div>
+                      <div class="text-xs font-bold text-[var(--foreground)] mt-2">${dCh.icon} ${esc(dCh.shortTitle || dCh.title)}</div>
                       <div class="w-full h-1.5 rounded-full tint-muted mt-2.5 overflow-hidden">
-                        <div class="h-full bg-[var(--primary)] rounded-full" style="width:${pct}%"></div>
+                        <div class="h-full ${dDone === pages.length && pages.length > 0 ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} rounded-full" style="width:${dPct}%"></div>
                       </div>
                     </div>
                     <div class="flex items-center justify-between gap-1 text-xs pt-2 border-t border-[var(--border)] tabular-nums">
-                      ${s.dTotal > 0
-                        ? `<button type="button" data-go-course-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.dDone}/${s.dTotal}p</button>`
-                        : `<button type="button" data-go-gram-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📘 ${s.gDone}/${s.gTotal}</button>`}
-                      <button type="button" data-go-vsyl-lvl="${s.lvl}" class="text-[var(--link)] font-semibold hover:underline cursor-pointer">📚 ${s.vDone}/${s.vTotal}</button>
-                      <button type="button" data-go-ch="${s.firstCh}" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-semibold cursor-pointer">🎧 ${s.chDone}/${s.chTotal}</button>
+                      <span class="text-[var(--muted-foreground)] font-semibold">${dDone}/${pages.length} pages</span>
+                      ${dNext ? `<button type="button" data-today-deep="${dCh.id}::${dNext.id}" class="text-[var(--link)] font-bold hover:underline cursor-pointer">${dDone > 0 ? `Page ${esc(dNext.code)} →` : `Start ${esc(dNext.code)} →`}</button>` : ''}
                     </div>
                   </div>
                 `;
@@ -5499,7 +5493,7 @@
               <div>
                 <h2 class="text-2xl font-bold text-[var(--foreground)]">Today’s Study Plan</h2>
                 <p class="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1">
-                  ${DEEP_CHAPTERS.length} Tex Chapters (${getTotalDeepPagesCount()}p) · ${VOCAB_SYLLABUS.length || 16} Vocab · 12 Units · ${audioClipCount} FR/CA neural audio clips
+                  ${DEEP_CHAPTERS.length} Tex Chapters (${getTotalDeepPagesCount()} bite-sized pages) · ${audioClipCount} FR/CA neural audio clips
                 </p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
@@ -5576,6 +5570,18 @@
           const [cid, pid] = String(b.dataset.todayDeep || '').split('::');
           openDeepPage(cid, pid, 'study');
         }));
+        els.mainContent.querySelectorAll('[data-today-deep-drills]').forEach((b) => (b.onclick = () => {
+          const [cid, pid] = String(b.dataset.todayDeepDrills || '').split('::');
+          openDeepPage(cid, pid, 'drills');
+        }));
+        const bTgi = document.getElementById('btnTodayGrammarIndex');
+        if (bTgi) bTgi.onclick = () => {
+          state.courseBrowseMode = 'index';
+          state.activeTopicQuizId = null;
+          state.activeDeepChapterId = null;
+          state.activeDeepPageId = null;
+          navigate('ws', 'course');
+        };
         els.mainContent.querySelectorAll('[data-go-course-lvl]').forEach((b) => (b.onclick = () => {
           state.courseLevel = b.dataset.goCourseLvl || 'A1';
           state.courseBrowseMode = 'path';
@@ -5583,14 +5589,6 @@
           state.activeDeepChapterId = null;
           state.activeDeepPageId = null;
           navigate('ws', 'course');
-        }));
-        els.mainContent.querySelectorAll('[data-today-gram]').forEach((b) => (b.onclick = () => {
-          state.grammarFilterLevel = 'all';
-          navigate('gram', b.dataset.todayGram);
-        }));
-        els.mainContent.querySelectorAll('[data-today-vsyl]').forEach((b) => (b.onclick = () => {
-          state.vocabLessonFilterLevel = 'all';
-          navigate('vsyl', b.dataset.todayVsyl);
         }));
         const btnTR = document.getElementById('btnTodayReview');
         if (btnTR) btnTR.onclick = () => {
@@ -5608,23 +5606,10 @@
             navigate('ws', 'practice');
           }
         };
-        els.mainContent.querySelectorAll('[data-go-ch]').forEach((b) => (b.onclick = () => navigate('ch', b.dataset.goCh)));
         els.mainContent.querySelectorAll('[data-go-ws]').forEach((b) => (b.onclick = () => navigate('ws', b.dataset.goWs)));
         els.mainContent.querySelectorAll('[data-go-gram]').forEach((b) => (b.onclick = () => {
           state.grammarFilterLevel = 'Sounds';
           navigate('gram', b.dataset.goGram);
-        }));
-        els.mainContent.querySelectorAll('[data-go-gram-lvl]').forEach((b) => (b.onclick = () => {
-          const lvl = b.dataset.goGramLvl;
-          state.grammarFilterLevel = lvl;
-          const first = GRAMMAR_SYLLABUS.find((g) => g.level === lvl);
-          navigate('gram', first ? first.id : 'p_1');
-        }));
-        els.mainContent.querySelectorAll('[data-go-vsyl-lvl]').forEach((b) => (b.onclick = () => {
-          const lvl = b.dataset.goVsylLvl;
-          state.vocabLessonFilterLevel = lvl;
-          const first = VOCAB_SYLLABUS.find((v) => v.level === lvl);
-          navigate('vsyl', first ? first.id : 'vs_a1_1');
         }));
         els.mainContent.querySelectorAll('[data-go-mock]').forEach((b) => (b.onclick = () => {
           state.mockType = b.dataset.goMock;
@@ -6099,9 +6084,10 @@
 
         const bBackCh = document.getElementById('btnBackToCourseFromCh');
         if (bBackCh) bBackCh.onclick = () => {
-          state.courseLevel = ch.level || 'A1';
+          state.legacyLevel = ch.level || 'A1';
+          state.legacyTab = 'units';
           state.activeTopicQuizId = null;
-          navigate('ws', 'course');
+          navigate('ws', 'legacy');
         };
         els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
         els.mainContent.querySelectorAll('[data-open-topic-quiz]').forEach((b) => (b.onclick = () => openTopicQuiz(b.dataset.openTopicQuiz)));
@@ -6303,7 +6289,7 @@
         if (GRAMMAR_QUIZZES.length === 0) {
           return '<div class="studio-card p-6 text-sm text-[var(--muted-foreground)]">Grammar quizzes loading...</div>';
         }
-        const ctx = opts.context || (state.activeView === 'course' ? 'course' : 'practice');
+        const ctx = opts.context || (state.activeView === 'legacy' ? 'legacy' : state.activeView === 'course' ? 'course' : 'practice');
 
         const activeTopic = state.activeTopicQuizId
           ? GRAMMAR_QUIZZES.find((t) => t.id === state.activeTopicQuizId) || null
@@ -6327,7 +6313,7 @@
           const topStepNav = `
             <div class="flex flex-wrap items-center justify-between gap-2">
               <button type="button" id="btnBackToTopics" class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                ${ctx === 'course' ? `← Back to ${esc(activeTopic.level)} Course` : '← All Topic Quizzes'}
+                ${ctx === 'legacy' ? `← 返回旧版 (${esc(activeTopic.level)})` : ctx === 'course' ? `← Back to ${esc(activeTopic.level)} Course` : '← All Topic Quizzes'}
               </button>
               <div class="inline-flex p-1 rounded-2xl bg-[var(--content)] border border-[var(--border)]">
                 <button type="button" data-tq-phase="learn" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
@@ -8458,9 +8444,6 @@
 
         const soundsList = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
         const levelDeepChapters = DEEP_CHAPTERS.filter((c) => c.level === curLvl);
-        const levelVocab = VOCAB_SYLLABUS.filter((v) => v.level === curLvl);
-        const levelUnits = CHAPTERS.filter((c) => c.level === curLvl);
-        const levelNotes = GRAMMAR_SYLLABUS.filter((g) => g.level === curLvl);
 
         const formatLvlTabLabel = (lvl, baseLabel) => {
           const chs = DEEP_CHAPTERS.filter((c) => c.level === lvl);
@@ -8477,21 +8460,12 @@
           { id: 'B2', label: formatLvlTabLabel('B2', 'B2 CLB 7') }
         ];
 
-        const typeFilters = [
-          { id: 'all', label: 'All' },
-          { id: 'grammar', label: `📘 Tex Chapters (${levelDeepChapters.length})` },
-          { id: 'units', label: `🎧 Listening & Reading Units (${levelUnits.length})` },
-          { id: 'vocab', label: `📚 Vocab Themes (${levelVocab.length})` },
-          { id: 'notes', label: `📄 Grammar Notes (${levelNotes.length})` }
-        ];
-        const tf = state.courseTypeFilter || 'all';
-
         const levelIntro = {
           A0: 'Build crisp French pronunciation and ear decoding first: Mandarin ü vs u, nasal vowels, liaisons, and Canadian spoken contractions.',
           A1: 'Tex Slow-Paced Foundations (Chapters 1–3 · 36 bite-sized pages): Ch 1 Nouns (gender, plurals, exceptions) → Ch 2 Determiners & Articles (definite, indefinite, partitive, demonstratives, possessives) → Ch 3 Adjectives (agreement, BAGS placement, comparatives).',
-          A2: 'Tex Slow-Paced Expansion (Chapter 4 live · 7 pages, more Tex chapters building here): Ch 4 Adverbs (-ment formation, irregulars, placement, comparative/superlative, bon vs bien) + TCF Listening/Reading Units & Vocab.',
-          B1: 'Intermediate Fluency: Tex slow-paced B1 chapters are coming next — explore B1 Listening & Reading Units, Thematic Vocab, and Grammar Notes below in the meantime.',
-          B2: 'CLB 7 Mastery: Tex slow-paced B2 chapters are coming next — explore B2 Listening & Reading Units, Thematic Vocab, and Grammar Notes below in the meantime.'
+          A2: 'Tex Slow-Paced Expansion (Chapter 4 live · 7 pages, more Tex chapters building here): Ch 4 Adverbs (-ment formation, irregulars, placement, comparative/superlative, bon vs bien).',
+          B1: 'Intermediate Fluency: Tex slow-paced B1 chapters are coming next — browse the 11-Topic Grammar Index or review earlier Tex chapters anytime.',
+          B2: 'CLB 7 Mastery: Tex slow-paced B2 chapters are coming next — browse the 11-Topic Grammar Index or explore Practice & TCF Exam studios.'
         }[curLvl];
 
         const a0BodyHTML = `
@@ -8519,77 +8493,6 @@
             </div>
           </div>
         `;
-
-        const unitsHTML = levelUnits.length ? `
-          <section class="space-y-3">
-            <h3 class="text-base font-bold text-[var(--foreground)]">2. Thematic Listening &amp; Reading Units (${curLvl})</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              ${levelUnits.map((ch) => {
-                const done = state.completedChapters.includes(ch.id);
-                return `
-                  <button type="button" data-course-ch="${ch.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
-                    <div>
-                      <div class="flex items-center justify-between gap-2">
-                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(ch.level)}">${esc(ch.code)}</span>
-                        ${done ? '<span class="text-xs font-bold text-[var(--success)]">✓ Done</span>' : `<span class="text-[11px] text-[var(--muted-foreground)]">${ch.passages.length} audio</span>`}
-                      </div>
-                      <div class="text-sm font-bold text-[var(--foreground)] mt-2">${esc(ch.shortTitle)}</div>
-                      <div class="text-xs text-[var(--muted-foreground)] mt-1 line-clamp-2">${esc(ch.subtitle)}</div>
-                    </div>
-                    <span class="text-xs font-bold text-[var(--link)]">Open Unit →</span>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </section>
-        ` : '';
-
-        const vocabHTML = levelVocab.length ? `
-          <section class="space-y-3">
-            <h3 class="text-base font-bold text-[var(--foreground)]">3. Thematic Vocabulary Themes (${curLvl})</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              ${levelVocab.map((vl) => {
-                const done = state.completedVocabLessons.includes(vl.id);
-                return `
-                  <button type="button" data-course-vsyl="${vl.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
-                    <div>
-                      <div class="flex items-center justify-between gap-2">
-                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(vl.level)}">${esc(vl.code)}</span>
-                        ${done ? '<span class="text-xs font-bold text-[var(--success)]">✓</span>' : ''}
-                      </div>
-                      <div class="text-sm font-bold text-[var(--foreground)] mt-2 leading-snug">${esc(vl.title)}</div>
-                      <div class="text-xs text-[var(--muted-foreground)] mt-1">${vl.words.length} curated words</div>
-                    </div>
-                    <span class="text-xs font-bold text-[var(--link)]">Study Words →</span>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </section>
-        ` : '';
-
-        const notesHTML = levelNotes.length ? `
-          <section class="space-y-3">
-            <h3 class="text-base font-bold text-[var(--foreground)]">4. Quick Grammar Summary Notes (${curLvl})</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              ${levelNotes.map((g) => {
-                const done = state.completedGrammar.includes(g.id);
-                return `
-                  <button type="button" data-course-gram="${g.id}" class="text-left p-3.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
-                    <div class="min-w-0">
-                      <div class="flex items-center gap-1.5">
-                        <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${levelBadgeStyle(g.level)}">${esc(g.code)}</span>
-                        <span class="text-[11px] text-[var(--muted-foreground)]">${esc(g.duration)}</span>
-                      </div>
-                      <div class="text-xs font-bold text-[var(--foreground)] mt-1 truncate">${esc(g.title)}</div>
-                    </div>
-                    <span class="text-xs font-bold shrink-0 ${done ? 'text-[var(--success)]' : 'text-[var(--link)]'}">${done ? '✓' : '→'}</span>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </section>
-        ` : '';
 
         const latestDeepCh = DEEP_CHAPTERS.length ? DEEP_CHAPTERS[DEEP_CHAPTERS.length - 1] : null;
         const lastLevelDeepCh = levelDeepChapters.length ? levelDeepChapters[levelDeepChapters.length - 1] : null;
@@ -8688,7 +8591,7 @@
                 <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(curLvl)}">${curLvl} · Upcoming Tex Chapters</span>
                 <h3 class="text-base font-bold text-[var(--foreground)]">🚧 Tex Slow-Paced Chapters for ${curLvl} Are Coming Next</h3>
                 <p class="text-xs text-[var(--muted-foreground)]">
-                  We’re building the slow-paced Tex chapters progressively. Meanwhile, explore ${curLvl} Listening &amp; Reading Units, Vocab Themes, and Quick Notes below, or view the 11-Topic Grammar Index.
+                  We’re building the slow-paced Tex chapters progressively. Check the 11-Topic Grammar Index to see the full Tex roadmap, or jump to our latest live Tex chapter.
                 </p>
               </div>
               <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -8712,7 +8615,7 @@
               <div>
                 <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 Structured French Course (A0 → B2)</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  Slow-paced Tex-depth French grammar chapters — tiny digestible rules, original cartoons, and focused drills, plus TCF Canada units &amp; vocab.
+                  Slow-paced Tex-depth French grammar chapters — tiny digestible rules, original cartoons, and focused drills.
                 </p>
               </div>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
@@ -8751,20 +8654,8 @@
             </div>
 
             ${curLvl === 'A0' ? a0BodyHTML : `
-              <div class="flex flex-wrap gap-1.5">
-                ${typeFilters.map((f) => `
-                  <button type="button" data-course-tf="${f.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
-                    tf === f.id
-                      ? 'tint-primary border-primary-soft text-[var(--primary)] font-bold'
-                      : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] tint-muted-hover'
-                  }">${f.label}</button>
-                `).join('')}
-              </div>
               <div class="space-y-6">
-                ${(tf === 'all' || tf === 'grammar') ? deepPilotHTML : ''}
-                ${tf === 'all' || tf === 'units' ? unitsHTML : ''}
-                ${tf === 'all' || tf === 'vocab' ? vocabHTML : ''}
-                ${tf === 'all' || tf === 'notes' ? notesHTML : ''}
+                ${deepPilotHTML}
               </div>
             `}
           </div>
@@ -8790,30 +8681,226 @@
         els.mainContent.querySelectorAll('[data-course-lvl]').forEach((b) => {
           b.onclick = () => {
             state.courseLevel = b.dataset.courseLvl;
-            state.courseTypeFilter = 'all';
             saveState();
             renderCourseView();
           };
         });
-        els.mainContent.querySelectorAll('[data-course-tf]').forEach((b) => {
-          b.onclick = () => {
-            state.courseTypeFilter = b.dataset.courseTf;
-            renderCourseView();
-          };
-        });
-        els.mainContent.querySelectorAll('[data-course-ch]').forEach((b) => {
-          b.onclick = () => navigate('ch', b.dataset.courseCh);
-        });
-        els.mainContent.querySelectorAll('[data-course-vsyl]').forEach((b) => {
-          b.onclick = () => {
-            state.vocabLessonFilterLevel = curLvl;
-            navigate('vsyl', b.dataset.courseVsyl);
-          };
-        });
         els.mainContent.querySelectorAll('[data-course-gram]').forEach((b) => {
           b.onclick = () => {
-            state.grammarFilterLevel = curLvl === 'A0' ? 'Sounds' : curLvl;
+            state.grammarFilterLevel = 'Sounds';
             navigate('gram', b.dataset.courseGram);
+          };
+        });
+      }
+
+      function renderLegacyView() {
+        if (state.activeTopicQuizId) {
+          els.mainContent.innerHTML = renderTopicQuizzesHTML({ context: 'legacy' });
+          els.mainContent.querySelectorAll('.speak-btn').forEach((b) => (b.onclick = () => speakPhrase(b.dataset.speak)));
+          bindTopicQuizEvents();
+          return;
+        }
+
+        const curLvl = ['A1', 'A2', 'B1', 'B2'].includes(state.legacyLevel) ? state.legacyLevel : 'A1';
+        state.legacyLevel = curLvl;
+        const curTab = ['courses', 'units', 'vocab', 'notes'].includes(state.legacyTab) ? state.legacyTab : 'courses';
+        state.legacyTab = curTab;
+
+        const levelCourses = GRAMMAR_QUIZZES.filter((t) => t.level === curLvl);
+        const levelUnits = CHAPTERS.filter((c) => c.level === curLvl);
+        const levelVocab = VOCAB_SYLLABUS.filter((v) => v.level === curLvl);
+        const levelNotes = GRAMMAR_SYLLABUS.filter((g) => g.level === curLvl);
+
+        const lvlTabs = ['A1', 'A2', 'B1', 'B2'].map((lvl) => ({
+          id: lvl,
+          label: `${lvl} (${GRAMMAR_QUIZZES.filter((t) => t.level === lvl).length} 课)`
+        }));
+
+        const catTabs = [
+          { id: 'courses', label: `📘 分步语法课 (${levelCourses.length})` },
+          { id: 'units', label: `🎧 听说读写单元 (${levelUnits.length})` },
+          { id: 'vocab', label: `📚 主题词汇 (${levelVocab.length})` },
+          { id: 'notes', label: `📄 语法速览笔记 (${levelNotes.length})` }
+        ];
+
+        const coursesBodyHTML = levelCourses.length ? `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            ${levelCourses.map((t) => {
+              const slides = GRAMMAR_LESSONS[t.id] || [];
+              const donePages = getTopicLessonDoneCount(t.id);
+              const recBest = state.topicQuizBest[t.id];
+              const best = recBest ? recBest.best : null;
+              const total = (t.questions || []).length;
+              const mastered = best !== null && best >= 7;
+              const pagePct = slides.length ? Math.round((donePages / slides.length) * 100) : 0;
+              return `
+                <div class="studio-card p-4 flex flex-col justify-between gap-3">
+                  <div class="space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="text-lg shrink-0">${t.icon}</span>
+                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold shrink-0 ${levelBadgeStyle(t.level)}">${esc(t.badge)}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded-full text-[11px] font-bold tabular-nums ${
+                        mastered ? 'tint-success text-[var(--success)]' : best !== null ? 'tint-primary text-[var(--primary)]' : 'tint-muted text-[var(--muted-foreground)]'
+                      }">
+                        ${mastered ? `✓ ${best}/${total}` : best !== null ? `Best ${best}/${total}` : `${slides.length} pages`}
+                      </span>
+                    </div>
+                    <h4 class="text-sm font-bold text-[var(--foreground)]">${esc(t.title)}</h4>
+                    <p class="text-xs text-[var(--muted-foreground)] leading-snug">${esc(t.subtitle)}</p>
+                    <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
+                      <div class="h-full rounded-full ${mastered ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'}" style="width:${pagePct}%"></div>
+                    </div>
+                  </div>
+                  <div class="pt-2 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2">
+                    <button type="button" data-legacy-course="${t.id}" class="px-3.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer bg-[var(--primary)] text-[var(--primary-foreground)]">
+                      ${donePages > 0 && donePages < slides.length ? 'Resume Lesson →' : donePages >= slides.length ? 'Review Lesson →' : 'Start Lesson →'}
+                    </button>
+                    <button type="button" data-legacy-quiz="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer bg-[var(--content)] border border-[var(--border)] text-[var(--foreground)] tint-muted-hover">
+                      ${best !== null ? 'Retake Quiz' : `Quiz (${total} Q)`}
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : '<div class="studio-card p-6 text-xs text-[var(--muted-foreground)]">No legacy courses at this level.</div>';
+
+        const unitsBodyHTML = levelUnits.length ? `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            ${levelUnits.map((ch) => {
+              const done = state.completedChapters.includes(ch.id);
+              return `
+                <button type="button" data-legacy-ch="${ch.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                  <div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(ch.level)}">${esc(ch.code)}</span>
+                      ${done ? '<span class="text-xs font-bold text-[var(--success)]">✓ Done</span>' : `<span class="text-[11px] text-[var(--muted-foreground)]">${ch.passages.length} audio</span>`}
+                    </div>
+                    <div class="text-sm font-bold text-[var(--foreground)] mt-2">${esc(ch.shortTitle)}</div>
+                    <div class="text-xs text-[var(--muted-foreground)] mt-1 line-clamp-2">${esc(ch.subtitle)}</div>
+                  </div>
+                  <span class="text-xs font-bold text-[var(--link)]">Open Unit →</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        ` : '<div class="studio-card p-6 text-xs text-[var(--muted-foreground)]">No units at this level.</div>';
+
+        const vocabBodyHTML = levelVocab.length ? `
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            ${levelVocab.map((vl) => {
+              const done = state.completedVocabLessons.includes(vl.id);
+              return `
+                <button type="button" data-legacy-vsyl="${vl.id}" class="text-left studio-card p-4 tint-muted-hover transition cursor-pointer flex flex-col justify-between gap-2.5">
+                  <div>
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(vl.level)}">${esc(vl.code)}</span>
+                      ${done ? '<span class="text-xs font-bold text-[var(--success)]">✓</span>' : ''}
+                    </div>
+                    <div class="text-sm font-bold text-[var(--foreground)] mt-2 leading-snug">${esc(vl.title)}</div>
+                    <div class="text-xs text-[var(--muted-foreground)] mt-1">${vl.words.length} curated words</div>
+                  </div>
+                  <span class="text-xs font-bold text-[var(--link)]">Study Words →</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        ` : '<div class="studio-card p-6 text-xs text-[var(--muted-foreground)]">No vocab themes at this level.</div>';
+
+        const notesBodyHTML = levelNotes.length ? `
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            ${levelNotes.map((g) => {
+              const done = state.completedGrammar.includes(g.id);
+              return `
+                <button type="button" data-legacy-gram="${g.id}" class="text-left p-3.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${levelBadgeStyle(g.level)}">${esc(g.code)}</span>
+                      <span class="text-[11px] text-[var(--muted-foreground)]">${esc(g.duration)}</span>
+                    </div>
+                    <div class="text-xs font-bold text-[var(--foreground)] mt-1 truncate">${esc(g.title)}</div>
+                  </div>
+                  <span class="text-xs font-bold shrink-0 ${done ? 'text-[var(--success)]' : 'text-[var(--link)]'}">${done ? '✓' : '→'}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        ` : '<div class="studio-card p-6 text-xs text-[var(--muted-foreground)]">No notes at this level.</div>';
+
+        els.mainContent.innerHTML = `
+          <div class="space-y-5">
+            <div class="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 class="text-2xl font-bold text-[var(--foreground)]">🗂️ 旧版课程归档 (Legacy TCF Curriculum)</h2>
+                <p class="text-sm text-[var(--muted-foreground)] mt-1">
+                  早期压缩节奏版的语法课、TCF 场景听说单元、主题词汇与语法速览笔记均完整保留于此，随时供查阅。
+                </p>
+              </div>
+              <button type="button" id="btnLegacyBackNew" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer shrink-0">
+                ← 返回新版 Tex 课程
+              </button>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 bg-[var(--card)] border border-[var(--card-border)] p-2 rounded-2xl">
+              ${lvlTabs.map((lt) => `
+                <button type="button" data-legacy-lvl="${lt.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
+                  curLvl === lt.id
+                    ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
+                    : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
+                }">${lt.label}</button>
+              `).join('')}
+            </div>
+
+            <div class="flex flex-wrap gap-1.5">
+              ${catTabs.map((t) => `
+                <button type="button" data-legacy-tab="${t.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
+                  curTab === t.id
+                    ? 'tint-primary border-primary-soft text-[var(--primary)] font-bold'
+                    : 'bg-[var(--card)] border-[var(--border)] text-[var(--muted-foreground)] tint-muted-hover'
+                }">${t.label}</button>
+              `).join('')}
+            </div>
+
+            ${curTab === 'courses' ? coursesBodyHTML : curTab === 'units' ? unitsBodyHTML : curTab === 'vocab' ? vocabBodyHTML : notesBodyHTML}
+          </div>
+        `;
+
+        const bBackNew = document.getElementById('btnLegacyBackNew');
+        if (bBackNew) bBackNew.onclick = () => navigate('ws', 'course');
+
+        els.mainContent.querySelectorAll('[data-legacy-lvl]').forEach((b) => {
+          b.onclick = () => {
+            state.legacyLevel = b.dataset.legacyLvl;
+            renderLegacyView();
+          };
+        });
+        els.mainContent.querySelectorAll('[data-legacy-tab]').forEach((b) => {
+          b.onclick = () => {
+            state.legacyTab = b.dataset.legacyTab;
+            renderLegacyView();
+          };
+        });
+        els.mainContent.querySelectorAll('[data-legacy-course]').forEach((b) => {
+          b.onclick = () => openTopicQuiz(b.dataset.legacyCourse, 'learn', 'legacy');
+        });
+        els.mainContent.querySelectorAll('[data-legacy-quiz]').forEach((b) => {
+          b.onclick = () => openTopicQuiz(b.dataset.legacyQuiz, 'quiz', 'practice');
+        });
+        els.mainContent.querySelectorAll('[data-legacy-ch]').forEach((b) => {
+          b.onclick = () => navigate('ch', b.dataset.legacyCh);
+        });
+        els.mainContent.querySelectorAll('[data-legacy-vsyl]').forEach((b) => {
+          b.onclick = () => {
+            state.vocabLessonFilterLevel = curLvl;
+            navigate('vsyl', b.dataset.legacyVsyl);
+          };
+        });
+        els.mainContent.querySelectorAll('[data-legacy-gram]').forEach((b) => {
+          b.onclick = () => {
+            state.grammarFilterLevel = curLvl;
+            navigate('gram', b.dataset.legacyGram);
           };
         });
       }
@@ -11014,6 +11101,14 @@
           } else {
             showSpeechWarn('实时真人语音服务未启动：请在项目目录双击 start_voice_server.command，或在终端运行 ./start_voice_server.command（启动后再点此按钮即可连接）。');
           }
+        };
+      }
+
+      if (els.btnOpenLegacy) {
+        els.btnOpenLegacy.onclick = () => {
+          state.activeTopicQuizId = null;
+          navigate('ws', 'legacy');
+          closeMobileSidebar();
         };
       }
 
