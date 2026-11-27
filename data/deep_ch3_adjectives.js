@@ -2,12 +2,12 @@
   if (!Array.isArray(window.__TCF_DEEP_CHAPTERS__)) window.__TCF_DEEP_CHAPTERS__ = [];
   window.__TCF_DEEP_CHAPTERS__.push({
     id: 'ch3_adjectives',
-    code: 'Ch 3',
+    code: 'Ch 4',
     level: 'A1',
     category: 'adjectives',
     icon: '🎨',
     title: 'Adjectives (Les Adjectifs)',
-    titleZh: '第三章 · 法语形容词完全掌握',
+    titleZh: '第四章 · 法语形容词完全掌握',
     subtitle: 'Tex-style slow-paced deep mastery: 11 bite-sized pages covering agreement, BANGS pre-noun placement, irregular stems, placement-meaning shifts, comparatives, superlatives, bon vs. bien & participles — with 17 cartoons & 126 drills.',
     subtitleZh: '对标 Tex 深度拆分为 11 个轻松小页：性数配合、常规后置与 BANGS 前置、不规则形容词、位置改变词义、比较级最高级、bon/meilleur vs bien/mieux 与分词作形容词，配 17 张原版卡通与 126 题专练。',
     pages: [
@@ -16,7 +16,7 @@
       ========================================================= */
       {
         id: 'adj_3_1',
-        code: '3.1',
+        code: '4.1',
         group: 'Intro to Adjectives',
         shortTitle: 'What Is an Adjective?',
         title: 'Introduction to Adjectives: Agreement, Placement & Adj. vs. Adv.',
@@ -185,8 +185,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_2', label: '3.2 Regular Formation & Placement' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: '4.1 Intro to Adverbs' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_2', label: '4.2 Regular Formation & Placement' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: '3.1 Intro to Adverbs' }
         ]
       },
 
@@ -195,7 +195,7 @@
       ========================================================= */
       {
         id: 'adj_3_2',
-        code: '3.2',
+        code: '4.2',
         group: 'Regular Agreement & Placement',
         shortTitle: 'Regular +e / +s & Placement',
         title: 'Regular Adjective Formation (+e, +s, +es) & Post-Noun Placement',
@@ -393,8 +393,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_3', label: '3.3 BANGS & beau/nouveau/vieux' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_4', label: '3.4 Irregular Adjectives' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_3', label: '4.3 BANGS & beau/nouveau/vieux' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_4', label: '4.4 Irregular Adjectives' }
         ]
       },
 
@@ -403,7 +403,7 @@
       ========================================================= */
       {
         id: 'adj_3_3',
-        code: '3.3',
+        code: '4.3',
         group: 'Pre-Noun Placement',
         shortTitle: 'BANGS & beau/nouveau/vieux',
         title: 'Adjectives Before the Noun (BANGS) & beau / nouveau / vieux',
@@ -621,8 +621,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_2', label: '3.2 Regular Formation' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_6', label: '3.6 Meaning Changes With Position' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_2', label: '4.2 Regular Formation' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_6', label: '4.6 Meaning Changes With Position' }
         ]
       },
 
@@ -631,7 +631,7 @@
       ========================================================= */
       {
         id: 'adj_3_4',
-        code: '3.4',
+        code: '4.4',
         group: 'Irregular Adjectives',
         shortTitle: 'Irregulars (1): Feminine Stems',
         title: 'Irregular Adjectives (Part 1): 6 Unique Irregulars & 14 Feminine Ending Families',
@@ -809,7 +809,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_5', label: '3.5 Unchanged -e, Plurals & Tex Review' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_5', label: '4.5 Unchanged -e, Plurals & Tex Review' },
           { chapterId: 'ch1_nouns', pageId: 'no_1_6', label: '1.6 Noun Gender Pairs' }
         ]
       },
@@ -819,7 +819,7 @@
       ========================================================= */
       {
         id: 'adj_3_5',
-        code: '3.5',
+        code: '4.5',
         group: 'Irregular Adjectives',
         shortTitle: 'Irregulars (2): Plurals & Review',
         title: 'Irregular Adjectives (Part 2): Unchanged -e, Plural Rules (-s/-x, -al → -aux) & Tex Review',
@@ -1004,8 +1004,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_4', label: '3.4 Irregulars Part 1' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_6', label: '3.6 Meaning Changes With Position' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_4', label: '4.4 Irregulars Part 1' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_6', label: '4.6 Meaning Changes With Position' }
         ]
       },
 
@@ -1014,7 +1014,7 @@
       ========================================================= */
       {
         id: 'adj_3_6',
-        code: '3.6',
+        code: '4.6',
         group: 'Placement & Nuance',
         shortTitle: 'Meaning Shifts by Position',
         title: '11 Adjectives Whose Meaning Changes Before vs. After the Noun',
@@ -1221,8 +1221,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_3', label: '3.3 BANGS Pre-Noun Rule' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_7', label: '3.7 Comparatives of Adjectives' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_3', label: '4.3 BANGS Pre-Noun Rule' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_7', label: '4.7 Comparatives of Adjectives' }
         ]
       },
 
@@ -1231,7 +1231,7 @@
       ========================================================= */
       {
         id: 'adj_3_7',
-        code: '3.7',
+        code: '4.7',
         group: 'Comparison & Superlative',
         shortTitle: 'Comparatives (plus/moins/aussi)',
         title: 'Comparison of Adjectives (plus/moins/aussi ... que & meilleur / pire)',
@@ -1421,8 +1421,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_8', label: '3.8 Superlatives of Adjectives' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_5', label: '4.5 Comparatives of Adverbs' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_8', label: '4.8 Superlatives of Adjectives' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_5', label: '3.5 Comparatives of Adverbs' }
         ]
       },
 
@@ -1431,7 +1431,7 @@
       ========================================================= */
       {
         id: 'adj_3_8',
-        code: '3.8',
+        code: '4.8',
         group: 'Comparison & Superlative',
         shortTitle: 'Superlatives (le plus / le pire)',
         title: 'Superlative of Adjectives: Double Article, Placement & le meilleur / le pire',
@@ -1626,8 +1626,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_7', label: '3.7 Comparatives of Adjectives' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_10', label: '3.10 le meilleur vs. le mieux' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_7', label: '4.7 Comparatives of Adjectives' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_10', label: '4.10 le meilleur vs. le mieux' }
         ]
       },
 
@@ -1636,7 +1636,7 @@
       ========================================================= */
       {
         id: 'adj_3_9',
-        code: '3.9',
+        code: '4.9',
         group: 'bon/meilleur vs. bien/mieux',
         shortTitle: 'bon/meilleur vs. bien/mieux (1)',
         title: 'bon / meilleur (Adjective) vs. bien / mieux (Adverb) — Base & Comparative',
@@ -1811,8 +1811,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_10', label: '3.10 le meilleur vs. le mieux + Tex Review' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: '4.1 Intro to Adverbs' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_10', label: '4.10 le meilleur vs. le mieux + Tex Review' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: '3.1 Intro to Adverbs' }
         ]
       },
 
@@ -1821,7 +1821,7 @@
       ========================================================= */
       {
         id: 'adj_3_10',
-        code: '3.10',
+        code: '4.10',
         group: 'bon/meilleur vs. bien/mieux',
         shortTitle: 'le meilleur vs. le mieux',
         title: 'bon/meilleur vs. bien/mieux (Part 2): Superlatives, Cooking Contest & Tex Review',
@@ -2010,8 +2010,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_9', label: '3.9 bon vs. bien Base Rules' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_11', label: '3.11 Participles as Adjectives' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_9', label: '4.9 bon vs. bien Base Rules' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_11', label: '4.11 Participles as Adjectives' }
         ]
       },
 
@@ -2020,7 +2020,7 @@
       ========================================================= */
       {
         id: 'adj_3_11',
-        code: '3.11',
+        code: '4.11',
         group: 'Participles as Adjectives',
         shortTitle: 'Participles (-ant vs. -é/-i/-u)',
         title: 'Present & Past Participles as Adjectives (fatigant vs. fatigué)',
@@ -2211,9 +2211,9 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_2', label: '3.2 Regular Adjectives' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: '4.1 Intro to Adverbs' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_1', label: 'Back to 3.1 Intro to Adjectives' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_2', label: '4.2 Regular Adjectives' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: '3.1 Intro to Adverbs' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_1', label: 'Back to 4.1 Intro to Adjectives' }
         ]
       }
     ]

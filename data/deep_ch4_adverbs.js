@@ -2,12 +2,12 @@
   if (!Array.isArray(window.__TCF_DEEP_CHAPTERS__)) window.__TCF_DEEP_CHAPTERS__ = [];
   window.__TCF_DEEP_CHAPTERS__.push({
     id: 'ch4_adverbs',
-    code: 'Ch 4',
+    code: 'Ch 3',
     level: 'A2',
     category: 'adverbs',
     icon: '⚡',
     title: 'Adverbs (Les Adverbes)',
-    titleZh: '第四章 · 法语副词全掌握',
+    titleZh: '第三章 · 法语副词全掌握',
     subtitle: 'Tex-style slow-paced deep mastery: 7 bite-sized pages covering -ment formation, present & past tense placement, comparatives/superlatives, il y a (ago) vs. en, and tôt/tard vs. en retard — with 8 cartoons & 80 drills.',
     subtitleZh: '对标 Tex 深度拆分为 7 个轻松小页：副词定义与常用库、-ment 构成法则、现在时与复合过去时位置、比较级与最高级、il y a（以前）与 tôt/en retard 辨析，配 8 张原版卡通与 80 题专练。',
     pages: [
@@ -16,7 +16,7 @@
       ========================================================= */
       {
         id: 'adv_4_1',
-        code: '4.1',
+        code: '3.1',
         group: 'Intro to Adverbs',
         shortTitle: 'What Is an Adverb?',
         title: 'Introduction to Adverbs: What They Modify & Core Adverb Bank',
@@ -191,8 +191,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_2', label: '4.2 Forming -ment Adverbs' },
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_9', label: '3.9 bon vs. bien' }
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_2', label: '3.2 Forming -ment Adverbs' },
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_9', label: '4.9 bon vs. bien' }
         ]
       },
 
@@ -201,7 +201,7 @@
       ========================================================= */
       {
         id: 'adv_4_2',
-        code: '4.2',
+        code: '3.2',
         group: 'Formation (-ment)',
         shortTitle: 'Forming -ment Adverbs',
         title: 'How to Build -ment Adverbs (4 Rules + Key Exceptions)',
@@ -352,8 +352,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_3', label: '4.3 Placement in Present Tense' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_4', label: '4.4 Placement in Passé Composé' }
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_3', label: '3.3 Placement in Present Tense' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_4', label: '3.4 Placement in Passé Composé' }
         ]
       },
 
@@ -362,7 +362,7 @@
       ========================================================= */
       {
         id: 'adv_4_3',
-        code: '4.3',
+        code: '3.3',
         group: 'Adverb Placement',
         shortTitle: 'Placement: Present Tense',
         title: 'Adverb Placement in Present Tense & All 12 Tex Drills',
@@ -553,8 +553,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_4', label: '4.4 Placement in Passé Composé' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_2', label: '4.2 Forming -ment Adverbs' }
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_4', label: '3.4 Placement in Passé Composé' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_2', label: '3.2 Forming -ment Adverbs' }
         ]
       },
 
@@ -563,7 +563,7 @@
       ========================================================= */
       {
         id: 'adv_4_4',
-        code: '4.4',
+        code: '3.4',
         group: 'Adverb Placement',
         shortTitle: 'Placement: Past & Futur Proche',
         title: 'Adverb Placement in Passé Composé & Futur Proche (All 12 Tex Drills)',
@@ -747,8 +747,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_3', label: '4.3 Placement in Present Tense' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_5', label: '4.5 Adverb Comparatives & Superlatives' }
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_3', label: '3.3 Placement in Present Tense' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_5', label: '3.5 Adverb Comparatives & Superlatives' }
         ]
       },
 
@@ -757,7 +757,7 @@
       ========================================================= */
       {
         id: 'adv_4_5',
-        code: '4.5',
+        code: '3.5',
         group: 'Comparison & Superlative',
         shortTitle: 'Comparatives & le plus (Adv.)',
         title: 'Comparative & Superlative of Adverbs (plus/moins/aussi, mieux & Invariable le)',
@@ -947,8 +947,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch3_adjectives', pageId: 'adj_3_10', label: '3.10 le meilleur vs. le mieux' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_6', label: '4.6 il y a ("ago") vs. en' }
+          { chapterId: 'ch3_adjectives', pageId: 'adj_3_10', label: '4.10 le meilleur vs. le mieux' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_6', label: '3.6 il y a ("ago") vs. en' }
         ]
       },
 
@@ -957,7 +957,7 @@
       ========================================================= */
       {
         id: 'adv_4_6',
-        code: '4.6',
+        code: '3.6',
         group: 'Time Expressions',
         shortTitle: 'il y a ("ago") vs. en',
         title: 'Expressing "Ago" with il y a vs. Dates with en',
@@ -1136,7 +1136,7 @@
         ],
         related: [
           { chapterId: 'ch1_nouns', pageId: 'no_1_8', label: '1.8 il y a ("there is")' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_7', label: '4.7 tôt, tard vs. en retard / à l’heure' }
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_7', label: '3.7 tôt, tard vs. en retard / à l’heure' }
         ]
       },
 
@@ -1145,7 +1145,7 @@
       ========================================================= */
       {
         id: 'adv_4_7',
-        code: '4.7',
+        code: '3.7',
         group: 'Time Expressions',
         shortTitle: 'tôt/tard vs. en retard/à l’heure',
         title: 'tôt / tard vs. en avance / en retard / à l’heure',
@@ -1341,9 +1341,9 @@
           }
         ],
         related: [
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_6', label: '4.6 il y a ("ago") vs. en' },
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_6', label: '3.6 il y a ("ago") vs. en' },
           { chapterId: 'ch1_nouns', pageId: 'no_1_11', label: '1.11 l’heure & la fois' },
-          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: 'Back to 4.1 Intro to Adverbs' }
+          { chapterId: 'ch4_adverbs', pageId: 'adv_4_1', label: 'Back to 3.1 Intro to Adverbs' }
         ]
       }
     ]

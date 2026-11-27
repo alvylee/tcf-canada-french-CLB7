@@ -2,9 +2,11 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
   {
     id: 'nouns',
     code: '01',
+    cefr: 'A1',
+    texPageCount: 5,
     icon: '📦',
     title: 'Nouns (Les Noms)',
-    titleZh: '名词（定义、单复数、阴阳性、存在表达、时间名词）',
+    titleZh: '第一章 · 名词（定义、单复数、阴阳性、存在表达、时间名词）',
     desc: 'What nouns are, singular vs. plural formation & exceptions, masculine vs. feminine patterns, il y a vs. voilà, and temps/heure/fois.',
     descZh: '从零定义讲起：普通/专有/可数/不可数、名词单复数全部规律与例外、人物与物体阴阳性后缀、il y a 与 voilà、以及 temps / heure / fois 辨析。',
     status: 'deep',
@@ -21,183 +23,198 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
   {
     id: 'determiners',
     code: '02',
+    cefr: 'A1',
+    texPageCount: 10,
     icon: '🏷️',
     title: 'Determiners & Articles (Les Déterminants)',
-    titleZh: '限定词与冠词（定冠词、不定冠词、部分冠词、指示/主有）',
+    titleZh: '第二章 · 限定词与冠词（定冠词、不定冠词、部分冠词、指示/主有）',
     desc: 'Definite (le/la/l’/les), indefinite (un/une/des), partitive (du/de la), possessive (mon/ma/mes), demonstrative (ce/cet/cette/ces) & tout.',
     descZh: '名词前面的“小标签”：定冠词、不定冠词、部分冠词、物主限定词、指示限定词与数量限定词。',
     status: 'deep',
     deepChapterId: 'ch2_determiners',
     plannedTopics: [
-      'Intro to Determiners',
-      'Definite Articles (le, la, l’, les)',
-      'Indefinite Articles (un, une, des & pas de)',
-      'Partitive Articles (du, de la, de l’)',
-      'Possessive & Demonstrative Determiners',
-      'Expressions of Quantity & Tout'
+      '2.1–2.4 Intro, Definite Articles & Contractions',
+      '2.5–2.8 Indefinite, Partitive & Negative de-Shift',
+      '2.9–2.10 Possessive & Demonstrative Determiners',
+      '2.11–2.14 Quantity Expressions, Tout & Indefinite Determiners'
     ],
     existingTopicIds: ['a1_articles_gender', 'a1_possessives_places', 'a1_contractions_quantities']
   },
   {
-    id: 'pronouns',
-    code: '03',
-    icon: '👤',
-    title: 'Pronouns (Les Pronoms)',
-    titleZh: '代词体系（主语、重读、直宾、间宾、y/en、关系代词）',
-    desc: 'Subject, tonic/disjunctive, reflexive, direct object (COD), indirect object (COI), y & en, demonstrative, possessive & relative pronouns.',
-    descZh: '按 Tex 渐进顺序：主语代词 → 重读代词 → 自反代词 → 直接宾语 COD → 间接宾语 COI → y / en → 指示/物主/关系代词。',
-    status: 'existing',
-    plannedTopics: [
-      'Intro to Pronouns & Subject Pronouns',
-      'Disjunctive / Tonic Pronouns (moi, toi, lui...)',
-      'Reflexive Pronouns',
-      'Direct Object (le, la, les) & Indirect Object (lui, leur)',
-      'Adverbial Pronouns Y & EN',
-      'Relative Pronouns (qui, que, où, dont)'
-    ],
-    existingTopicIds: ['a1_subject_etre_avoir', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives', 'a2_adverbs_dem_poss_pronouns', 'advanced_pronouns']
-  },
-  {
-    id: 'adjectives',
-    code: '04',
-    icon: '🎨',
-    title: 'Adjectives (Les Adjectifs)',
-    titleZh: '形容词（性数配合、词序与比较级/最高级）',
-    desc: 'Gender & plural agreement, irregular stems (beau/nouveau/vieux), BAGS placement before nouns, and comparatives/superlatives.',
-    descZh: '形容词的阴阳性与复数变化、特殊双形词、置于名词前的 BAGS 规则，以及比较级与最高级。',
-    status: 'deep',
-    deepChapterId: 'ch3_adjectives',
-    plannedTopics: [
-      'Intro & Regular Agreement',
-      'Irregular Adjectives & BAGS Placement',
-      'C’est vs. Il/Elle est',
-      'Comparative & Superlative (bon/meilleur)'
-    ],
-    existingTopicIds: ['a1_cest_adjectives', 'a2_y_en_comparatives']
-  },
-  {
     id: 'adverbs',
-    code: '05',
+    code: '03',
+    cefr: 'A2',
+    texPageCount: 6,
     icon: '⚡',
     title: 'Adverbs (Les Adverbes)',
-    titleZh: '副词（-ment 构成、位置、程度与频率、bon vs bien）',
-    desc: 'Formation in -ment, placement with simple & compound tenses, irregular adverbs (bien/mal/mieux), and frequency expressions.',
-    descZh: '副词构成规则、在现在时与复合过去时中的语序位置，以及 mieux / meilleur 等高频易混词。',
+    titleZh: '第三章 · 副词（-ment 构成、语序位置、比较级/最高级、bon vs bien）',
+    desc: 'Formation in -ment, placement with simple & compound tenses, comparatives & superlatives, il y a (ago), and tôt/tard vs. en retard.',
+    descZh: '副词构成规则、在现在时与复合过去时中的语序位置、比较级/最高级、il y a（以前）与 tôt / en retard 辨析。',
     status: 'deep',
     deepChapterId: 'ch4_adverbs',
     plannedTopics: [
-      'Intro to Adverbs & -ment Formation',
-      'Placement in Simple & Compound Tenses',
-      'Comparatives & Irregulars (bien, mieux, vite)'
+      '3.1–3.2 Intro to Adverbs & -ment Formation Rules',
+      '3.3–3.4 Placement in Present & Passé Composé',
+      '3.5 Comparative & Superlative of Adverbs',
+      '3.6–3.7 il y a ("ago") & tôt/tard vs. en retard'
     ],
     existingTopicIds: ['a2_adverbs_dem_poss_pronouns']
   },
   {
+    id: 'adjectives',
+    code: '04',
+    cefr: 'A1',
+    texPageCount: 9,
+    icon: '🎨',
+    title: 'Adjectives (Les Adjectifs)',
+    titleZh: '第四章 · 形容词（性数配合、词序、词义变化与比较级/最高级）',
+    desc: 'Gender & plural agreement, irregular stems (beau/nouveau/vieux), BANGS placement, meaning shifts by position, comparatives & participles.',
+    descZh: '形容词的阴阳性与复数变化、特殊双形词、BANGS 前置规则、位置改变词义、比较级/最高级与分词作形容词。',
+    status: 'deep',
+    deepChapterId: 'ch3_adjectives',
+    plannedTopics: [
+      '4.1–4.3 Intro, Regular Agreement & BANGS Placement',
+      '4.4–4.6 Irregular Adjectives & Meaning Changes With Position',
+      '4.7–4.10 Comparatives, Superlatives & bon vs. bien',
+      '4.11 Participles Used as Adjectives'
+    ],
+    existingTopicIds: ['a1_cest_adjectives', 'a2_y_en_comparatives']
+  },
+  {
     id: 'verbs',
-    code: '06',
+    code: '05',
+    cefr: 'A1–B1',
+    texPageCount: 28,
     icon: '🔤',
     title: 'Verbs (Les Verbes)',
-    titleZh: '动词基础（être/avoir、规则变位、情态、自反与常用不规则）',
-    desc: 'Être, avoir & avoir idioms, regular -ER/-IR/-RE verbs, stem-changing verbs, modals (pouvoir/vouloir/devoir), savoir vs. connaître.',
-    descZh: '法语动词核心支柱：être 单独精讲、avoir 与习语、三大规则变位组、词干变化、情态动词与 savoir/connaître。',
+    titleZh: '第五章 · 动词基础（être/avoir、规则变位、词干变化、情态与常用不规则）',
+    desc: 'Être, avoir & avoir idioms, regular -ER/-IR/-RE verbs, stem-changing verbs, core irregulars (aller/faire/venir), pronominals, modals & savoir vs. connaître.',
+    descZh: '法语动词核心支柱：être/avoir 与习语、三大规则变位组、词干变化、情态/代词式动词与 savoir/connaître 等 28 个原站主题。',
     status: 'existing',
     plannedTopics: [
-      'Être (To Be) & Avoir (To Have) + Avoir Idioms',
+      'Être, Avoir & Avoir Expressions',
       'Regular -ER, -IR & -RE Present Tense',
       'Stem-Changing -ER (-ger, -cer, -yer, -e_er)',
-      'Core Irregulars & Modals (aller, faire, venir, pouvoir...)',
-      'Savoir vs. Connaître & Leave Verbs'
+      'Irregulars, Modals, Pronominal Verbs & Causative faire'
     ],
     existingTopicIds: ['a1_subject_etre_avoir', 'a1_regular_present', 'a1_irregular_modals', 'a1_stem_irregulars', 'a1_imperative', 'a2_savoir_connaitre_leave']
   },
   {
     id: 'negation',
-    code: '07',
+    code: '06',
+    cefr: 'A1',
+    texPageCount: 5,
     icon: '🚫',
     title: 'Negation (La Négation)',
-    titleZh: '否定句体系（ne...pas/jamais/rien/personne/plus/que）',
-    desc: 'Basic ne...pas, negative words (jamais, rien, personne, plus, aucun), article shift to de, and negation with infinitives & compound tenses.',
-    descZh: '基本否定框架 ne...pas、延伸否定副词（从不/不再/没有人/没有什么）、否定后的 de 变化与语序。',
+    titleZh: '第六章 · 否定句体系（ne...pas/jamais/rien/personne/aucun/ni/que 与 si）',
+    desc: 'Basic ne...pas, alternate forms (jamais, plus, pas encore, pas du tout), personne & rien as subjects/objects, ne...aucun(e), ne...ni...ni, ne...que & oui/si.',
+    descZh: '基本否定框架 ne...pas、延伸否定副词、personne/rien 语法位置、ne...aucun(e) 与 ne...ni...ni、限制 ne...que 与回答词 oui vs si。',
     status: 'deep',
     deepChapterId: 'ch5_negation',
     plannedTopics: [
-      '5.1 Intro: Two-Word Sandwich & Vowel Elision',
-      '5.2 Basic ne...pas (Compound Tenses & Spoken French)',
-      '5.3–5.4 Alternate Forms (jamais, plus, pas encore) & personne/rien',
-      '5.5–5.6 ne...aucun(e), ne...ni...ni & ne...que ("Only")',
-      '5.7 One-Word Responses: oui vs. si, non, jamais!'
-    ],
-    existingTopicIds: ['a1_negation_questions']
-  },
-  {
-    id: 'interrogatives',
-    code: '08',
-    icon: '❓',
-    title: 'Interrogatives (Les Questions)',
-    titleZh: '疑问句（语调、Est-ce que、主谓倒装与疑问词）',
-    desc: 'Yes/no questions across 3 registers (intonation, est-ce que, inversion), interrogative words (qui, que, quoi, où, quand, pourquoi, comment, quel).',
-    descZh: '法语口语与书面三种提问语域，以及完整疑问代词/疑问副词与 quel 配合。',
-    status: 'existing',
-    plannedTopics: [
-      '3 Registers: Intonation, Est-ce que & Inversion',
-      'Question Words (Où, Quand, Comment, Pourquoi)',
-      'Qui / Que / Quoi & Quel/Quelle'
+      '6.1–6.2 Intro: Two-Word Sandwich & Basic ne...pas',
+      '6.3–6.4 Alternate Forms (jamais, plus) & personne / rien',
+      '6.5–6.6 ne...aucun(e), ne...ni...ni & ne...que ("Only")',
+      '6.7 One-Word Responses: oui vs. si, non, jamais!'
     ],
     existingTopicIds: ['a1_negation_questions']
   },
   {
     id: 'prepositions',
-    code: '09',
+    code: '07',
+    cefr: 'A2',
+    texPageCount: 8,
     icon: '🧭',
     title: 'Prepositions (Les Prépositions)',
-    titleZh: '介词（地点方位、国家城市、时间 depuis/pendant/pour、动词搭配）',
-    desc: 'Location & countries (à, en, au, aux), contractions (au/du), time prepositions (depuis, pendant, pour, il y a), and verb + à / de patterns.',
-    descZh: '城市与国家介词选择、缩合冠词、时间介词四姐妹辨析，以及常考动词固定介词搭配。',
+    titleZh: '第七章 · 介词（方位介词、缩合、国名城市、时间 depuis/pendant/pour 与不定式）',
+    desc: 'Common prepositions A–V, contractions (au/aux/du/des), places (à/en/au/aux & de/du/des), time (depuis/pendant/pour/il y a...que), and verbs/adj. + à/de.',
+    descZh: '常用介词辨析、缩合冠词、地理国名与城市介词、时间四姐妹（depuis/pendant/pour/il y a...que）、以及不定式搭配与 après 过去不定式。',
     status: 'deep',
     deepChapterId: 'ch6_prepositions',
     plannedTopics: [
-      '6.1–6.4 Intro & Common Prepositions A–V + Mismatches',
-      '6.5 Contractions of à & de (au, aux, du, des)',
-      '6.6–6.7 Prepositions with Places & Countries (To/In & From)',
-      '6.8–6.9 Time: depuis (Present/Imparfait), il y a...que, pendant, pour',
-      '6.10–6.11 Infinitives: Verbs + à / de, Adj. + de/à & après Past Inf.'
+      '7.1–7.4 Intro & Common Prepositions A–V + Mismatches',
+      '7.5 Contractions of à & de (au, aux, du, des)',
+      '7.6–7.7 Prepositions with Places & Countries (To/In & From)',
+      '7.8–7.9 Time: depuis (Present/Imparfait), il y a...que, pendant, pour',
+      '7.10–7.11 Infinitives: Verbs + à / de, Adj. + de/à & après Past Inf.'
     ],
     existingTopicIds: ['a1_possessives_places', 'a2_time_depuis_pendant', 'connectors_prep_gerondif']
   },
   {
+    id: 'pronouns',
+    code: '08',
+    cefr: 'A1–B2',
+    texPageCount: 15,
+    icon: '👤',
+    title: 'Pronouns (Les Pronoms)',
+    titleZh: '第八章 · 代词体系（主语、c’est/il est、重读、直宾、间宾、y/en、关系与指示）',
+    desc: 'Subject pronouns, c’est vs. il/elle est, disjunctive/tonic, direct (COD) & indirect (COI) objects, y & en, pronoun order, relative (qui/que/dont/lequel) & possessive.',
+    descZh: '按 Tex 渐进顺序：主语代词 → c’est vs il/elle est → 重读代词 → COD/COI → y / en → 关系代词与指示/物主代词（15 页原站体系）。',
+    status: 'existing',
+    plannedTopics: [
+      'Subject Pronouns & c’est vs. il/elle est',
+      'Disjunctive / Tonic Pronouns (moi, toi, lui...)',
+      'Direct Object (le, la, les) & Indirect Object (lui, leur)',
+      'Adverbial Pronouns Y & EN + Pronoun Order',
+      'Relative (qui, que, où, dont), Demonstrative & Possessive Pronouns'
+    ],
+    existingTopicIds: ['a1_subject_etre_avoir', 'a1_tonic_reflexives', 'a2_cod_pronouns', 'a2_coi_vs_cod', 'a2_y_en_comparatives', 'a2_adverbs_dem_poss_pronouns', 'advanced_pronouns']
+  },
+  {
     id: 'conjunctions',
-    code: '10',
+    code: '09',
+    cefr: 'A2–B2',
+    texPageCount: 3,
     icon: '🔗',
     title: 'Conjunctions (Les Conjonctions)',
-    titleZh: '连词与逻辑连接词（因果、转折、条件与虚拟语气触发）',
-    desc: 'Coordinating conjunctions (mais, ou, et, donc, or, ni, car) and subordinating connectors (parce que, bien que, avant que, afin que).',
-    descZh: '并列连词 FANBOYS 法语版与写作口语高频逻辑从属连词。',
+    titleZh: '第九章 · 连词与逻辑连接词（并列连词、从属连词与虚拟语气触发）',
+    desc: 'Coordinating conjunctions (mais, ou, et, donc, or, ni, car), subordinating connectors (parce que, pendant que), and conjunctions triggering subjunctive.',
+    descZh: '并列连词、高分时间/因果/转折从属连词，以及要求接虚拟式的连词（bien que, avant que, afin que 等 3 大原站页面）。',
     status: 'existing',
     plannedTopics: [
       'Coordinating Conjunctions',
-      'Cause, Contrast & Purpose Connectors',
-      'Conjunctions Requiring the Subjunctive'
+      'Subordinating Conjunctions',
+      'Conjunctions Taking the Subjunctive'
     ],
     existingTopicIds: ['connectors_prep_gerondif']
   },
   {
     id: 'tense_mood',
-    code: '11',
+    code: '10',
+    cefr: 'A1–B2',
+    texPageCount: 33,
     icon: '⏳',
     title: 'Tense, Mood & Voice (Temps & Modes)',
-    titleZh: '时态、语式与语态（过去/将来/条件/命令/虚拟/被动）',
-    desc: 'Futur proche, passé récent, impératif, passé composé (avoir & être), imparfait, plus-que-parfait, futur simple, conditionnel, gérondif & subjonctif.',
-    descZh: '从近将来、近过去起步，逐步打通复合过去、未完成过去、愈过去、简单将来、条件式、副动词与虚拟式。',
+    titleZh: '第十章 · 时态、语式与语态（过去/将来/条件/命令/虚拟/间接引语/被动）',
+    desc: 'Present, passé récent, futur proche, impératif, passé composé, imparfait, plus-que-parfait, passé simple, futur simple, conditionnel, subjonctif & passive voice.',
+    descZh: '全套法语时态与语式系统（33 页）：现在时/近将来/命令式 → 复合过去/未完成过去对比 → 简单将来/条件式/si 从句 → 虚拟式全解与被动态。',
     status: 'existing',
     plannedTopics: [
-      'Futur Proche & Passé Récent',
-      'Impératif (Imperative Mood)',
-      'Passé Composé (Avoir & Être) vs. Imparfait',
-      'Futur Simple & Plus-que-parfait',
-      'Conditionnel & Si-Clauses',
-      'Subjonctif & Gérondif'
+      'Present, Passé Récent & Futur Proche',
+      'Passé Composé (avoir / être / pronominal) vs. Imparfait',
+      'Plus-que-parfait, Futur Simple & Futur Antérieur',
+      'Conditional, Past Conditional & Si-Clauses',
+      'Subjunctive, Reported Speech & Passive Voice'
     ],
     existingTopicIds: ['a1_near_future_recent_past', 'a1_imperative', 'a2_passe_compose_avoir', 'a2_passe_compose_etre', 'a2_imparfait', 'a2_pc_vs_imparfait', 'a2_futur_simple', 'plus_que_parfait', 'conditionnel_si', 'subjunctive']
+  },
+  {
+    id: 'interrogatives',
+    code: '11',
+    cefr: 'A1–B1',
+    texPageCount: 7,
+    icon: '❓',
+    title: 'Interrogatives (Les Questions)',
+    titleZh: '第十一章 · 疑问句（语调、Est-ce que、倒装、quel、lequel 与疑问词）',
+    desc: 'Yes/no questions, subject/verb inversion, interrogative adjective quel(le)(s), interrogative pronouns (qui/que/qu’est-ce qui/lequel) & question words.',
+    descZh: '法语三种提问语域（语调/est-ce que/倒装）、疑问形容词 quel、疑问代词 qui/que/quoi/lequel 以及全部疑问词（7 页原站专题）。',
+    status: 'existing',
+    plannedTopics: [
+      'Yes/No Questions & Subject/Verb Inversion',
+      'Interrogative Adjective quel & Pronoun lequel',
+      'Interrogative Pronouns & Question Words (où, quand, comment, pourquoi)'
+    ],
+    existingTopicIds: ['a1_negation_questions']
   }
 ];
 

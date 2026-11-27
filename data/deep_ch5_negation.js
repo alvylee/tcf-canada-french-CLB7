@@ -2,12 +2,12 @@
   if (!Array.isArray(window.__TCF_DEEP_CHAPTERS__)) window.__TCF_DEEP_CHAPTERS__ = [];
   window.__TCF_DEEP_CHAPTERS__.push({
     id: 'ch5_negation',
-    code: 'Ch 5',
+    code: 'Ch 6',
     level: 'A1',
     category: 'negation',
     icon: '🚫',
     title: 'Negation (La Négation)',
-    titleZh: '第五章 · 法语否定句全掌握',
+    titleZh: '第六章 · 法语否定句全掌握',
     subtitle: 'Tex-style slow-paced deep mastery: 7 bite-sized pages covering the ne...pas sandwich, alternate negatives (jamais/plus/rien/personne), personne & rien as subjects, ne...aucun(e), ne...ni...ni, ne...que ("only"), and oui vs. si — with 6 cartoons & 80 drills.',
     subtitleZh: '对标 Tex 深度拆分为 7 个轻松小页：基本双词否定 ne...pas、延伸否定词（jamais/plus/rien/personne/pas du tout）、personne 与 rien 作主语/宾语、ne...aucun(e) 与 ne...ni...ni、限制表达 ne...que（仅仅）与回答词 oui vs si，配 6 张原版卡通与 80 题专练。',
     pages: [
@@ -16,7 +16,7 @@
       ========================================================= */
       {
         id: 'neg_5_1',
-        code: '5.1',
+        code: '6.1',
         group: 'Intro to Negation',
         shortTitle: 'What Is Negation?',
         title: 'Introduction to Negation: Two-Word Sandwich vs. English One-Word Negatives',
@@ -182,7 +182,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_2', label: '5.2 Basic Negation: ne...pas & Tenses' }
+          { chapterId: 'ch5_negation', pageId: 'neg_5_2', label: '6.2 Basic Negation: ne...pas & Tenses' }
         ]
       },
 
@@ -191,7 +191,7 @@
       ========================================================= */
       {
         id: 'neg_5_2',
-        code: '5.2',
+        code: '6.2',
         group: 'Basic ne...pas',
         shortTitle: 'Basic ne...pas & Compound Tenses',
         title: 'Basic Negation (ne...pas): Present, Passé Composé, Futur Proche & Spoken French',
@@ -385,7 +385,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_3', label: '5.3 Alternate Negatives (jamais, plus, pas encore...)' },
+          { chapterId: 'ch5_negation', pageId: 'neg_5_3', label: '6.3 Alternate Negatives (jamais, plus, pas encore...)' },
           { chapterId: 'ch2_determiners', pageId: 'det_2_8', label: 'Review 2.8: Negative pas de Rule' }
         ]
       },
@@ -395,7 +395,7 @@
       ========================================================= */
       {
         id: 'neg_5_3',
-        code: '5.3',
+        code: '6.3',
         group: 'Alternate Negatives I',
         shortTitle: 'jamais, plus, pas encore, pas du tout',
         title: 'Alternate Forms (1): jamais, pas encore, rien, personne, plus & pas du tout',
@@ -601,7 +601,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_4', label: '5.4 Negative Pronouns: personne & rien' }
+          { chapterId: 'ch5_negation', pageId: 'neg_5_4', label: '6.4 Negative Pronouns: personne & rien' }
         ]
       },
 
@@ -610,7 +610,7 @@
       ========================================================= */
       {
         id: 'neg_5_4',
-        code: '5.4',
+        code: '6.4',
         group: 'personne & rien',
         shortTitle: 'personne & rien (Object vs. Subject)',
         title: 'Negative Pronouns (personne & rien): Direct Object, Prepositional Object & Sentence Subject',
@@ -809,7 +809,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_5', label: '5.5 ne...aucun(e) & ne...ni...ni' }
+          { chapterId: 'ch5_negation', pageId: 'neg_5_5', label: '6.5 ne...aucun(e) & ne...ni...ni' }
         ]
       },
 
@@ -818,7 +818,7 @@
       ========================================================= */
       {
         id: 'neg_5_5',
-        code: '5.5',
+        code: '6.5',
         group: 'aucun & ni...ni',
         shortTitle: 'ne...aucun(e) & ne...ni...ni',
         title: 'ne...aucun(e) ("Not a Single") & ne...ni...ni ("Neither...Nor")',
@@ -1005,7 +1005,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_6', label: '5.6 Restriction: ne...que ("Only")' },
+          { chapterId: 'ch5_negation', pageId: 'neg_5_6', label: '6.6 Restriction: ne...que ("Only")' },
           { chapterId: 'ch2_determiners', pageId: 'det_2_13', label: 'Review 2.13: aucun vs. quelque' }
         ]
       },
@@ -1015,7 +1015,7 @@
       ========================================================= */
       {
         id: 'neg_5_6',
-        code: '5.6',
+        code: '6.6',
         group: 'ne...que ("Only")',
         shortTitle: 'ne...que ("Only")',
         title: 'Restriction: ne...que ("Only") — Placement & Why Articles Don’t Shift to de!',
@@ -1189,7 +1189,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_7', label: '5.7 One-Word Sentences: oui vs. si, non, jamais!' }
+          { chapterId: 'ch5_negation', pageId: 'neg_5_7', label: '6.7 One-Word Sentences: oui vs. si, non, jamais!' }
         ]
       },
 
@@ -1198,7 +1198,7 @@
       ========================================================= */
       {
         id: 'neg_5_7',
-        code: '5.7',
+        code: '6.7',
         group: 'One-Word Answers',
         shortTitle: 'oui vs. si & One-Word Negatives',
         title: 'One-Word Responses: oui vs. si, non vs. pas & Standalone rien / personne / jamais!',
@@ -1384,8 +1384,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Back to 5.1 Intro to Negation' },
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_1', label: 'Continue → Ch 6 Prepositions (A2)' }
+          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Back to 6.1 Intro to Negation' },
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_1', label: 'Continue → Ch 7 Prepositions (A2)' }
         ]
       }
     ]

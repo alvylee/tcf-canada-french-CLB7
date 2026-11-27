@@ -2,12 +2,12 @@
   if (!Array.isArray(window.__TCF_DEEP_CHAPTERS__)) window.__TCF_DEEP_CHAPTERS__ = [];
   window.__TCF_DEEP_CHAPTERS__.push({
     id: 'ch6_prepositions',
-    code: 'Ch 6',
+    code: 'Ch 7',
     level: 'A2',
     category: 'prepositions',
     icon: '🧭',
     title: 'Prepositions (Les Prépositions)',
-    titleZh: '第六章 · 法语介词全掌握',
+    titleZh: '第七章 · 法语介词全掌握',
     subtitle: 'Tex-style slow-paced deep mastery: 11 bite-sized pages covering 35+ common prepositions (A–V), contractions (au/aux/du/des), places & countries (à/en/au/aux & de/du/des), time prepositions (depuis / pendant / pour / il y a...que / imparfait), and infinitive constructions (à vs. de & après past infinitive) — with 19 cartoons & 128 drills.',
     subtitleZh: '对标 Tex 深度拆分为 11 个轻松小页：35+ 个高频空间/逻辑介词精讲（A–V）、à/de 缩合（au/du/aux/des）、地理国名与城市介词（往来两套）、时间四姐妹（depuis/pendant/pour/il y a...que 与未完成过去时）、以及“动词/形容词 + à/de + 不定式”与 après 过去不定式，配 19 张原版卡通与 128 题专练。',
     pages: [
@@ -16,7 +16,7 @@
       ========================================================= */
       {
         id: 'pre_6_1',
-        code: '6.1',
+        code: '7.1',
         group: 'Intro to Prepositions',
         shortTitle: 'What Is a Preposition?',
         title: 'Introduction to Prepositions: Relationships & English–French Mismatches',
@@ -183,7 +183,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_2', label: '6.2 Common Prepositions A–C' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_2', label: '7.2 Common Prepositions A–C' }
         ]
       },
 
@@ -192,7 +192,7 @@
       ========================================================= */
       {
         id: 'pre_6_2',
-        code: '6.2',
+        code: '7.2',
         group: 'Common Prepositions A–C',
         shortTitle: 'Prepositions A–C (chez, à cause de...)',
         title: 'Common Prepositions (A–C): à, à cause de, au milieu de, avant, avec, chez & contre',
@@ -411,7 +411,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_3', label: '6.3 Common Prepositions D–F' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_3', label: '7.3 Common Prepositions D–F' }
         ]
       },
 
@@ -420,7 +420,7 @@
       ========================================================= */
       {
         id: 'pre_6_3',
-        code: '6.3',
+        code: '7.3',
         group: 'Common Prepositions D–F',
         shortTitle: 'dans vs. en, devant vs. avant, entre',
         title: 'Common Prepositions (D–F): dans vs. en, devant vs. avant, entre vs. parmi & envers',
@@ -634,7 +634,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_4', label: '6.4 Common Prepositions G–V & Tex Exercise' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_4', label: '7.4 Common Prepositions G–V & Tex Exercise' }
         ]
       },
 
@@ -643,7 +643,7 @@
       ========================================================= */
       {
         id: 'pre_6_4',
-        code: '6.4',
+        code: '7.4',
         group: 'Common Prepositions G–V',
         shortTitle: 'Prepositions G–V (grâce à, malgré, sans...)',
         title: 'Common Prepositions (G–V): grâce à, malgré, par, parmi, sans, sous, sur, vers & Tex Practice',
@@ -857,7 +857,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_5', label: '6.5 Contractions of à & de (au, aux, du, des)' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_5', label: '7.5 Contractions of à & de (au, aux, du, des)' }
         ]
       },
 
@@ -866,7 +866,7 @@
       ========================================================= */
       {
         id: 'pre_6_5',
-        code: '6.5',
+        code: '7.5',
         group: 'Contractions (à / de)',
         shortTitle: 'Contractions: au, aux, du, des',
         title: 'Contractions of à & de with Definite Articles (au, aux, du, des vs. à la / de l’)',
@@ -1048,7 +1048,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_6', label: '6.6 Places I: To / In (à, en, au, aux)' },
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_6', label: '7.6 Places I: To / In (à, en, au, aux)' },
           { chapterId: 'ch2_determiners', pageId: 'det_2_6', label: 'Review 2.6: Partitive du / de la vs. Contraction' }
         ]
       },
@@ -1058,7 +1058,7 @@
       ========================================================= */
       {
         id: 'pre_6_6',
-        code: '6.6',
+        code: '7.6',
         group: 'Places (To / In)',
         shortTitle: 'Places I: à, en, au, aux',
         title: 'Prepositions with Places (Part 1 — To / In): Cities, Islands, Countries, States & Provinces',
@@ -1232,7 +1232,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_7', label: '6.7 Places II: From (de, d’, du, des)' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_7', label: '7.7 Places II: From (de, d’, du, des)' }
         ]
       },
 
@@ -1241,7 +1241,7 @@
       ========================================================= */
       {
         id: 'pre_6_7',
-        code: '6.7',
+        code: '7.7',
         group: 'Places (From)',
         shortTitle: 'Places II: de, d’, du, des ("From")',
         title: 'Prepositions with Places (Part 2 — Coming From): de / d’, du & des + Mixed Practice',
@@ -1418,7 +1418,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_8', label: '6.8 Time I: depuis & il y a / ça fait ... que' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_8', label: '7.8 Time I: depuis & il y a / ça fait ... que' }
         ]
       },
 
@@ -1427,7 +1427,7 @@
       ========================================================= */
       {
         id: 'pre_6_8',
-        code: '6.8',
+        code: '7.8',
         group: 'Time (depuis + Present)',
         shortTitle: 'depuis vs. il y a / ça fait ... que',
         title: 'Time (1): depuis ("For/Since") with Present Tense vs. il y a / ça fait / voilà ... que',
@@ -1632,7 +1632,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_9', label: '6.9 Time II: depuis + Imperfect & pendant / pour' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_9', label: '7.9 Time II: depuis + Imperfect & pendant / pour' }
         ]
       },
 
@@ -1641,7 +1641,7 @@
       ========================================================= */
       {
         id: 'pre_6_9',
-        code: '6.9',
+        code: '7.9',
         group: 'Time (Imperfect & pendant/pour)',
         shortTitle: 'depuis+Imparfait & depuis/pendant/pour',
         title: 'Time (2): depuis with Imparfait ("Had Been...") & Choosing depuis vs. pendant vs. pour',
@@ -1833,7 +1833,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_10', label: '6.10 Infinitives I: Verbs + à vs. de' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_10', label: '7.10 Infinitives I: Verbs + à vs. de' }
         ]
       },
 
@@ -1842,7 +1842,7 @@
       ========================================================= */
       {
         id: 'pre_6_10',
-        code: '6.10',
+        code: '7.10',
         group: 'Infinitives (à vs. de)',
         shortTitle: 'Verbs + à / de + Infinitive',
         title: 'Prepositions with Infinitives (1): Verbs Taking à vs. de + Avoir Idioms',
@@ -2030,7 +2030,7 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_11', label: '6.11 Infinitives II: Adj. + de/à, pour/sans/avant de & après' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_11', label: '7.11 Infinitives II: Adj. + de/à, pour/sans/avant de & après' }
         ]
       },
 
@@ -2039,7 +2039,7 @@
       ========================================================= */
       {
         id: 'pre_6_11',
-        code: '6.11',
+        code: '7.11',
         group: 'Infinitives (Adj. & Clauses)',
         shortTitle: 'Adj. + de/à, sans/avant de, après',
         title: 'Infinitives (2): Adjectives + de vs. à, pour / avant de / sans / par & après Past Infinitive',
@@ -2212,8 +2212,8 @@
           }
         ],
         related: [
-          { chapterId: 'ch6_prepositions', pageId: 'pre_6_1', label: 'Back to 6.1 Intro to Prepositions' },
-          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Review Ch 5 Negation' }
+          { chapterId: 'ch6_prepositions', pageId: 'pre_6_1', label: 'Back to 7.1 Intro to Prepositions' },
+          { chapterId: 'ch5_negation', pageId: 'neg_5_1', label: 'Review Ch 6 Negation' }
         ]
       }
     ]

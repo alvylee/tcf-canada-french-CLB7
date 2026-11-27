@@ -310,8 +310,8 @@
   <script src="./data/grammar_lessons.js"></script>
   <script src="./data/deep_chapters.js"></script>
   <script src="./data/deep_ch2_determiners.js"></script>
-  <script src="./data/deep_ch3_adjectives.js"></script>
   <script src="./data/deep_ch4_adverbs.js"></script>
+  <script src="./data/deep_ch3_adjectives.js"></script>
   <script src="./data/deep_ch5_negation.js"></script>
   <script src="./data/deep_ch6_prepositions.js"></script>
   <script src="./data/audio_manifest.js?v=2"></script>
@@ -2513,7 +2513,8 @@
         activeView: normalizedInitView, // 'roadmap' | 'course' | 'practice' | 'exam' | 'essentials' | 'grammar' | 'vocabsyl' | 'chapter'
         roadmapTab: 'today', // 'today' | 'sprint' | 'plan'
         courseLevel: persisted.courseLevel || 'A1', // 'A0' | 'A1' | 'A2' | 'B1' | 'B2'
-        courseBrowseMode: (persisted.courseBrowseMode === 'index') ? 'index' : 'path', // 'path' | 'index'
+        courseBrowseMode: (persisted.courseBrowseMode === 'index') ? 'index' : 'path', // legacy compat
+        courseFilter: 'all', // 'all' | 'live' | 'A0' | 'A1' | 'A2'
         courseTypeFilter: 'all', // 'all' | 'grammar' | 'vocab' | 'units' | 'notes'
         activeDeepChapterId: null,
         activeDeepPageId: null,
@@ -3810,7 +3811,7 @@
 
       const WORKSPACES = [
         { id: 'roadmap', icon: '🗺️', label: 'Today', group: 'main' },
-        { id: 'course', icon: '📘', label: 'Course (A0 → B2)', group: 'main' },
+        { id: 'course', icon: '📘', label: 'Course (Tex 1–11)', group: 'main' },
         { id: 'practice', icon: '⚡', label: 'Practice & SRS', group: 'main' },
         { id: 'exam', icon: '🎯', label: 'TCF Exam', group: 'main' },
         { id: 'ref_pronouns', icon: '👤', label: 'Pronouns & Changes', group: 'quickref', essTab: 'pronouns' },
@@ -5311,7 +5312,10 @@
                   <div class="p-4 rounded-xl bg-[var(--content)] border border-[var(--border)] flex flex-col justify-between gap-3">
                     <div>
                       <div class="flex items-center justify-between gap-1">
-                        <span class="px-2 py-0.5 rounded border text-xs font-bold ${levelBadgeStyle(dCh.level)}">${esc(dCh.level)} · ${esc(dCh.code)}</span>
+                        <div class="flex items-center gap-1.5">
+                          <span class="px-2 py-0.5 rounded border text-xs font-bold tint-primary text-[var(--primary)] border-primary-soft">${esc(dCh.code)}</span>
+                          <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${levelBadgeStyle(dCh.level)}">${esc(dCh.level)}</span>
+                        </div>
                         <span class="text-xs font-semibold text-[var(--muted-foreground)] tabular-nums">${dPct}%</span>
                       </div>
                       <div class="text-xs font-bold text-[var(--foreground)] mt-2">${dCh.icon} ${esc(dCh.shortTitle || dCh.title)}</div>
@@ -5578,15 +5582,15 @@
         }));
         const bTgi = document.getElementById('btnTodayGrammarIndex');
         if (bTgi) bTgi.onclick = () => {
-          state.courseBrowseMode = 'index';
+          state.courseFilter = 'all';
           state.activeTopicQuizId = null;
           state.activeDeepChapterId = null;
           state.activeDeepPageId = null;
           navigate('ws', 'course');
         };
         els.mainContent.querySelectorAll('[data-go-course-lvl]').forEach((b) => (b.onclick = () => {
-          state.courseLevel = b.dataset.goCourseLvl || 'A1';
-          state.courseBrowseMode = 'path';
+          const lvl = b.dataset.goCourseLvl || 'all';
+          state.courseFilter = ['A1', 'A2'].includes(lvl) ? lvl : 'all';
           state.activeTopicQuizId = null;
           state.activeDeepChapterId = null;
           state.activeDeepPageId = null;
@@ -7601,7 +7605,7 @@
 
         const prevPage = pageIdx > 0 ? pages[pageIdx - 1] : null;
         const nextPage = pageIdx + 1 < pages.length ? pages[pageIdx + 1] : null;
-        const backLabel = state.courseBrowseMode === 'index' ? '← Back to Grammar Index' : '← Back to Course';
+        const backLabel = '← Back to Tex Course';
 
         const subPageStripHTML = `
           <div class="flex flex-wrap gap-1.5">
@@ -8334,146 +8338,26 @@
           return;
         }
 
-        const browseMode = state.courseBrowseMode === 'index' ? 'index' : 'path';
-        state.courseBrowseMode = browseMode;
-
-        const curLvl = ['A0', 'A1', 'A2', 'B1', 'B2'].includes(state.courseLevel) ? state.courseLevel : 'A1';
-        state.courseLevel = curLvl;
+        const curFilter = ['all', 'live', 'A0', 'A1', 'A2'].includes(state.courseFilter) ? state.courseFilter : 'all';
+        state.courseFilter = curFilter;
         const deepTotalPages = getTotalDeepPagesCount();
         const deepDonePages = getTotalDeepPagesDoneCount();
         const recDeep = getRecommendedNextDeepPageGlobal();
-
-        const modeSwitchHTML = `
-          <div class="flex flex-wrap items-center gap-2">
-            <button type="button" data-course-browse="path" class="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer border ${browseMode === 'path' ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent' : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
-              🗺️ Learning Path (A0 → B2)
-            </button>
-            <button type="button" data-course-browse="index" class="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer border ${browseMode === 'index' ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent' : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'}">
-              📚 Grammar Index (11 Topics · Tex Style)
-            </button>
-          </div>
-        `;
-
-        if (browseMode === 'index') {
-          const readyCats = GRAMMAR_DIRECTORY.filter((c) => c.status === 'deep' && getDeepChapter(c.deepChapterId)).length;
-
-          const dirHTML = GRAMMAR_DIRECTORY.map((cat) => {
-            const deepCh = (cat.status === 'deep' && cat.deepChapterId) ? getDeepChapter(cat.deepChapterId) : null;
-            const isDeepReady = Boolean(deepCh);
-            const deepPages = deepCh ? (deepCh.pages || []) : [];
-            const deepDone = deepCh ? getDeepChapterDoneCount(deepCh.id) : 0;
-
-            return `
-              <div class="studio-card p-5 space-y-3 ${isDeepReady ? 'border-primary-soft ring-1 ring-[var(--primary)]/15' : ''}">
-                <div class="flex flex-wrap items-start justify-between gap-2">
-                  <div class="space-y-1 min-w-0">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="text-lg">${cat.icon}</span>
-                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">${esc(cat.code)}</span>
-                      <h3 class="text-base font-bold text-[var(--foreground)]">${esc(cat.title)}</h3>
-                      ${isDeepReady
-                        ? `<span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(deepCh.level)}">${esc(deepCh.level)} · ${esc(deepCh.code)}</span>
-                           <span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Deep Slow-Paced Ready (${deepDone}/${deepPages.length} pages)</span>`
-                        : `<span class="px-2.5 py-0.5 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold">🚧 Coming Soon · Tex Slow-Paced</span>`}
-                    </div>
-                    ${state.showZh && cat.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(cat.titleZh)}</div>` : ''}
-                    <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && cat.descZh ? cat.descZh : cat.desc)}</p>
-                  </div>
-                </div>
-
-                ${isDeepReady ? `
-                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 pt-1">
-                    ${deepPages.map((p) => {
-                      const pProg = state.deepProgress[p.id] || {};
-                      const done = Boolean(pProg.completed);
-                      return `
-                        <button type="button" data-open-deep="${deepCh.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${done ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover cursor-pointer flex items-center justify-between gap-2">
-                          <div class="min-w-0">
-                            <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
-                            <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
-                          </div>
-                          <span class="text-xs font-bold shrink-0 ${done ? 'text-[var(--success)]' : 'text-[var(--link)]'}">${done ? '✓' : '→'}</span>
-                        </button>
-                      `;
-                    }).join('')}
-                  </div>
-                ` : `
-                  <div class="space-y-2 pt-1">
-                    <div class="flex flex-wrap gap-1.5">
-                      ${(cat.plannedTopics || []).map((pt) => `<span class="px-2 py-0.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">${esc(pt)}</span>`).join('')}
-                    </div>
-                  </div>
-                `}
-              </div>
-            `;
-          }).join('');
-
-          els.mainContent.innerHTML = `
-            <div class="space-y-5">
-              <div class="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <h2 class="text-2xl font-bold text-[var(--foreground)]">📚 Grammar Directory (11 Categories · Tex Structure)</h2>
-                  <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                    Browse all 11 Tex grammar categories systematically. ${readyCats} of ${GRAMMAR_DIRECTORY.length} categories (${deepTotalPages} bite-sized pages) are live now!
-                  </p>
-                </div>
-                <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
-                  Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${readyCats} Ch
-                </div>
-              </div>
-              ${modeSwitchHTML}
-              <div class="space-y-4">
-                ${dirHTML}
-              </div>
-            </div>
-          `;
-
-          els.mainContent.querySelectorAll('[data-course-browse]').forEach((b) => {
-            b.onclick = () => {
-              state.courseBrowseMode = b.dataset.courseBrowse;
-              saveState();
-              renderCourseView();
-            };
-          });
-          els.mainContent.querySelectorAll('[data-open-deep]').forEach((b) => {
-            b.onclick = () => {
-              const [cid, pid] = String(b.dataset.openDeep || '').split('::');
-              openDeepPage(cid, pid, 'study');
-            };
-          });
-          return;
-        }
-
         const soundsList = GRAMMAR_SYLLABUS.filter((g) => g.level === 'Sounds');
-        const levelDeepChapters = DEEP_CHAPTERS.filter((c) => c.level === curLvl);
+        const readyCount = GRAMMAR_DIRECTORY.filter((c) => c.status === 'deep' && getDeepChapter(c.deepChapterId)).length;
 
-        const formatLvlTabLabel = (lvl, baseLabel) => {
-          const chs = DEEP_CHAPTERS.filter((c) => c.level === lvl);
-          if (!chs.length) return `${baseLabel} (Upcoming)`;
-          const pgs = chs.reduce((sum, c) => sum + ((c.pages || []).length), 0);
-          return `${baseLabel} (${chs.length} Ch · ${pgs}p)`;
-        };
-
-        const levelTabs = [
+        const filterPills = [
+          { id: 'all', label: `📚 All Tex Chapters (${GRAMMAR_DIRECTORY.length})` },
+          { id: 'live', label: `✨ Live Now (${readyCount} Ch · ${deepTotalPages}p)` },
           { id: 'A0', label: `🔊 A0 Sounds (${soundsList.length})` },
-          { id: 'A1', label: formatLvlTabLabel('A1', 'A1 Foundations') },
-          { id: 'A2', label: formatLvlTabLabel('A2', 'A2 Elementary') },
-          { id: 'B1', label: formatLvlTabLabel('B1', 'B1 Intermediate') },
-          { id: 'B2', label: formatLvlTabLabel('B2', 'B2 CLB 7') }
+          { id: 'A1', label: 'CEFR: A1' },
+          { id: 'A2', label: 'CEFR: A2' }
         ];
-
-        const levelIntro = {
-          A0: 'Build crisp French pronunciation and ear decoding first: Mandarin ü vs u, nasal vowels, liaisons, and Canadian spoken contractions.',
-          A1: 'Tex Slow-Paced Foundations (Chapters 1–3 & 5 · 43 bite-sized pages): Ch 1 Nouns → Ch 2 Determiners & Articles → Ch 3 Adjectives → Ch 5 Negation.',
-          A2: 'Tex Slow-Paced Expansion (Chapters 4 & 6 · 18 bite-sized pages): Ch 4 Adverbs (-ment formation, placement, comparatives) → Ch 6 Prepositions (contractions, places, depuis/pendant/pour, infinitives).',
-          B1: 'Intermediate Fluency: Tex slow-paced B1 chapters are coming next — browse the 11-Topic Grammar Index or review earlier Tex chapters anytime.',
-          B2: 'CLB 7 Mastery: Tex slow-paced B2 chapters are coming next — browse the 11-Topic Grammar Index or explore Practice & TCF Exam studios.'
-        }[curLvl];
 
         const a0BodyHTML = `
           <div class="space-y-4">
             <div class="p-3.5 rounded-xl tint-primary border border-primary-soft text-xs text-[var(--foreground)]">
-              💡 <strong>Suggested Pacing:</strong> Complete <strong>P.1–P.3</strong> (U vs OU, Nasals, Liaisons) before or alongside <strong>Ch 1 (Nouns)</strong>, then use <strong>P.4–P.7</strong> (Voiced/Voiceless, é/è, Canadian French) as you advance through A1–A2.
+              💡 <strong>Suggested Pacing:</strong> Complete <strong>P.1–P.3</strong> (U vs OU, Nasals, Liaisons) before or alongside <strong>Ch 1 (Nouns)</strong>, then use <strong>P.4–P.7</strong> (Voiced/Voiceless, é/è, Canadian French) as you advance.
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               ${soundsList.map((g, idx) => {
@@ -8496,140 +8380,122 @@
           </div>
         `;
 
-        const latestDeepCh = DEEP_CHAPTERS.length ? DEEP_CHAPTERS[DEEP_CHAPTERS.length - 1] : null;
-        const lvlOrder = ['A1', 'A2', 'B1', 'B2'];
-        const nextLevelName = lvlOrder[lvlOrder.indexOf(curLvl) + 1] || null;
-        const nextLvlDeepCh = nextLevelName ? (DEEP_CHAPTERS.find((c) => c.level === nextLevelName) || null) : null;
+        const visibleCats = GRAMMAR_DIRECTORY.filter((cat) => {
+          const isReady = Boolean(cat.status === 'deep' && cat.deepChapterId && getDeepChapter(cat.deepChapterId));
+          if (curFilter === 'live') return isReady;
+          if (curFilter === 'A1') return (cat.cefr || '').includes('A1');
+          if (curFilter === 'A2') return (cat.cefr || '').includes('A2');
+          return true;
+        });
 
-        const deepPilotHTML = levelDeepChapters.length ? `
-          <section class="space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <h3 class="text-base font-bold text-[var(--foreground)]">1. Tex Slow-Paced Grammar Chapters (${curLvl})</h3>
-              <span class="text-xs text-[var(--muted-foreground)]">Bite-sized rules + original cartoons + focused drills</span>
-            </div>
-            ${levelDeepChapters.map((dCh) => {
-              const dPages = dCh.pages || [];
-              const dDone = getDeepChapterDoneCount(dCh.id);
-              const dNext = getNextRecommendedDeepPage(dCh.id);
-              const dPct = dPages.length ? Math.round((dDone / dPages.length) * 100) : 0;
-              return `
-                <div class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/15">
-                  <div class="flex flex-wrap items-start justify-between gap-3">
-                    <div class="space-y-1 min-w-0">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-lg">${dCh.icon}</span>
-                        <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(dCh.level)}">${esc(dCh.code)} · Deep Slow-Paced</span>
-                        <span class="px-2.5 py-0.5 rounded-full tint-primary text-[var(--primary)] text-[11px] font-bold">✨ Tex Depth · ${dPages.length} Bite-Sized Pages</span>
-                      </div>
-                      <h4 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(dCh.title)}</h4>
-                      ${state.showZh && dCh.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(dCh.titleZh)}</div>` : ''}
-                      <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && dCh.subtitleZh ? dCh.subtitleZh : dCh.subtitle)}</p>
+        const chaptersListHTML = visibleCats.map((cat) => {
+          const chNum = parseInt(cat.code, 10) || 1;
+          const dCh = (cat.status === 'deep' && cat.deepChapterId) ? getDeepChapter(cat.deepChapterId) : null;
+          const cefrLabel = cat.cefr || (dCh ? dCh.level : 'A1');
+          const badgeLevel = cefrLabel.slice(0, 2);
+
+          if (dCh) {
+            const dPages = dCh.pages || [];
+            const dDone = getDeepChapterDoneCount(dCh.id);
+            const dNext = getNextRecommendedDeepPage(dCh.id);
+            const dPct = dPages.length ? Math.round((dDone / dPages.length) * 100) : 0;
+            return `
+              <section class="studio-card p-5 space-y-4 border-primary-soft ring-1 ring-[var(--primary)]/15">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div class="space-y-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="text-lg">${dCh.icon || cat.icon}</span>
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-primary text-[var(--primary)] border-primary-soft">Ch ${chNum}</span>
+                      <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(badgeLevel)}">${esc(cefrLabel)}</span>
+                      <span class="px-2.5 py-0.5 rounded-full tint-success text-[var(--success)] text-[11px] font-bold">✨ Tex Depth · ${dPages.length} Pages</span>
                     </div>
-                    <div class="flex flex-col items-end gap-2 shrink-0">
-                      <span class="px-2.5 py-1 rounded-full text-xs font-bold tabular-nums ${dDone === dPages.length ? 'tint-success text-[var(--success)]' : 'tint-muted text-[var(--foreground)]'}">${dDone} / ${dPages.length} pages done</span>
-                      ${dNext ? `
-                        <button type="button" data-open-deep="${dCh.id}::${dNext.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                          ${dDone > 0 && dDone < dPages.length ? `Continue Page ${esc(dNext.code)} →` : `Start Page ${esc(dNext.code)} →`}
+                    <h3 class="text-base sm:text-lg font-bold text-[var(--foreground)]">${esc(dCh.title)}</h3>
+                    ${state.showZh && dCh.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(dCh.titleZh)}</div>` : ''}
+                    <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && dCh.subtitleZh ? dCh.subtitleZh : dCh.subtitle)}</p>
+                  </div>
+                  <div class="flex flex-col items-end gap-2 shrink-0">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold tabular-nums ${dDone === dPages.length ? 'tint-success text-[var(--success)]' : 'tint-muted text-[var(--foreground)]'}">${dDone} / ${dPages.length} pages done</span>
+                    ${dNext ? `
+                      <button type="button" data-open-deep="${dCh.id}::${dNext.id}" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
+                        ${dDone > 0 && dDone < dPages.length ? `Continue Page ${esc(dNext.code)} →` : `Start Page ${esc(dNext.code)} →`}
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+                <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
+                  <div class="h-full rounded-full ${dDone === dPages.length ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${dPct}%"></div>
+                </div>
+                <details open class="group">
+                  <summary class="text-xs font-bold text-[var(--link)] cursor-pointer select-none mb-2.5">
+                    Show / Hide all ${dPages.length} sub-pages (Ch ${chNum})
+                  </summary>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    ${dPages.map((p) => {
+                      const pProg = state.deepProgress[p.id] || {};
+                      const pDone = Boolean(pProg.completed);
+                      const pBest = pProg.drillBest || 0;
+                      const pTotal = (p.drills || []).length;
+                      return `
+                        <button type="button" data-open-deep="${dCh.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${pDone ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
+                          <div class="min-w-0">
+                            <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
+                            <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
+                          </div>
+                          <span class="text-[11px] font-bold shrink-0 tabular-nums ${pDone ? 'text-[var(--success)]' : pBest > 0 ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}">
+                            ${pDone ? `✓ ${pBest}/${pTotal}` : pBest > 0 ? `${pBest}/${pTotal}` : `${pTotal}Q →`}
+                          </span>
                         </button>
-                      ` : ''}
-                    </div>
+                      `;
+                    }).join('')}
                   </div>
-                  <div class="w-full h-1.5 rounded-full tint-muted overflow-hidden">
-                    <div class="h-full rounded-full ${dDone === dPages.length ? 'bg-[var(--success)]' : 'bg-[var(--primary)]'} transition-all" style="width:${dPct}%"></div>
+                </details>
+              </section>
+            `;
+          }
+
+          return `
+            <section class="studio-card p-5 space-y-3 border-dashed border-[var(--border)]">
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div class="space-y-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-lg">${cat.icon}</span>
+                    <span class="px-2 py-0.5 rounded border text-[11px] font-bold tint-muted text-[var(--foreground)] border-[var(--border)]">Ch ${chNum}</span>
+                    <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(badgeLevel)}">${esc(cefrLabel)}</span>
+                    ${cat.texPageCount ? `<span class="text-[11px] text-[var(--muted-foreground)] font-medium">${cat.texPageCount} Tex pages</span>` : ''}
                   </div>
-                  <details open class="group">
-                    <summary class="text-xs font-bold text-[var(--link)] cursor-pointer select-none mb-2.5">
-                      Show / Hide all ${dPages.length} sub-pages (${esc(dCh.code)})
-                    </summary>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                      ${dPages.map((p) => {
-                        const pProg = state.deepProgress[p.id] || {};
-                        const pDone = Boolean(pProg.completed);
-                        const pBest = pProg.drillBest || 0;
-                        const pTotal = (p.drills || []).length;
-                        return `
-                          <button type="button" data-open-deep="${dCh.id}::${p.id}" class="text-left p-2.5 rounded-xl bg-[var(--content)] border ${pDone ? 'border-success-soft' : 'border-[var(--border)]'} tint-muted-hover transition cursor-pointer flex items-center justify-between gap-2">
-                            <div class="min-w-0">
-                              <div class="text-[11px] font-bold text-[var(--primary)]">${esc(p.code)} · ${esc(p.group)}</div>
-                              <div class="text-xs font-bold text-[var(--foreground)] truncate">${esc(p.shortTitle)}</div>
-                            </div>
-                            <span class="text-[11px] font-bold shrink-0 tabular-nums ${pDone ? 'text-[var(--success)]' : pBest > 0 ? 'text-[var(--primary)]' : 'text-[var(--muted-foreground)]'}">
-                              ${pDone ? `✓ ${pBest}/${pTotal}` : pBest > 0 ? `${pBest}/${pTotal}` : `${pTotal}Q →`}
-                            </span>
-                          </button>
-                        `;
-                      }).join('')}
-                    </div>
-                  </details>
+                  <h3 class="text-base font-bold text-[var(--foreground)]">${esc(cat.title)}</h3>
+                  ${state.showZh && cat.titleZh ? `<div class="text-xs font-semibold text-[var(--primary)]">${esc(cat.titleZh)}</div>` : ''}
+                  <p class="text-xs text-[var(--muted-foreground)]">${esc(state.showZh && cat.descZh ? cat.descZh : cat.desc)}</p>
                 </div>
-              `;
-            }).join('')}
-            ${nextLvlDeepCh ? `
-              <div class="studio-card p-4 border-primary-soft bg-[var(--content)] flex flex-wrap items-center justify-between gap-3">
-                <div class="space-y-0.5 min-w-0">
-                  <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">➡️ Next in Tex Curriculum (${esc(nextLvlDeepCh.level)})</div>
-                  <div class="text-sm font-bold text-[var(--foreground)]">${nextLvlDeepCh.icon} [${esc(nextLvlDeepCh.code)}] ${esc(nextLvlDeepCh.title)}</div>
-                  <div class="text-xs text-[var(--muted-foreground)]">${(nextLvlDeepCh.pages || []).length} bite-sized pages · ${esc(nextLvlDeepCh.subtitle)}</div>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 shrink-0">
-                  <button type="button" data-course-lvl="${esc(nextLvlDeepCh.level)}" class="px-3.5 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                    View ${esc(nextLvlDeepCh.level)} Level →
-                  </button>
-                  ${(nextLvlDeepCh.pages || []).length ? `
-                    <button type="button" data-open-deep="${nextLvlDeepCh.id}::${nextLvlDeepCh.pages[0].id}" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                      Start ${esc(nextLvlDeepCh.code)} (${esc(nextLvlDeepCh.pages[0].code)}) →
-                    </button>
-                  ` : ''}
-                </div>
+                <span class="px-2.5 py-1 rounded-full tint-muted text-[var(--muted-foreground)] text-[11px] font-semibold shrink-0">🚧 Coming Soon · Tex Slow-Paced</span>
               </div>
-            ` : ''}
-          </section>
-        ` : `
-          <section class="studio-card p-5 space-y-3 border-dashed border-[var(--border)]">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="space-y-1">
-                <span class="px-2 py-0.5 rounded border text-[11px] font-bold ${levelBadgeStyle(curLvl)}">${curLvl} · Upcoming Tex Chapters</span>
-                <h3 class="text-base font-bold text-[var(--foreground)]">🚧 Tex Slow-Paced Chapters for ${curLvl} Are Coming Next</h3>
-                <p class="text-xs text-[var(--muted-foreground)]">
-                  We’re building the slow-paced Tex chapters progressively. Check the 11-Topic Grammar Index to see the full Tex roadmap, or jump to our latest live Tex chapter.
-                </p>
+              <div class="flex flex-wrap gap-1.5 pt-1">
+                ${(cat.plannedTopics || []).map((pt) => `<span class="px-2 py-0.5 rounded-lg bg-[var(--content)] border border-[var(--border)] text-[11px] text-[var(--muted-foreground)]">${esc(pt)}</span>`).join('')}
               </div>
-              <div class="flex flex-wrap items-center gap-2 shrink-0">
-                ${latestDeepCh ? `
-                  <button type="button" data-course-lvl="${esc(latestDeepCh.level)}" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer">
-                    Jump to ${esc(latestDeepCh.code)} (${esc(latestDeepCh.level)}) →
-                  </button>
-                ` : ''}
-                <button type="button" data-course-browse="index" class="px-3.5 py-2 rounded-xl bg-[var(--content)] border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] tint-muted-hover cursor-pointer">
-                  📚 Grammar Index →
-                </button>
-              </div>
-            </div>
-          </section>
-        `;
+            </section>
+          `;
+        }).join('');
 
         els.mainContent.innerHTML = `
           <div class="space-y-5">
             <!-- Header -->
             <div class="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 Structured French Course (A0 → B2)</h2>
+                <h2 class="text-2xl font-bold text-[var(--foreground)]">📘 Tex’s French Grammar Course (Ch 1 → Ch 11)</h2>
                 <p class="text-sm text-[var(--muted-foreground)] mt-1">
-                  Slow-paced Tex-depth French grammar chapters — tiny digestible rules, original cartoons, and focused drills.
+                  Following Tex’s official 11-chapter progression in sequence — with CEFR difficulty noted on every chapter.
                 </p>
               </div>
               <div class="px-3 py-1.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-xs font-bold tabular-nums">
-                Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${DEEP_CHAPTERS.length} Chapters
+                Tex Pages Done: <span class="text-[var(--success)]">${deepDonePages} / ${deepTotalPages}</span> · ${readyCount}/${GRAMMAR_DIRECTORY.length} Chapters Live
               </div>
             </div>
-
-            ${modeSwitchHTML}
 
             ${recDeep ? `
               <div class="studio-card p-4 border-primary-soft flex flex-wrap items-center justify-between gap-3">
                 <div class="space-y-0.5 min-w-0">
                   <div class="text-[11px] font-bold uppercase tracking-wider text-[var(--primary)]">✨ Next Recommended Tex Lesson</div>
-                  <div class="text-sm font-bold text-[var(--foreground)]">${recDeep.chapter.icon} [${esc(recDeep.chapter.level)} · ${esc(recDeep.chapter.code)} · ${esc(recDeep.page.code)}] ${esc(recDeep.page.title)}</div>
+                  <div class="text-sm font-bold text-[var(--foreground)]">${recDeep.chapter.icon} [${esc(recDeep.chapter.code)} · ${esc(recDeep.page.code)} · ${esc(recDeep.chapter.level)}] ${esc(recDeep.page.title)}</div>
                   <div class="text-xs text-[var(--muted-foreground)]">${esc(recDeep.chapter.title)} · ${esc(recDeep.page.shortTitle)}</div>
                 </div>
                 <button type="button" id="btnResumeRecommended" class="px-4 py-2 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] text-xs font-bold cursor-pointer shrink-0">
@@ -8638,24 +8504,20 @@
               </div>
             ` : ''}
 
-            <!-- CEFR Level Tabs -->
+            <!-- Unified Filter Bar -->
             <div class="flex flex-wrap gap-1.5 bg-[var(--card)] border border-[var(--card-border)] p-2 rounded-2xl">
-              ${levelTabs.map((lt) => `
-                <button type="button" data-course-lvl="${lt.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
-                  curLvl === lt.id
+              ${filterPills.map((fp) => `
+                <button type="button" data-course-filter="${fp.id}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border ${
+                  curFilter === fp.id
                     ? 'bg-[var(--primary)] text-[var(--primary-foreground)] border-transparent'
                     : 'bg-[var(--content)] border-[var(--border)] text-[var(--foreground)] tint-muted-hover'
-                }">${lt.label}</button>
+                }">${fp.label}</button>
               `).join('')}
             </div>
 
-            <div class="p-3.5 rounded-xl bg-[var(--card)] border border-[var(--card-border)] text-xs text-[var(--muted-foreground)]">
-              <strong class="text-[var(--foreground)]">${curLvl} Focus:</strong> ${esc(levelIntro)}
-            </div>
-
-            ${curLvl === 'A0' ? a0BodyHTML : `
-              <div class="space-y-6">
-                ${deepPilotHTML}
+            ${curFilter === 'A0' ? a0BodyHTML : `
+              <div class="space-y-4">
+                ${chaptersListHTML}
               </div>
             `}
           </div>
@@ -8664,10 +8526,9 @@
         const bRec = document.getElementById('btnResumeRecommended');
         if (bRec && recDeep) bRec.onclick = () => openDeepPage(recDeep.chapter.id, recDeep.page.id, 'study');
 
-        els.mainContent.querySelectorAll('[data-course-browse]').forEach((b) => {
+        els.mainContent.querySelectorAll('[data-course-filter]').forEach((b) => {
           b.onclick = () => {
-            state.courseBrowseMode = b.dataset.courseBrowse;
-            saveState();
+            state.courseFilter = b.dataset.courseFilter;
             renderCourseView();
           };
         });
@@ -8675,14 +8536,6 @@
           b.onclick = () => {
             const [cid, pid] = String(b.dataset.openDeep || '').split('::');
             openDeepPage(cid, pid, 'study');
-          };
-        });
-
-        els.mainContent.querySelectorAll('[data-course-lvl]').forEach((b) => {
-          b.onclick = () => {
-            state.courseLevel = b.dataset.courseLvl;
-            saveState();
-            renderCourseView();
           };
         });
         els.mainContent.querySelectorAll('[data-course-gram]').forEach((b) => {
