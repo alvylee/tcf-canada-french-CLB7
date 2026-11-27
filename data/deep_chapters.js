@@ -323,18 +323,19 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
   {
     id: 'interrogatives',
     code: '11',
-    cefr: 'A1–B1',
+    cefr: 'A1–B2',
     texPageCount: 7,
     icon: '❓',
     title: 'Interrogatives (Les Questions)',
-    titleZh: '第十一章 · 疑问句（语调、Est-ce que、倒装、quel、lequel 与疑问词）',
-    desc: 'Yes/no questions, subject/verb inversion, interrogative adjective quel(le)(s), interrogative pronouns (qui/que/qu’est-ce qui/lequel) & question words.',
-    descZh: '法语三种提问语域（语调/est-ce que/倒装）、疑问形容词 quel、疑问代词 qui/que/quoi/lequel 以及全部疑问词（7 页原站专题）。',
-    status: 'existing',
+    titleZh: '第十一章 · 疑问句全解（语调/Est-ce que/倒装、quel、qui/que/quoi、lequel 与疑问副词）',
+    desc: 'Tex int1–int7 (7 bite-sized pages): yes/no vs. info questions, 3 registers (intonation / est-ce que / inversion + n’est-ce pas), inversion mechanics (-t-, noun complex inversion, Y a-t-il), quel(le)(s) interrogative & exclamative, qui/que/quoi/qu’est-ce qui matrix, lequel + à/de contractions, and où/quand/comment/pourquoi/combien de.',
+    descZh: '对标 Tex 原版 int1–int7（7 小页）：是非问 vs 信息问、三种提问语域与 n’est-ce pas、主谓倒装（加 -t-、名词复指、Y a-t-il）、quel 配合与感叹、人物疑问代词矩阵、lequel 缩合全规及五大疑问副词。',
+    status: 'deep',
+    deepChapterId: 'ch11_interrogatives',
     plannedTopics: [
-      'Yes/No Questions & Subject/Verb Inversion',
-      'Interrogative Adjective quel & Pronoun lequel',
-      'Interrogative Pronouns & Question Words (où, quand, comment, pourquoi)'
+      '11.1–11.3 Registers (Intonation, Est-ce que, N’est-ce pas) & Subject-Verb Inversion (-t-)',
+      '11.4 Interrogative & Exclamative Adjective quel / quelle / quels / quelles',
+      '11.5–11.7 Pronouns (qui / que / quoi / lequel) & Adverbs (où, quand, comment, pourquoi, combien)'
     ],
     existingTopicIds: ['a1_negation_questions']
   }
