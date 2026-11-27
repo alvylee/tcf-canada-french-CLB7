@@ -242,24 +242,78 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     existingTopicIds: ['connectors_prep_gerondif']
   },
   {
-    id: 'tense_mood',
-    code: '10',
-    cefr: 'A1–B2',
-    texPageCount: 33,
+    id: 'tense_mood_a',
+    code: '10A',
+    cefr: 'A1–B1',
+    texPageCount: 10,
     icon: '⏳',
-    title: 'Tense, Mood & Voice (Temps & Modes)',
-    titleZh: '第十章 · 时态、语式与语态（过去/将来/条件/命令/虚拟/间接引语/被动）',
-    desc: 'Present, passé récent, futur proche, impératif, passé composé, imparfait, plus-que-parfait, passé simple, futur simple, conditionnel, subjonctif & passive voice.',
-    descZh: '全套法语时态与语式系统（33 页）：现在时/近将来/命令式 → 复合过去/未完成过去对比 → 简单将来/条件式/si 从句 → 虚拟式全解与被动态。',
+    title: 'Tense & Mood I: Present, Recent Past, Passé Composé & Imparfait',
+    titleZh: '第十章 A · 现在时与核心过去叙事（近过去、复合过去时 avoir/être/代动词 与 未完成过去时）',
+    desc: 'Tex ta1, tapr1, tap1–tap8 (10 bite-sized pages): tense/aspect/mood/voice overview, 3 nuances of Present + historical present, venir de (present & past), Passé Composé with avoir / être (Alamo) / pronominals (+ agreement exceptions), Imparfait & PC vs. Imparfait narrative.',
+    descZh: '对标 Tex 第十章前半部（ta1, tapr1, tap1–tap8 共 10 小页）：时态语式总纲、现在时与历史现在时、近过去时 venir de、复合过去时（avoir / être / 代动词配合与例外）、未完成过去时及叙事对比。',
+    status: 'deep',
+    deepChapterId: 'ch10a_tenses_past',
+    plannedTopics: [
+      '10A.1–10A.3 Foundations, Present Tense & Recent Past (venir de)',
+      '10A.4–10A.6 Passé Composé (avoir, être Alamo & Pronominal Verbs)',
+      '10A.7–10A.9 Imparfait Formation, States/Habits & Si Wishes/Suggestions',
+      '10A.10 Narrative Comparison: Passé Composé vs. Imparfait'
+    ],
+    existingTopicIds: ['a1_near_future_recent_past', 'a2_passe_compose_avoir', 'a2_passe_compose_etre', 'a2_imparfait', 'a2_pc_vs_imparfait']
+  },
+  {
+    id: 'tense_mood_b',
+    code: '10B',
+    cefr: 'A1–B2',
+    texPageCount: 9,
+    icon: '🚀',
+    title: 'Tense & Mood II: Plus-que-parfait, Future, Passé Simple & Imperative',
+    titleZh: '第十章 B · 愈过去时、将来时体系（近将来/简单将来/先将来）、简单过去时与命令式',
+    desc: 'Tex tap9–11, taf1–5, tai1: plus-que-parfait ("had done"), passé simple & passé antérieur (reading/literary), futur proche, futur simple (regular & irregular stems) + futur antérieur, and imperative mood.',
+    descZh: '对标 Tex tap9–11, taf1–5, tai1：愈过去时、书面文学时态（简单过去/先过去）、近将来时、简单将来时与先将来时，以及命令式。',
     status: 'existing',
     plannedTopics: [
-      'Present, Passé Récent & Futur Proche',
-      'Passé Composé (avoir / être / pronominal) vs. Imparfait',
-      'Plus-que-parfait, Futur Simple & Futur Antérieur',
-      'Conditional, Past Conditional & Si-Clauses',
-      'Subjunctive, Reported Speech & Passive Voice'
+      'Plus-que-parfait & Passé Simple / Antérieur',
+      'Futur Proche, Futur Simple & Futur Antérieur',
+      'Imperative Mood (Affirmative & Negative)'
     ],
-    existingTopicIds: ['a1_near_future_recent_past', 'a1_imperative', 'a2_passe_compose_avoir', 'a2_passe_compose_etre', 'a2_imparfait', 'a2_pc_vs_imparfait', 'a2_futur_simple', 'plus_que_parfait', 'conditionnel_si', 'subjunctive']
+    existingTopicIds: ['a1_near_future_recent_past', 'a1_imperative', 'a2_futur_simple', 'plus_que_parfait']
+  },
+  {
+    id: 'tense_mood_c',
+    code: '10C',
+    cefr: 'B1–B2',
+    texPageCount: 9,
+    icon: '💭',
+    title: 'Tense & Mood III: The Subjunctive Mood Mastery',
+    titleZh: '第十章 C · 虚拟式全解（规则与不规则词干、义务/怀疑/意愿/连词触发、过去虚拟式与规避技巧）',
+    desc: 'Tex tas1–tas8: regular & irregular subjunctive stems, obligation (il faut que), doubt (negative/interrogative), will/emotion, subjunctive conjunctions, past subjunctive, and ways to avoid subjunctive.',
+    descZh: '对标 Tex tas1–tas8：虚拟式变位全规、必要性/怀疑/意志情绪触发机制、虚拟式连词、过去虚拟式与同主语规避转化。',
+    status: 'existing',
+    plannedTopics: [
+      'Regular & Irregular Subjunctive Stems (tas1–tas2)',
+      'Triggers: Obligation, Doubt, Will & Emotion (tas3–tas4)',
+      'Past Subjunctive, Summary & Infinitive Avoidance (tas5–tas8)'
+    ],
+    existingTopicIds: ['subjunctive']
+  },
+  {
+    id: 'tense_mood_d',
+    code: '10D',
+    cefr: 'B1–B2',
+    texPageCount: 6,
+    icon: '⚖️',
+    title: 'Tense & Mood IV: Conditional, Si-Clauses, Reported Speech & Passive',
+    titleZh: '第十章 D · 条件式（现在/过去）、Si 条件句、直接/间接引语转换与被动态',
+    desc: 'Tex tac1–3, tad1–2, tav1: conditional & past conditional ("would / would have"), 3 si-clause sequences, present & past reported speech backshifting, and active vs. passive voice.',
+    descZh: '对标 Tex tac1–3, tad1–2, tav1：条件式与过去条件式、三大 Si 条件从句黄金配对、现在与过去间接引语时态后退，以及被动态。',
+    status: 'existing',
+    plannedTopics: [
+      'Conditional, Past Conditional & 3 Si-Clauses (tac1–tac3)',
+      'Reported Speech: Present & Past Backshifting (tad1–tad2)',
+      'Active vs. Passive Voice (tav1)'
+    ],
+    existingTopicIds: ['conditionnel_si']
   },
   {
     id: 'interrogatives',
