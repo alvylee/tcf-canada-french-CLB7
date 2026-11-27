@@ -308,14 +308,15 @@ window.__TCF_GRAMMAR_DIRECTORY__ = [
     texPageCount: 6,
     icon: '⚖️',
     title: 'Tense & Mood IV: Conditional, Si-Clauses, Reported Speech & Passive',
-    titleZh: '第十章 D · 条件式（现在/过去）、Si 条件句、直接/间接引语转换与被动态',
-    desc: 'Tex tac1–3, tad1–2, tav1: conditional & past conditional ("would / would have"), 3 si-clause sequences, present & past reported speech backshifting, and active vs. passive voice.',
-    descZh: '对标 Tex tac1–3, tad1–2, tav1：条件式与过去条件式、三大 Si 条件从句黄金配对、现在与过去间接引语时态后退，以及被动态。',
-    status: 'existing',
+    titleZh: '第十章 D · 条件式、Si 条件句、间接引语时态配合与被动语态',
+    desc: 'Tex tac1–3, tad1–2, tav1 (6 bite-sized pages): present conditional & journalistic rumor, past conditional ("would have") & regrets, 3 golden Si-clause sequences (+ "si" if vs. whether), present indirect speech (que/si/ce qui/ce que/de+inf.), past backshifting (concordance des temps), and active vs. passive voice (être agreement + par/de + on/pronominal alternatives).',
+    descZh: '对标 Tex 原版 tac1–3, tad1–2, tav1（6 小页）：现在条件式（礼貌/假设/新闻传闻）、过去条件式（遗憾与未发生事件）、三大 Si 条件从句黄金配对、现在间接引语、过去间接引语时态后退律，以及被动语态全时态配合与规避写法。',
+    status: 'deep',
+    deepChapterId: 'ch10d_cond_disc_pass',
     plannedTopics: [
-      'Conditional, Past Conditional & 3 Si-Clauses (tac1–tac3)',
-      'Reported Speech: Present & Past Backshifting (tad1–tad2)',
-      'Active vs. Passive Voice (tav1)'
+      '10D.1–10D.3 Present Conditional, Past Conditional & 3 Si-Clause Sequences',
+      '10D.4–10D.5 Reported Speech: Present Conversion & Past Backshifting',
+      '10D.6 Active vs. Passive Voice (par vs. de, Agreement & Avoidance)'
     ],
     existingTopicIds: ['conditionnel_si']
   },
